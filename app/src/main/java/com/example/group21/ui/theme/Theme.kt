@@ -1,4 +1,4 @@
-package com.example.pokedex.ui.theme
+package com.example.group21.ui.theme
 
 import android.app.Activity
 import android.os.Build

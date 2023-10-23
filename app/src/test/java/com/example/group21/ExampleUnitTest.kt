@@ -1,4 +1,4 @@
-package com.example.pokedex
+package com.example.group21
 
 import org.junit.Test
 
