@@ -94,9 +94,40 @@ object PokemonSamples {
         R.drawable._0009
     )
 
+    val caterpie = Pokemon(
+        "caterpie",
+        10,
+        PokemonType.BUG,
+        null,
+        PokemonGender.MALE,
+        PokemonStats(45, 30, 35, 20, 20, 45),
+        R.drawable._0010
+    )
+
+    val metapod = Pokemon(
+        "metapod",
+        11,
+        PokemonType.BUG,
+        null,
+        PokemonGender.MALE,
+        PokemonStats(50, 20, 55, 25, 25, 30),
+        R.drawable._0011
+    )
+
+    val butterfree = Pokemon(
+        "butterfree",
+        12,
+        PokemonType.BUG,
+        PokemonType.FLYING,
+        PokemonGender.MALE,
+        PokemonStats(60, 45, 50, 90, 80, 70),
+        R.drawable._0012
+    )
+
     var listOfPokemons: List<Pokemon> = listOf(
-        bulbasaur, ivysaur, venusaur, charmander, charmeleon,
-        charizard, squirtle, wartortle, blastoise
+        bulbasaur, ivysaur, venusaur, charmander,
+        charmeleon, charizard, squirtle, wartortle,
+        blastoise, caterpie, metapod, butterfree
     )
 
 }
