@@ -94,6 +94,9 @@ object PokemonSamples {
         R.drawable._0009
     )
 
-
+    var listOfPokemons: List<Pokemon> = listOf(
+        bulbasaur, ivysaur, venusaur, charmander, charmeleon,
+        charizard, squirtle, wartortle, blastoise
+    )
 
 }
