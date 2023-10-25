@@ -2,7 +2,7 @@ package dtu.group21.models.pokemon
 
 import com.example.pokedex.R
 
-class PokemonSamples {
+object PokemonSamples {
 
     val bulbasaur = Pokemon(
         "bulbasaur",
