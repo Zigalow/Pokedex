@@ -1,74 +1,59 @@
 package dtu.group21.pokedex
 
+import android.graphics.Paint.Align
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFrom
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dtu.group21.ui.theme.PokedexTheme
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.Pokemon
-import dtu.group21.models.pokemon.PokemonGender
-import dtu.group21.models.pokemon.PokemonStats
+import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.ui.theme.PokedexTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             PokedexTheme {
-                /*   // A surface container using the 'background' color from the theme
-                   Column {
-                       UpperMenu()
-                       // Line
-                       Divider(thickness = 1.dp, color = Color.Black)
-                       Spacer(modifier = Modifier.padding(18.dp))
-                   }*/
-                pokemonBox(pokemon = bulbasaur)
-
+                // A surface container using the 'background' color from the theme
+                Column {
+                    UpperMenu()
+                    // Line
+                    Divider(thickness = 1.dp, color = Color.Black)
+                    Spacer(modifier = Modifier.padding(3.dp))
+                    pokemonColumn(listOfPokemon = PokemonSamples.listOfPokemons)
+                }
+                favoritesIcon(modifier = Modifier.offset(290.dp, 675.dp))
             }
         }
     }
-
-
-    val bulbasaur = Pokemon(
-        "bulbasaur",
-        1,
-        PokemonType.GRASS,
-        PokemonType.POISON,
-        PokemonGender.MALE,
-        PokemonStats(12, 12, 12, 12, 12, 12),
-        R.drawable._0001
-    )
 
     @Composable
     fun UpperMenu(modifier: Modifier = Modifier) {
@@ -136,8 +121,7 @@ class MainActivity : ComponentActivity() {
                 .background(
                     Color(android.graphics.Color.parseColor(pokemonType.regularColorHexvalue)),
                     shape = RoundedCornerShape(15.dp)
-                ),
-            contentAlignment = Alignment.Center
+                ), contentAlignment = Alignment.Center
 
         ) {
             Text(
@@ -157,8 +141,7 @@ class MainActivity : ComponentActivity() {
                 .background(
                     Color(android.graphics.Color.parseColor(pokemonType.regularColorHexvalue)),
                     shape = RoundedCornerShape(15.dp)
-                ),
-            contentAlignment = Alignment.Center
+                ), contentAlignment = Alignment.Center
 
         ) {
             Text(
@@ -205,8 +188,7 @@ class MainActivity : ComponentActivity() {
                     typeBox(pokemonType = pokemon.secondaryType)
                 }
                 Box(
-                    modifier = Modifier
-                        .weight(1f), // Takes up remaining space
+                    modifier = Modifier.weight(1f), // Takes up remaining space
                     contentAlignment = Alignment.CenterEnd // Align the content to the end (right)
                 ) {
                     Text(
@@ -217,7 +199,6 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
-
             Box(
                 modifier = modifier
                     .width(120.dp)
@@ -229,29 +210,64 @@ class MainActivity : ComponentActivity() {
                     ),
                 contentAlignment = Alignment.Center,
 
-            ) {
+                ) {
                 Text(
                     text = pokemon.name.toLowerCase().capitalize(),
                     fontSize = 17.sp,
                     color = Color.White,
                 )
             }
-
         }
-
     }
 
 
     @Composable
-    fun pokemonColumn() {
-
+    fun pokemonColumn(modifier: Modifier = Modifier, listOfPokemon: List<Pokemon>) {
+        Column(
+            modifier = modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 10.dp)
+        ) {
+            for (i in listOfPokemon.indices step 2) {
+                Row()
+                {
+                    if (i < listOfPokemon.size) {
+                        pokemonBox(pokemon = listOfPokemon[i])
+                        Spacer(modifier = modifier.padding(horizontal = 12.dp))
+                    }
+                    if (i + 1 < listOfPokemon.size) pokemonBox(pokemon = listOfPokemon[i + 1])
+                }
+                Spacer(modifier = modifier.padding(vertical = 5.dp))
+            }
+        }
     }
-    
+
+    @Composable
+    fun favoritesIcon(modifier: Modifier = Modifier) {
+        Box(
+            modifier = modifier
+                .size(60.dp)
+                .offset(30.dp, 30.dp)
+                .background(
+                    Color(android.graphics.Color.parseColor("#DE4A4A")),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ){
+            Image(
+                painter = painterResource(id = R.drawable.white_heart),
+                contentDescription = "White heart",
+                modifier = Modifier.size(30.dp)
+            )
+        }
+    }
+
 
     @Preview(showBackground = false, showSystemUi = true)
     @Composable
     fun Preview() {
-        pokemonBox(pokemon = bulbasaur)
+        //pokemonColumn(listOfPokemon = PokemonSamples.listOfPokemons)
+        favoritesIcon()
     }
 }
     
