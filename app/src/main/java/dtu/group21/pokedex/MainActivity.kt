@@ -1,6 +1,5 @@
 package dtu.group21.pokedex
 
-import android.graphics.Paint.Align
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -51,60 +51,30 @@ class MainActivity : ComponentActivity() {
                     pokemonColumn(listOfPokemon = PokemonSamples.listOfPokemons)
                 }
                 favoritesIcon(modifier = Modifier.offset(290.dp, 675.dp))
+                menu()
             }
         }
     }
 
+
+    //region main components
     @Composable
     fun UpperMenu(modifier: Modifier = Modifier) {
-
         Box(
             modifier = modifier
                 .fillMaxWidth()
                 .height(83.dp)
         ) {
             Row {
-                Image(
-                    painter = painterResource(id = R.drawable.menu_icon), // Replace with your image resource
-                    contentDescription = "menu-icon", // Set to null if the image is decorative
-                    modifier = Modifier
-                        .padding(vertical = 16.dp, horizontal = 19.dp)
-                        .size(49.dp),
-                    //contentScale = ContentScale.FillBounds
-                )/*Box(
-                modifier = modifier
-                    .padding(vertical = 16.dp, horizontal = 19.dp)
-                    .height(49.dp)
-                    .width(49.dp)
-                    .background(color = Color.Gray)
-
-            )*/
+                menuIcon()
                 Spacer(
                     modifier = modifier.padding(horizontal = 14.dp)
                 )
-                Image(
-                    painter = painterResource(id = R.drawable.pokemon_logo), // Replace with your image resource
-                    contentDescription = "Pokemon logo", // Set to null if the image is decorative
-                    modifier = Modifier
-                        .height(87.dp)
-                        .width(154.dp)
-                )/* Box(
-                 modifier = modifier
-                     .height(87.dp)
-                     .width(154.dp)
-                     .background(color = Color.Gray)
-             )*/
+                pokemonLogo()
                 Spacer(
                     modifier = modifier.padding(horizontal = 14.dp)
                 )
-                Image(
-                    painter = painterResource(id = R.drawable.search_icon),
-                    contentDescription = "search icon",
-                    modifier = Modifier
-                        .padding(vertical = 16.dp, horizontal = 19.dp)
-                        .size(49.dp)
-
-                )
+                searchIcon()
             }
 
         }
@@ -113,113 +83,26 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun typeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
+    fun menu(modifier: Modifier = Modifier) {
         Box(
             modifier = modifier
-                .width(50.dp)
-                .height(18.dp)
-                .background(
-                    Color(android.graphics.Color.parseColor(pokemonType.regularColorHexvalue)),
-                    shape = RoundedCornerShape(15.dp)
-                ), contentAlignment = Alignment.Center
-
+                .fillMaxHeight()
+                .width(80.dp)
+                .background(Color(android.graphics.Color.parseColor("#FFCC00")))
         ) {
-            Text(
-                text = pokemonType.name.toLowerCase().capitalize(),
-                fontSize = 10.sp,
-                color = Color.White
-            )
-        }
-    }
-
-    @Composable
-    fun nameBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
-        Box(
-            modifier = modifier
-                .width(95.dp)
-                .height(23.dp)
-                .background(
-                    Color(android.graphics.Color.parseColor(pokemonType.regularColorHexvalue)),
-                    shape = RoundedCornerShape(15.dp)
-                ), contentAlignment = Alignment.Center
-
-        ) {
-            Text(
-                text = pokemonType.name.toLowerCase().capitalize(),
-                fontSize = 10.sp,
-                color = Color.White
-            )
-        }
-    }
-
-    fun formatPokemonId(unformattedNumber: Int): String {
-        return "#${"%04d".format(unformattedNumber)}"
-    }
-
-    @Composable
-    fun pokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon) {
-        Box(
-            modifier = modifier
-                .size(174.dp)
-                .background(
-                    Color(android.graphics.Color.parseColor(pokemon.type.backgroundColorHexvalue)),
-                    shape = RoundedCornerShape(15.dp)
-                )
-        ) {
+            menuIcon()
             Image(
-                painter = painterResource(id = pokemon.spriteResourceId),
-                contentDescription = pokemon.name,
+                painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
+                contentDescription = "settings-icon", // Set to null if the image is decorative
                 modifier = Modifier
-                    .size(174.dp)
-                    .background(
-                        Color(android.graphics.Color.parseColor(pokemon.type.backgroundColorHexvalue)),
-                        shape = RoundedCornerShape(15.dp)
-                    )
-            )
-            Row(
-                modifier = modifier
-                    .padding(horizontal = 4.dp, 11.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                typeBox(modifier = modifier, pokemonType = pokemon.type)
-                if (pokemon.secondaryType != null) {
-                    Spacer(modifier = modifier.padding(horizontal = 4.dp))
-                    typeBox(pokemonType = pokemon.secondaryType)
-                }
-                Box(
-                    modifier = Modifier.weight(1f), // Takes up remaining space
-                    contentAlignment = Alignment.CenterEnd // Align the content to the end (right)
-                ) {
-                    Text(
-                        text = formatPokemonId(pokemon.pokedexNumber),
-                        textAlign = TextAlign.Right,
-                        color = Color.White,
-                        fontSize = 10.sp
-                    )
-                }
-            }
-            Box(
-                modifier = modifier
-                    .width(120.dp)
-                    .height(23.dp)
-                    .offset(x = 8.dp, y = 145.dp)
-                    .background(
-                        Color(android.graphics.Color.parseColor(pokemon.type.regularColorHexvalue)),
-                        shape = RoundedCornerShape(15.dp)
-                    ),
-                contentAlignment = Alignment.Center,
+                    .padding(vertical = 16.dp, horizontal = 19.dp)
+                    .size(49.dp)
+                    .offset(y = 675.dp),
 
-                ) {
-                Text(
-                    text = pokemon.name.toLowerCase().capitalize(),
-                    fontSize = 17.sp,
-                    color = Color.White,
                 )
-            }
         }
-    }
 
+    }
 
     @Composable
     fun pokemonColumn(modifier: Modifier = Modifier, listOfPokemon: List<Pokemon>) {
@@ -253,7 +136,7 @@ class MainActivity : ComponentActivity() {
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
-        ){
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.white_heart),
                 contentDescription = "White heart",
@@ -261,13 +144,161 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
+    //endregion
+
+    //helper functions to components
+    
+    //region upper menu component functions
+    @Composable
+    fun pokemonLogo(modifier: Modifier = Modifier) {
+        Image(
+            painter = painterResource(id = R.drawable.pokemon_logo),
+            contentDescription = "Pokemon logo",
+            modifier = Modifier
+                .height(87.dp)
+                .width(154.dp)
+        )
+    }
+
+    @Composable
+    fun searchIcon(modifier: Modifier = Modifier) {
+        Image(
+            painter = painterResource(id = R.drawable.search_icon),
+            contentDescription = "search icon",
+            modifier = Modifier
+                .padding(vertical = 16.dp, horizontal = 19.dp)
+                .size(49.dp)
+
+        )
+    }
+
+    @Composable
+    fun menuIcon(modifier: Modifier = Modifier) {
+        Image(
+            painter = painterResource(id = R.drawable.menu_icon), // Replace with your image resource
+            contentDescription = "menu-icon", // Set to null if the image is decorative
+            modifier = Modifier
+                .padding(vertical = 16.dp, horizontal = 19.dp)
+                .size(49.dp),
+        )
+    }
+    //endregion
+
+    //region pokemon column functions
+    @Composable
+    fun pokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
+        Box(
+            modifier = modifier
+                .width(50.dp)
+                .height(18.dp)
+                .background(
+                    Color(android.graphics.Color.parseColor(pokemonType.regularColorHexvalue)),
+                    shape = RoundedCornerShape(15.dp)
+                ), contentAlignment = Alignment.Center
+
+        ) {
+            Text(
+                text = pokemonType.name.toLowerCase().capitalize(),
+                fontSize = 10.sp,
+                color = Color.White
+            )
+        }
+    }
+
+    @Composable
+    fun pokemonImage(modifier: Modifier = Modifier, pokemon: Pokemon) {
+        Image(
+            painter = painterResource(id = pokemon.spriteResourceId),
+            contentDescription = pokemon.name,
+            modifier = Modifier
+                .size(174.dp)
+                .background(
+                    Color(android.graphics.Color.parseColor(pokemon.type.backgroundColorHexvalue)),
+                    shape = RoundedCornerShape(20.dp)
+                )
+        )
+    }
+
+    @Composable
+    fun pokemonNameBox(modifier: Modifier = Modifier, pokemon: Pokemon) {
+        Box(
+            modifier = modifier
+                .width(120.dp)
+                .height(23.dp)
+                .offset(x = 8.dp, y = 145.dp)
+                .background(
+                    Color(android.graphics.Color.parseColor(pokemon.type.regularColorHexvalue)),
+                    shape = RoundedCornerShape(15.dp)
+                ),
+            contentAlignment = Alignment.Center,
+
+            ) {
+            Text(
+                text = pokemon.name.toLowerCase().capitalize(),
+                fontSize = 17.sp,
+                color = Color.White,
+            )
+        }
+    }
+
+    fun formatPokemonId(unformattedNumber: Int): String {
+        return "#${"%04d".format(unformattedNumber)}"
+    }
+
+    @Composable
+    fun pokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon) {
+        Box(
+            modifier = modifier
+                .size(174.dp)
+//                .background(
+//                    Color(android.graphics.Color.parseColor(pokemon.type.regularColorHexvalue)),
+//                    shape = RoundedCornerShape(50.dp)
+//                )
+        ) {
+            pokemonImage(pokemon = pokemon)
+            Row(
+                modifier = modifier
+                    .padding(horizontal = 6.dp, 11.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                pokemonTypeBox(pokemonType = pokemon.type)
+                if (pokemon.secondaryType != null) {
+                    Spacer(modifier = modifier.padding(horizontal = 4.dp))
+                    pokemonTypeBox(pokemonType = pokemon.secondaryType)
+                }
+                // For displaying pokedex number
+                Box(
+                    modifier = Modifier.weight(1f), // Takes up remaining space
+                    contentAlignment = Alignment.CenterEnd // Align the content to the end (right)
+                ) {
+                    Text(
+                        text = formatPokemonId(pokemon.pokedexNumber),
+                        textAlign = TextAlign.Right,
+                        color = Color.White,
+                        fontSize = 10.sp
+                    )
+                }
+            }
+            pokemonNameBox(pokemon = pokemon)
+        }
+    }
+
+    //endregion
 
 
-    @Preview(showBackground = false, showSystemUi = true)
+    @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun Preview() {
-        //pokemonColumn(listOfPokemon = PokemonSamples.listOfPokemons)
-        favoritesIcon()
+        Column {
+            UpperMenu()
+            // Line
+            Divider(thickness = 1.dp, color = Color.Black)
+            Spacer(modifier = Modifier.padding(3.dp))
+            pokemonColumn(listOfPokemon = PokemonSamples.listOfPokemons)
+        }
+        favoritesIcon(modifier = Modifier.offset(290.dp, 675.dp))
+        //menu()
     }
 }
     
