@@ -5,8 +5,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -29,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
@@ -36,45 +40,59 @@ import dtu.group21.models.pokemon.Pokemon
 import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.theme.PokedexTheme
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            // FrontPage()
             PokedexTheme {
                 // A surface container using the 'background' color from the theme
                 Column {
-                    UpperMenu()
+                    UpperMenu(
+                        leftIcon = { MenuIcon() },
+                        middleIcon = { PokemonLogo() },
+                        rightIcon = { SearchIcon() })
                     // Line
                     Divider(thickness = 1.dp, color = Color.Black)
                     Spacer(modifier = Modifier.padding(3.dp))
                     PokemonColumn(listOfPokemon = PokemonSamples.listOfPokemons)
                 }
                 FavoritesIcon(modifier = Modifier.offset(290.dp, 675.dp))
-                Menu()
+                //Menu()
             }
         }
     }
 
+    @Composable
+    fun FrontPage() {
+
+    }
 
     //region main components
     @Composable
-    fun UpperMenu(modifier: Modifier = Modifier) {
+    fun UpperMenu(
+        modifier: Modifier = Modifier,
+        leftIcon: @Composable () -> Unit,
+        middleIcon: @Composable () -> Unit,
+        rightIcon: @Composable () -> Unit
+    ) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
                 .height(83.dp)
         ) {
             Row {
-                MenuIcon()
+                leftIcon()
                 Spacer(
                     modifier = modifier.padding(horizontal = 14.dp)
                 )
-                PokemonLogo()
+                middleIcon()
                 Spacer(
                     modifier = modifier.padding(horizontal = 14.dp)
                 )
-                SearchIcon()
+                rightIcon()
             }
 
         }
@@ -104,26 +122,38 @@ class MainActivity : ComponentActivity() {
 
     }
 
+    @OptIn(ExperimentalLayoutApi::class)
     @Composable
     fun PokemonColumn(modifier: Modifier = Modifier, listOfPokemon: List<Pokemon>) {
-        Column(
+        FlowRow(
             modifier = modifier
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = 6.dp),
+            horizontalArrangement = Arrangement.Center,
+            maxItemsInEachRow = 2
         ) {
-            for (i in listOfPokemon.indices step 2) {
-                Row()
-                {
-                    if (i < listOfPokemon.size) {
-                        PokemonBox(pokemon = listOfPokemon[i])
-                        Spacer(modifier = modifier.padding(horizontal = 12.dp))
-                    }
-                    if (i + 1 < listOfPokemon.size) PokemonBox(pokemon = listOfPokemon[i + 1])
-                }
-                Spacer(modifier = modifier.padding(vertical = 5.dp))
+            for (i in listOfPokemon.indices) {
+                PokemonBox(
+                    modifier = modifier
+                        .padding(horizontal = 8.dp, vertical = 5.dp),
+                    pokemon = listOfPokemon[i], size = 174.dp
+                )
+                //    Spacer(modifier = modifier.padding(horizontal = 12.dp))
             }
         }
+        /* Column(
+             modifier = modifier
+                 .verticalScroll(rememberScrollState())
+                 .padding(horizontal = 10.dp)
+         ) {
+ 
+             //Spacer(modifier = modifier.padding(vertical = 5.dp))
+         }*/
+
+
     }
+
 
     @Composable
     fun FavoritesIcon(modifier: Modifier = Modifier) {
@@ -132,10 +162,8 @@ class MainActivity : ComponentActivity() {
                 .size(60.dp)
                 .offset(30.dp, 30.dp)
                 .background(
-                    Color(android.graphics.Color.parseColor("#DE4A4A")),
-                    shape = CircleShape
-                ),
-            contentAlignment = Alignment.Center
+                    Color(android.graphics.Color.parseColor("#DE4A4A")), shape = CircleShape
+                ), contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(id = R.drawable.white_heart),
@@ -144,9 +172,9 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-    //endregion
+//endregion
 
-    //helper functions to components
+//helper functions to components
 
     //region upper menu component functions
     @Composable
@@ -154,7 +182,7 @@ class MainActivity : ComponentActivity() {
         Image(
             painter = painterResource(id = R.drawable.pokemon_logo),
             contentDescription = "Pokemon logo",
-            modifier = Modifier
+            modifier = modifier
                 .height(87.dp)
                 .width(154.dp)
         )
@@ -165,7 +193,7 @@ class MainActivity : ComponentActivity() {
         Image(
             painter = painterResource(id = R.drawable.search_icon),
             contentDescription = "search icon",
-            modifier = Modifier
+            modifier = modifier
                 .padding(vertical = 16.dp, horizontal = 19.dp)
                 .size(49.dp)
 
@@ -177,28 +205,27 @@ class MainActivity : ComponentActivity() {
         Image(
             painter = painterResource(id = R.drawable.menu_icon), // Replace with your image resource
             contentDescription = "menu-icon", // Set to null if the image is decorative
-            modifier = Modifier
+            modifier = modifier
                 .padding(vertical = 16.dp, horizontal = 19.dp)
                 .size(49.dp),
         )
     }
-    //endregion
+//endregion
 
     //region pokemon column functions
     @Composable
     fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
         Box(
             modifier = modifier
-                .width(50.dp)
-                .height(18.dp)
                 .background(
-                    Color(android.graphics.Color.parseColor(pokemonType.regularColorHexvalue)),
+                    color = pokemonType.primaryColor,
                     shape = RoundedCornerShape(15.dp)
                 ), contentAlignment = Alignment.Center
 
         ) {
             Text(
-                text = pokemonType.name.toLowerCase().capitalize(),
+                text = capitalizeFirstLetter(pokemonType.name),
+                // todo
                 fontSize = 10.sp,
                 color = Color.White
             )
@@ -210,31 +237,31 @@ class MainActivity : ComponentActivity() {
         Image(
             painter = painterResource(id = pokemon.spriteResourceId),
             contentDescription = pokemon.name,
-            modifier = Modifier
-                .size(174.dp)
+            modifier = modifier
                 .background(
-                    Color(android.graphics.Color.parseColor(pokemon.type.backgroundColorHexvalue)),
+                    color = pokemon.type.secondaryColor,
                     shape = RoundedCornerShape(20.dp)
                 )
         )
     }
 
+    private fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+
+
     @Composable
-    fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: Pokemon) {
+    fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: Pokemon, size: Dp) {
         Box(
             modifier = modifier
-                .width(120.dp)
-                .height(23.dp)
-                .offset(x = 8.dp, y = 145.dp)
                 .background(
-                    Color(android.graphics.Color.parseColor(pokemon.type.regularColorHexvalue)),
-                    shape = RoundedCornerShape(15.dp)
+                    color = pokemon.type.primaryColor,
+                    shape = RoundedCornerShape(size / 1.5f)
                 ),
             contentAlignment = Alignment.Center,
 
             ) {
             Text(
-                text = pokemon.name.toLowerCase().capitalize(),
+                text = capitalizeFirstLetter(pokemon.name),
                 fontSize = 17.sp,
                 color = Color.White,
             )
@@ -246,26 +273,34 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon) {
+    fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, size: Dp) {
         Box(
-            modifier = modifier
-                .size(174.dp)
+            modifier = modifier.size(size)
 //                .background(
 //                    Color(android.graphics.Color.parseColor(pokemon.type.regularColorHexvalue)),
 //                    shape = RoundedCornerShape(50.dp)
 //                )
         ) {
-            PokemonImage(pokemon = pokemon)
+            PokemonImage(modifier = Modifier.size(size), pokemon = pokemon)
             Row(
-                modifier = modifier
-                    .padding(horizontal = 6.dp, 11.dp)
+                modifier = Modifier
+                    .padding(horizontal = (size / 29), vertical = (size / 16))
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PokemonTypeBox(pokemonType = pokemon.type)
+                val pokemonTypeBoxModifier = Modifier
+                    .width(size / 10 * 3)
+                    .height(size / 10)
+                PokemonTypeBox(
+                    pokemonType = pokemon.type,
+                    modifier = pokemonTypeBoxModifier
+                )
                 if (pokemon.secondaryType != null) {
-                    Spacer(modifier = modifier.padding(horizontal = 4.dp))
-                    PokemonTypeBox(pokemonType = pokemon.secondaryType)
+                    Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                    PokemonTypeBox(
+                        modifier = pokemonTypeBoxModifier,
+                        pokemonType = pokemon.secondaryType
+                    )
                 }
                 // For displaying pokedex number
                 Box(
@@ -280,25 +315,23 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
-            PokemonNameBox(pokemon = pokemon)
+            PokemonNameBox(
+                modifier = Modifier
+                    .width(size / 7.5f * 5)
+                    .height(size / 7.5f)
+                    .offset(x = size / 7.5f / 3, y = size / 7.5f * 6.2f),
+                pokemon = pokemon,
+                size = size / 7.5f
+            )
         }
     }
 
-    //endregion
-
+//endregion
 
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun Preview() {
-        Column {
-            UpperMenu()
-            // Line
-            Divider(thickness = 1.dp, color = Color.Black)
-            Spacer(modifier = Modifier.padding(3.dp))
-            PokemonColumn(listOfPokemon = PokemonSamples.listOfPokemons)
-        }
-        FavoritesIcon(modifier = Modifier.offset(290.dp, 675.dp))
-        //menu()
+
     }
 }
     
