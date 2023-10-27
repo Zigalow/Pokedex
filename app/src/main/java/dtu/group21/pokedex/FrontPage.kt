@@ -2,6 +2,7 @@ package dtu.group21.pokedex
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,27 +43,51 @@ import dtu.group21.models.pokemon.PokemonType
 import java.util.Locale
 
 @Composable
-fun FrontPage() {
+fun FrontPage(onNavigate: (String) -> Unit) {
+    var menuIsOpen by remember { mutableStateOf(false) }
     Column {
-        UpperMenu(leftIcon = { MenuIcon(size = 49.dp) },
-            middleIcon = { PokemonLogo(size = 174.dp) },
-            rightIcon = { SearchIcon(size = 49.dp) })
-        // Line
-        Divider(thickness = 1.dp, color = Color.Black)
+        UpperMenu {
+            MenuIcon(
+                size = 49.dp,
+                onClicked = { menuIsOpen = true })
+
+            Spacer(
+                modifier = Modifier.padding(horizontal = 14.dp)
+            )
+            PokemonLogo(size = 174.dp)
+            Spacer(
+                modifier = Modifier.padding(horizontal = 14.dp)
+            )
+            SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
+        }
         Spacer(modifier = Modifier.padding(3.dp))
-        PokemonColumn(listOfPokemon = PokemonSamples.listOfPokemons)
+        PokemonColumn(pokemons = PokemonSamples.listOfPokemons, onPokemonClicked = {onNavigate("pokemon/$it")} )
     }
-    FavoritesIcon(modifier = Modifier.offset(290.dp, 675.dp))
-   // Menu()
+    FavoritesIcon(
+        modifier = Modifier.offset(290.dp, 675.dp),
+        onClicked = { onNavigate("favorites") })
+    if (menuIsOpen) {
+        Menu {
+            MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
+            Image(
+                modifier = Modifier
+                    .padding(vertical = 16.dp, horizontal = 19.dp)
+                    .size(49.dp)
+                    .offset(y = 675.dp)
+                    .clickable { onNavigate("settings") },
+                painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
+                contentDescription = "settings-icon", // Set to null if the image is decorative
+
+            )
+        }
+    }
 }
 
 //region main components
 @Composable
 fun UpperMenu(
     modifier: Modifier = Modifier,
-    leftIcon: @Composable () -> Unit,
-    middleIcon: @Composable () -> Unit,
-    rightIcon: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -66,21 +95,15 @@ fun UpperMenu(
             .height(83.dp), contentAlignment = Alignment.Center
     ) {
         Row {
-            leftIcon()
-            Spacer(
-                modifier = modifier.padding(horizontal = 14.dp)
-            )
-            middleIcon()
-            Spacer(
-                modifier = modifier.padding(horizontal = 14.dp)
-            )
-            rightIcon()
+            content()
         }
     }
+    // Line
+    Divider(thickness = 1.dp, color = Color.Black)
 }
 
 @Composable
-fun Menu(modifier: Modifier = Modifier) {
+fun Menu(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Box(
         modifier = modifier
             .fillMaxHeight()
@@ -89,21 +112,17 @@ fun Menu(modifier: Modifier = Modifier) {
                 color = Color(0xFFFFCC00)
             )
     ) {
-        MenuIcon(size = 49.dp)
-        Image(
-            painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
-            contentDescription = "settings-icon", // Set to null if the image is decorative
-            modifier = Modifier
-                .padding(vertical = 16.dp, horizontal = 19.dp)
-                .size(49.dp)
-                .offset(y = 675.dp),
-        )
+        content()
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PokemonColumn(modifier: Modifier = Modifier, listOfPokemon: List<Pokemon>) {
+fun PokemonColumn(
+    modifier: Modifier = Modifier,
+    pokemons: List<Pokemon>,
+    onPokemonClicked: (String) -> Unit
+) {
     FlowRow(
         modifier = modifier
             .fillMaxWidth()
@@ -112,11 +131,12 @@ fun PokemonColumn(modifier: Modifier = Modifier, listOfPokemon: List<Pokemon>) {
         horizontalArrangement = Arrangement.Center,
         maxItemsInEachRow = 2
     ) {
-        for (i in listOfPokemon.indices) {
+        for (i in pokemons.indices) {
             PokemonBox(
                 modifier = modifier.padding(horizontal = 8.dp, vertical = 5.dp),
-                pokemon = listOfPokemon[i],
-                size = 174.dp
+                pokemon = pokemons[i],
+                size = 174.dp,
+                onClicked = { onPokemonClicked(pokemons[i].name) }
             )
         }
     }
@@ -124,7 +144,7 @@ fun PokemonColumn(modifier: Modifier = Modifier, listOfPokemon: List<Pokemon>) {
 
 
 @Composable
-fun FavoritesIcon(modifier: Modifier = Modifier) {
+fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
     Box(
         modifier = modifier
             .size(60.dp)
@@ -132,7 +152,8 @@ fun FavoritesIcon(modifier: Modifier = Modifier) {
             .background(
                 shape = CircleShape,
                 color = Color(0xFFDE4A4A),
-            ), contentAlignment = Alignment.Center
+            )
+            .clickable { onClicked() }, contentAlignment = Alignment.Center
     ) {
         Image(
             painter = painterResource(id = R.drawable.white_heart),
@@ -160,26 +181,28 @@ fun PokemonLogo(modifier: Modifier = Modifier, size: Dp) {
 }
 
 @Composable
-fun SearchIcon(modifier: Modifier = Modifier, size: Dp) {
+fun SearchIcon(modifier: Modifier = Modifier, size: Dp, onClicked: () -> Unit) {
     Image(
         painter = painterResource(id = R.drawable.search_icon),
         contentDescription = "search icon",
         modifier = modifier
             .padding(vertical = size / 3, horizontal = size / 2.5f)
             .size(size)
+            .clickable { onClicked() }
 //                .padding(vertical = 16.dp, horizontal = 19.dp)
 //                .size(49.dp)
     )
 }
 
 @Composable
-fun MenuIcon(modifier: Modifier = Modifier, size: Dp) {
+fun MenuIcon(modifier: Modifier = Modifier, size: Dp, onClicked: () -> Unit) {
     Image(
         painter = painterResource(id = R.drawable.menu_icon), // Replace with your image resource
         contentDescription = "menu-icon", // Set to null if the image is decorative
         modifier = modifier
             .padding(vertical = size / 3, horizontal = size / 2.5f)
             .size(size)
+            .clickable { onClicked() }
 //                .padding(vertical = 16.dp, horizontal = 19.dp)
 //                .size(49.dp),
 
@@ -241,13 +264,12 @@ private fun formatPokemonId(unformattedNumber: Int): String {
 }
 
 @Composable
-fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, size: Dp) {
+fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, size: Dp, onClicked: () -> Unit) {
     Box(
-        modifier = modifier.size(size)
-//                .background(
-//                    Color(android.graphics.Color.parseColor(pokemon.type.regularColorHexvalue)),
-//                    shape = RoundedCornerShape(50.dp)
-//                )
+        modifier = modifier
+            .size(size)
+            .clickable { onClicked() }
+
     ) {
         PokemonImage(modifier = Modifier.size(size), pokemon = pokemon)
         Row(
@@ -292,7 +314,3 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, size: Dp) {
 }
 
 //endregion
-
-  
-
-    
