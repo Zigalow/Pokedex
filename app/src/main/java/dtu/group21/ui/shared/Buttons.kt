@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 val buttonColor = Color(0xFFFFCC00)
+val unselectedToggleColor = Color.hsv(0f, 0f, 0.85f)
 
 @Composable
 fun RoundedButton(
