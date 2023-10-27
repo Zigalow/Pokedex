@@ -115,6 +115,8 @@ fun SearchBar(
 
 @Composable
 fun SearchScreen(
+    onNavigateToFilter: () -> Unit,
+    onNavigateToSort: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -136,7 +138,7 @@ fun SearchScreen(
             val buttonColors = ButtonDefaults.buttonColors(containerColor = buttonColor, contentColor = Color.Black)
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { onNavigateToFilter() },
                 modifier = Modifier
                     .padding(horizontal = buttonPadding)
                     .defaultMinSize(minWidth = buttonWidth),
@@ -148,7 +150,7 @@ fun SearchScreen(
                )
             }
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { onNavigateToSort() },
                 modifier = Modifier
                     .padding(horizontal = buttonPadding)
                     .defaultMinSize(minWidth = buttonWidth),
