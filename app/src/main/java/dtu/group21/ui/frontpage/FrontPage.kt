@@ -1,4 +1,4 @@
-package dtu.group21.pokedex
+package dtu.group21.ui.frontpage
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
