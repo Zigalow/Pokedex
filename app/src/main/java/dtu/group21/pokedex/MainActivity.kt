@@ -3,6 +3,7 @@ package dtu.group21.pokedex
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -16,6 +17,7 @@ import dtu.group21.ui.search.FilterScreen
 import dtu.group21.ui.search.SearchNavHost
 import dtu.group21.ui.search.SearchScreen
 import dtu.group21.ui.search.SortScreen
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

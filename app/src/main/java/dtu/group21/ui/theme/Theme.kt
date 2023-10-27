@@ -1,4 +1,4 @@
-package com.example.group21.ui.theme
+package dtu.group21.ui.theme
 
 import android.app.Activity
 import android.os.Build
