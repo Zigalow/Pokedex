@@ -38,7 +38,7 @@ object PokemonSamples {
         "charmander",
         4,
         PokemonType.FIRE,
-        null,
+        PokemonType.NONE,
         PokemonGender.MALE,
         PokemonStats(39, 52, 43, 60, 50, 65),
         R.drawable._0004
@@ -48,7 +48,7 @@ object PokemonSamples {
         "charmeleon",
         5,
         PokemonType.FIRE,
-        null,
+        PokemonType.NONE,
         PokemonGender.MALE,
         PokemonStats(58, 64, 58, 80, 65, 80),
         R.drawable._0005
@@ -68,7 +68,7 @@ object PokemonSamples {
         "squirtle",
         7,
         PokemonType.WATER,
-        null,
+        PokemonType.NONE,
         PokemonGender.MALE,
         PokemonStats(44, 48, 65, 50, 64, 43),
         R.drawable._0007
@@ -78,7 +78,7 @@ object PokemonSamples {
         "wartortle",
         8,
         PokemonType.WATER,
-        null,
+        PokemonType.NONE,
         PokemonGender.MALE,
         PokemonStats(59, 63, 80, 65, 80, 58),
         R.drawable._0008
@@ -88,7 +88,7 @@ object PokemonSamples {
         "blastoise",
         9,
         PokemonType.WATER,
-        null,
+        PokemonType.NONE,
         PokemonGender.MALE,
         PokemonStats(79, 83, 100, 85, 105, 78),
         R.drawable._0009
@@ -98,7 +98,7 @@ object PokemonSamples {
         "caterpie",
         10,
         PokemonType.BUG,
-        null,
+        PokemonType.NONE,
         PokemonGender.MALE,
         PokemonStats(45, 30, 35, 20, 20, 45),
         R.drawable._0010
@@ -108,7 +108,7 @@ object PokemonSamples {
         "metapod",
         11,
         PokemonType.BUG,
-        null,
+        PokemonType.NONE,
         PokemonGender.MALE,
         PokemonStats(50, 20, 55, 25, 25, 30),
         R.drawable._0011

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -64,7 +65,11 @@ fun FrontPage(onNavigate: (String) -> Unit) {
             SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
         }
         Spacer(modifier = Modifier.padding(3.dp))
-        PokemonColumn(pokemons = PokemonSamples.listOfPokemons, onPokemonClicked = {onNavigate("pokemon/$it")} )
+        PokemonColumn(
+            pokemons = PokemonSamples.listOfPokemons,
+            onPokemonClicked = {onNavigate("pokemon/$it")},
+            modifier = Modifier.padding(horizontal = 5.dp)
+        )
     }
     FavoritesIcon(
         modifier = Modifier.offset(290.dp, 675.dp),
@@ -116,16 +121,16 @@ fun PokemonColumn(
     FlowRow(
         modifier = modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 6.dp),
+            .verticalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.Center,
         maxItemsInEachRow = 2
     ) {
         for (i in pokemons.indices) {
             PokemonBox(
-                modifier = modifier.padding(horizontal = 8.dp, vertical = 5.dp),
+                modifier = modifier
+                    .size(190.dp)
+                    .padding(horizontal = 8.dp, vertical = 5.dp),
                 pokemon = pokemons[i],
-                size = 174.dp,
                 onClicked = { onPokemonClicked(pokemons[i].name) }
             )
         }
@@ -205,12 +210,14 @@ fun MenuIcon(modifier: Modifier = Modifier, size: Dp, onClicked: () -> Unit) {
 fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
     Box(
         modifier = modifier.background(
-            color = pokemonType.primaryColor, shape = RoundedCornerShape(15.dp)
+            color = pokemonType.primaryColor,
+            shape = RoundedCornerShape(15.dp)
         ), contentAlignment = Alignment.Center
 
     ) {
+        val name = if (pokemonType == PokemonType.NONE) "" else pokemonType.name
         Text(
-            text = capitalizeFirstLetter(pokemonType.name),
+            text = capitalizeFirstLetter(name),
             // todo
             fontSize = 10.sp, color = Color.White
         )
@@ -222,9 +229,7 @@ fun PokemonImage(modifier: Modifier = Modifier, pokemon: Pokemon) {
     Image(
         painter = painterResource(id = pokemon.spriteResourceId),
         contentDescription = pokemon.name,
-        modifier = modifier.background(
-            color = pokemon.type.secondaryColor, shape = RoundedCornerShape(20.dp)
-        )
+        modifier = modifier,
     )
 }
 
@@ -236,13 +241,13 @@ private fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
 fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: Pokemon, size: Dp) {
     Box(
         modifier = modifier.background(
-            color = pokemon.type.primaryColor, shape = RoundedCornerShape(size / 1.5f)
+            color = pokemon.type.primaryColor,
+            shape = RoundedCornerShape(30.dp)
         ),
-        contentAlignment = Alignment.Center,
-
-        ) {
+    ) {
         Text(
             text = capitalizeFirstLetter(pokemon.name),
+            modifier = Modifier.padding(start = 8.dp),
             fontSize = 17.sp,
             color = Color.White,
         )
@@ -254,52 +259,79 @@ private fun formatPokemonId(unformattedNumber: Int): String {
 }
 
 @Composable
-fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, size: Dp, onClicked: () -> Unit) {
+fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () -> Unit) {
     Box(
         modifier = modifier
-            .size(size)
             .clickable { onClicked() }
+            .background(
+                color = pokemon.type.secondaryColor,
+                shape = RoundedCornerShape(20.dp)
+            )
 
     ) {
-        PokemonImage(modifier = Modifier.size(size), pokemon = pokemon)
-        Row(
-            modifier = Modifier
-                .padding(horizontal = (size / 29), vertical = (size / 16))
-                .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            val pokemonTypeBoxModifier = Modifier
-                .width(size / 10 * 3)
-                .height(size / 10)
-            PokemonTypeBox(
-                pokemonType = pokemon.type, modifier = pokemonTypeBoxModifier
-            )
-            if (pokemon.secondaryType != null) {
-                Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-                PokemonTypeBox(
-                    modifier = pokemonTypeBoxModifier, pokemonType = pokemon.secondaryType
-                )
-            }
-            // For displaying pokedex number
-            Box(
-                modifier = Modifier.weight(1f), // Takes up remaining space
-                contentAlignment = Alignment.CenterEnd // Align the content to the end (right)
+        PokemonImage(modifier = Modifier.align(Alignment.BottomEnd), pokemon = pokemon)
+        Column {
+            Spacer(modifier = Modifier.height(7.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
             ) {
-                Text(
-                    text = formatPokemonId(pokemon.pokedexNumber),
-                    textAlign = TextAlign.Right,
-                    color = Color.White,
-                    fontSize = 10.sp
+                Spacer(modifier = Modifier.width(7.dp))
+                val pokemonTypeBoxModifier = Modifier.weight(1f)
+                PokemonTypeBox(
+                    pokemonType = pokemon.type,
+                    modifier = pokemonTypeBoxModifier
                 )
+                Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                PokemonTypeBox(
+                    pokemonType = pokemon.secondaryType,
+                    modifier = pokemonTypeBoxModifier,
+                )
+                Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                // For displaying pokedex number
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = Color.White,
+                            shape = RoundedCornerShape(30.dp),
+                        )
+                        .weight(1f),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = formatPokemonId(pokemon.pokedexNumber),
+                        color = Color.Black,
+                        fontSize = 10.sp
+                    )
+                }
+                Spacer(modifier = Modifier.width(7.dp))
+            }
+            Spacer(modifier = Modifier.fillMaxHeight(0.8f))
+            Row {
+                Spacer(modifier = Modifier.width(7.dp))
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = pokemon.type.primaryColor,
+                            shape = RoundedCornerShape(30.dp)
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = capitalizeFirstLetter(pokemon.name),
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                        fontSize = 17.sp,
+                        color = Color.White,
+                    )
+                }
+                /*PokemonNameBox(
+                    modifier = Modifier
+                        .weight(1f),
+                    pokemon = pokemon,
+                    size = size / 7.5f
+                )*/
             }
         }
-        PokemonNameBox(
-            modifier = Modifier
-                .width(size / 7.5f * 5)
-                .height(size / 7.5f)
-                .offset(x = size / 7.5f / 3, y = size / 7.5f * 6.2f),
-            pokemon = pokemon,
-            size = size / 7.5f
-        )
     }
 }
 

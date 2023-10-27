@@ -3,6 +3,7 @@ package dtu.group21.models.pokemon
 import androidx.compose.ui.graphics.Color
 
 enum class PokemonType(val primaryColor: Color, val secondaryColor: Color) {
+    NONE(Color.Transparent, Color.Transparent),
     NORMAL(Color(0xFF000000), Color(0xFF000000)),
     FIRE(Color(0xFFFD7D24), Color(0xFFFFCFAD)),
     WATER(Color(0xFF4592C4), Color(0xFFB6E2FF)),
@@ -21,6 +22,4 @@ enum class PokemonType(val primaryColor: Color, val secondaryColor: Color) {
     DARK(Color(0xFF000000), Color(0xFF000000)),
     STEEL(Color(0xFF000000), Color(0xFF000000)),
     FAIRY(Color(0xFF000000), Color(0xFF000000));
-
-
 }
