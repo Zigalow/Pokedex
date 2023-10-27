@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.search.SortSettings
 import dtu.group21.ui.shared.BinaryChooser
 import dtu.group21.ui.shared.RadioOptions
 import dtu.group21.ui.shared.Title

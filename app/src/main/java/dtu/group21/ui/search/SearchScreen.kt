@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.example.pokedex.R
-import com.example.search.SearchSettings
 import dtu.group21.ui.shared.Title
 import dtu.group21.ui.shared.buttonColor
 import dtu.group21.ui.shared.mediumFontSize

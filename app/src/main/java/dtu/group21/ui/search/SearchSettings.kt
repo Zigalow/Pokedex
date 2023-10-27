@@ -1,4 +1,4 @@
-package com.example.search
+package dtu.group21.ui.search
 
 class SearchSettings {
     var searchString = ""
