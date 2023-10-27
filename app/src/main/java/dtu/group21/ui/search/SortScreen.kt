@@ -12,10 +12,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dtu.group21.ui.shared.BinaryChooser
 import dtu.group21.ui.shared.RadioOptions
 import dtu.group21.ui.shared.Title
+import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
 import dtu.group21.ui.shared.buttonColor
 
@@ -29,7 +31,16 @@ fun SortScreen(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Title(text = "Sort")
+        UpperMenu(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Filter",
+                textAlign = TextAlign.Center,
+                fontSize = bigFontSize,
+                modifier = Modifier.weight(1f),
+            )
+        }
         Divider()
         val options = remember { arrayOf(SortSettings.SortType.Ascending, SortSettings.SortType.Descending) }
         BinaryChooser(

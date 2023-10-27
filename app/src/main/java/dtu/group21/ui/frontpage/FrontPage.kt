@@ -40,13 +40,16 @@ import com.example.pokedex.R
 import dtu.group21.models.pokemon.Pokemon
 import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.ui.shared.UpperMenu
 import java.util.Locale
 
 @Composable
 fun FrontPage(onNavigate: (String) -> Unit) {
     var menuIsOpen by remember { mutableStateOf(false) }
     Column {
-        UpperMenu {
+        UpperMenu(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             MenuIcon(
                 size = 49.dp,
                 onClicked = { menuIsOpen = true })
@@ -81,25 +84,6 @@ fun FrontPage(onNavigate: (String) -> Unit) {
             )
         }
     }
-}
-
-//region main components
-@Composable
-fun UpperMenu(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(83.dp), contentAlignment = Alignment.Center
-    ) {
-        Row {
-            content()
-        }
-    }
-    // Line
-    Divider(thickness = 1.dp, color = Color.Black)
 }
 
 @Composable

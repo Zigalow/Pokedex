@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
@@ -29,12 +30,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.example.pokedex.R
 import dtu.group21.ui.shared.Title
+import dtu.group21.ui.shared.UpperMenu
+import dtu.group21.ui.shared.bigFontSize
 import dtu.group21.ui.shared.buttonColor
 import dtu.group21.ui.shared.mediumFontSize
 
@@ -125,7 +129,17 @@ fun SearchScreen(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Title(text = "Search")
+        UpperMenu(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Search",
+                textAlign = TextAlign.Center,
+                fontSize = bigFontSize,
+                modifier = Modifier.weight(1f),
+            )
+        }
+        Spacer(modifier = Modifier.height(20.dp))
         SearchBar(
             onChange = { println("Searched for '$it'"); searchSettings.searchString = it },
             height = 40.dp,

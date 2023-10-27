@@ -20,10 +20,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dtu.group21.ui.shared.BinaryChooser
 import dtu.group21.ui.shared.Title
 import dtu.group21.ui.shared.ToggleButton
+import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
 import dtu.group21.ui.shared.buttonColor
 import dtu.group21.ui.shared.mediumFontSize
@@ -40,7 +42,16 @@ fun FilterScreen(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Title(text = "Filter")
+        UpperMenu(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Filter",
+                textAlign = TextAlign.Center,
+                fontSize = bigFontSize,
+                modifier = Modifier.weight(1f),
+            )
+        }
         val options = remember { arrayOf(FilterSettings.FilterType.IncludableTypes, FilterSettings.FilterType.DualType) }
         BinaryChooser(
             option1 = "Includable Types",

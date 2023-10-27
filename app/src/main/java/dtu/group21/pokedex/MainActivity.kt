@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import dtu.group21.ui.frontpage.FrontPage
 import dtu.group21.ui.theme.PokedexTheme
 import dtu.group21.ui.search.FilterScreen
 import dtu.group21.ui.search.SearchNavHost
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.White//MaterialTheme.colorScheme.background
                 ) {
+                    //FrontPage(onNavigate = {})
                     SearchNavHost()
                 }
             }
