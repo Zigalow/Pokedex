@@ -70,18 +70,26 @@ fun FrontPage(onNavigate: (String) -> Unit) {
         modifier = Modifier.offset(290.dp, 675.dp),
         onClicked = { onNavigate("favorites") })
     if (menuIsOpen) {
-        Menu {
-            MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
-            Image(
+        Column(
+            modifier = Modifier.width(80.dp),
+        ) {
+            Menu(
                 modifier = Modifier
-                    .padding(vertical = 16.dp, horizontal = 19.dp)
-                    .size(49.dp)
-                    .offset(y = 675.dp)
-                    .clickable { onNavigate("settings") },
-                painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
-                contentDescription = "settings-icon", // Set to null if the image is decorative
+                    .fillMaxHeight(),
+            ) {
+                MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
+                Image(
+                    modifier = Modifier
+                        .padding(vertical = 16.dp, horizontal = 19.dp)
+                        .size(49.dp)
+                        .offset(y = 675.dp)
+                        .clickable { onNavigate("settings") },
+                    painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
+                    contentDescription = "settings-icon", // Set to null if the image is decorative
 
-            )
+                )
+            }
+
         }
     }
 }
@@ -90,10 +98,8 @@ fun FrontPage(onNavigate: (String) -> Unit) {
 fun Menu(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Box(
         modifier = modifier
-            .fillMaxHeight()
-            .width(80.dp)
             .background(
-                color = Color(0xFFFFCC00)
+                color = Color(0xFFFFCC00),
             )
     ) {
         content()
