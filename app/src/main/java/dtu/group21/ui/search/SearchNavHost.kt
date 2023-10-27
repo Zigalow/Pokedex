@@ -25,7 +25,10 @@ fun SearchNavHost(startDestination: String = "search") {
     val navController = rememberNavController()
     val searchSettings = remember { SearchSettings() }
 
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
         composable("search") {
             SearchScreen(
                 onNavigateToFilter = { navController.navigate("filter") },
