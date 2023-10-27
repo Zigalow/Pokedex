@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.group21.ui.theme.PokedexTheme
 import dtu.group21.ui.search.FilterScreen
+import dtu.group21.ui.search.SearchScreen
 import dtu.group21.ui.search.SortScreen
 
 class MainActivity : ComponentActivity() {
@@ -25,7 +26,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.White//MaterialTheme.colorScheme.background
                 ) {
-                    FilterScreen(onDoneFiltering = { /*TODO*/ })
+                    SearchScreen()
                 }
             }
         }
