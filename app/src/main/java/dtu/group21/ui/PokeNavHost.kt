@@ -1,4 +1,4 @@
-package dtu.group21.ui.search
+package dtu.group21.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -7,6 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dtu.group21.ui.frontpage.FrontPage
+import dtu.group21.ui.search.FilterScreen
+import dtu.group21.ui.search.SearchScreen
+import dtu.group21.ui.search.SearchSettings
+import dtu.group21.ui.search.SortScreen
 
 // Step1: get nav controller
 
@@ -21,7 +26,7 @@ import androidx.navigation.compose.rememberNavController
 // Step6: add navigation arguments
 
 @Composable
-fun SearchNavHost(startDestination: String = "search") {
+fun PokeNavHost(startDestination: String = "home") {
     val navController = rememberNavController()
     val searchSettings = remember { SearchSettings() }
 
@@ -29,6 +34,11 @@ fun SearchNavHost(startDestination: String = "search") {
         navController = navController,
         startDestination = startDestination
     ) {
+        composable("home") {
+            FrontPage(
+                onNavigate = { navController.navigate(it) }
+            )
+        }
         composable("search") {
             SearchScreen(
                 onNavigateToFilter = { navController.navigate("filter") },
