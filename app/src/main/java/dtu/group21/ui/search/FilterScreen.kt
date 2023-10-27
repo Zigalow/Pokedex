@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.search.FilterSettings
 import dtu.group21.ui.shared.BinaryChooser
 import dtu.group21.ui.shared.Title
 import dtu.group21.ui.shared.ToggleButton
@@ -33,6 +34,7 @@ import dtu.group21.ui.shared.unselectedToggleColor
 @Composable
 fun FilterScreen(
     onDoneFiltering: () -> Unit,
+    filterSettings: FilterSettings,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -40,10 +42,12 @@ fun FilterScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Title(text = "Filter")
+        val options = remember { arrayOf(FilterSettings.FilterType.IncludableTypes, FilterSettings.FilterType.DualType) }
         BinaryChooser(
             option1 = "Includable Types",
             option2 = "Dual Type",
-            onChange = { /*TODO*/ },
+            onChange = { filterSettings.filterType = options[it] },
+            startsAt = options.indexOf(filterSettings.filterType),
         )
         Spacer(Modifier.height(5.dp))
         Divider(color = Color.Black, thickness = 1.dp) // horizontal line
@@ -84,7 +88,7 @@ fun FilterScreen(
                     for (i in 0 until columnsButtonCount) {
                         ToggleButton(
                             onClick = {
-                                /*TODO*/
+                                filterSettings.types[i] = it
                             },
                             modifier = Modifier
                                 .padding(all = 5.dp)
@@ -93,6 +97,7 @@ fun FilterScreen(
                             offForegroundColor = Color.Black,
                             onBackgroundColor = typeColors[i],
                             onForegroundColor = Color.White,
+                            isClickedInitially = filterSettings.types[i],
                         ) {
                             Text(
                                 text = typeNames[i],

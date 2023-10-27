@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.search.SortSettings
 import dtu.group21.ui.shared.BinaryChooser
 import dtu.group21.ui.shared.RadioOptions
 import dtu.group21.ui.shared.Title
@@ -22,6 +23,7 @@ import dtu.group21.ui.shared.buttonColor
 @Composable
 fun SortScreen(
     onDoneSorting: () -> Unit,
+    sortSettings: SortSettings,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -30,16 +32,19 @@ fun SortScreen(
     ) {
         Title(text = "Sort")
         Divider()
+        val options = remember { arrayOf(SortSettings.SortType.Ascending, SortSettings.SortType.Descending) }
         BinaryChooser(
             option1 = "Ascending",
             option2 = "Descending",
-            onChange = { /*TODO*/ },
+            onChange = { sortSettings.sortType = options[it] },
+            startsAt = options.indexOf(sortSettings.sortType),
         )
         val sortOptions = remember { arrayOf("ID", "Name", "Total", "HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed") }
         RadioOptions(
             options = sortOptions,
-            onSelectionChanged = { /*TODO*/ },
+            onSelectionChanged = { sortSettings.sortMethod = it },
             modifier = Modifier.padding(horizontal = 5.dp),
+            selectedInitially = sortSettings.sortMethod,
         )
 
         Button(
@@ -54,5 +59,4 @@ fun SortScreen(
             )
         }
     }
-
 }

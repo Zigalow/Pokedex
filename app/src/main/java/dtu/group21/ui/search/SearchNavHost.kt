@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.search.SearchSettings
 
 // Step1: get nav controller
 
@@ -23,24 +24,28 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun SearchNavHost(startDestination: String = "search") {
     val navController = rememberNavController()
+    val searchSettings = remember { SearchSettings() }
 
     NavHost(navController = navController, startDestination = startDestination) {
         composable("search") {
             SearchScreen(
                 onNavigateToFilter = { navController.navigate("filter") },
                 onNavigateToSort = { navController.navigate("sort") },
+                searchSettings = searchSettings,
                 modifier = Modifier.fillMaxSize(),
             )
         }
         composable("filter") {
             FilterScreen(
                 onDoneFiltering = { navController.popBackStack() },
+                filterSettings = searchSettings.filterSettings,
                 modifier = Modifier.fillMaxSize(),
             )
         }
         composable("sort") {
             SortScreen(
                 onDoneSorting = { navController.popBackStack() },
+                sortSettings = searchSettings.sortSettings,
                 modifier = Modifier.fillMaxSize(),
             )
         }

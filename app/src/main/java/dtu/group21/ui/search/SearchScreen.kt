@@ -28,11 +28,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.example.pokedex.R
+import com.example.search.SearchSettings
 import dtu.group21.ui.shared.Title
 import dtu.group21.ui.shared.buttonColor
 import dtu.group21.ui.shared.mediumFontSize
@@ -117,6 +119,7 @@ fun SearchBar(
 fun SearchScreen(
     onNavigateToFilter: () -> Unit,
     onNavigateToSort: () -> Unit,
+    searchSettings: SearchSettings,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -125,11 +128,12 @@ fun SearchScreen(
     ) {
         Title(text = "Search")
         SearchBar(
-            onChange = { /*TODO*/ },
+            onChange = { println("Searched for '$it'"); searchSettings.searchString = it },
             height = 40.dp,
             modifier = Modifier
                 .padding(horizontal = 5.dp)
                 .fillMaxWidth(0.9f),
+            initialText = searchSettings.searchString,
         )
         Spacer(Modifier.height(10.dp))
         Row {
@@ -144,10 +148,11 @@ fun SearchScreen(
                     .defaultMinSize(minWidth = buttonWidth),
                 colors = buttonColors,
             ) {
-               Text(
-                   text = "Filter",
-                   fontSize = mediumFontSize,
-               )
+                Text(
+                    text = "Filter",
+                    fontSize = mediumFontSize,
+                    fontWeight = if (searchSettings.filterSettings.hasSettings()) FontWeight.Black else FontWeight.Normal,
+                )
             }
             Button(
                 onClick = { onNavigateToSort() },
@@ -159,6 +164,7 @@ fun SearchScreen(
                 Text(
                     text = "Sort",
                     fontSize = mediumFontSize,
+                    fontWeight = if (searchSettings.sortSettings.hasSettings()) FontWeight.Black else FontWeight.Normal,
                 )
             }
         }
