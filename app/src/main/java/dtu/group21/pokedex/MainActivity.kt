@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -70,9 +69,10 @@ class MainActivity : ComponentActivity() {
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun Inspect(){
-
+        val modifier = Modifier
+        //val color = Color(PokemonType.GRASS.backgroundColorHexvalue)
         Column(
-            //modifier = Modifier.background(ColPokemonType.GRASS.backgroundColorHexvalue)
+            modifier.background(color = Color(android.graphics.Color.parseColor(PokemonType.GRASS.backgroundColorHexvalue)))
         ) {
 
         }
@@ -81,7 +81,10 @@ class MainActivity : ComponentActivity() {
 
             Mid()
         }
-        Column(verticalArrangement = Arrangement.Center) {
+        Column(
+            modifier.padding(start = 115.dp),
+            verticalArrangement = Arrangement.Center
+                ) {
             pokemonImage(pokemon = PokemonSamples.bulbasaur)
         }
 
@@ -145,7 +148,11 @@ class MainActivity : ComponentActivity() {
             modifier
                 .fillMaxWidth()
                 .height(300.dp)
-                .background(Color.Gray, shape = RoundedCornerShape(32.dp)),
+                .background(Color.White, shape = RoundedCornerShape(
+                    topStart = 32.dp,
+                    topEnd = 32.dp,
+                    bottomStart = 0.dp,
+                    bottomEnd = 0.dp)),
             verticalArrangement = Arrangement.Bottom
         ){
             val categories = listOf("About","Stats", "Moves", "Evolution")
@@ -204,7 +211,7 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    fun TwoThings(first: String, second: String){
+    fun Table(first: String, second: String){
         Row(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -223,11 +230,11 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun AboutSection(){
         Column {
-            TwoThings(first = "Category", second = "Seed")
-            TwoThings(first = "Abilities", second = "Overgrow")
-            TwoThings(first = "Weight", second = "12.2 lbs")
-            TwoThings(first = "Height", second = "2'04")
-            TwoThings(first = "Gender", second = "")
+            Table(first = "Category", second = "Seed")
+            Table(first = "Abilities", second = "Overgrow")
+            Table(first = "Weight", second = "12.2 lbs")
+            Table(first = "Height", second = "2'04")
+            Table(first = "Gender", second = "")
         }
     }
 
