@@ -314,7 +314,7 @@ class MainActivity : ComponentActivity() {
                 .size(60.dp)
                 .offset(0.dp, 11.dp)
                 .background(
-                    Color(android.graphics.Color.parseColor("#DE4A4A")),
+                    Color(android.graphics.Color.parseColor(PokemonType.GRASS.backgroundColorHexvalue)),
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
