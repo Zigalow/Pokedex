@@ -5,17 +5,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,11 +28,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,6 +65,169 @@ class MainActivity : ComponentActivity() {
                 favoritesIcon(modifier = Modifier.offset(290.dp, 675.dp))
                 menu()
             }
+        }
+    }
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+    fun Inspect(){
+
+        Column(
+            //modifier = Modifier.background(ColPokemonType.GRASS.backgroundColorHexvalue)
+        ) {
+
+        }
+        Column(verticalArrangement = Arrangement.Top){
+            Top()
+
+            Mid()
+        }
+        Column(verticalArrangement = Arrangement.Center) {
+            pokemonImage(pokemon = PokemonSamples.bulbasaur)
+        }
+
+        //Mid()
+        Column(verticalArrangement = Arrangement.Bottom) {
+            Bottom()
+        }
+
+    }
+    @Composable
+    fun Top(modifier: Modifier = Modifier){
+        Row(
+        ) {
+                backIcon()
+                Spacer(modifier.width(230.dp))
+                favoritesIcon(modifier)
+                Spacer(modifier.width(11.dp))
+            }
+    }
+    @Composable
+    fun Mid(modifier: Modifier  = Modifier){
+        Column(
+            modifier
+                .height(105.dp)
+                .fillMaxWidth()
+        ){
+            Row (modifier
+                .height(35.dp)
+            ){
+                Spacer(modifier.width(13.dp))
+                Text(
+                    modifier = Modifier
+                        .weight(0.3f)
+                        .fillMaxHeight(),
+                    text = "Bulbasuar",
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                    fontSize = 30.sp
+                )
+                Text(
+                    text = "#001",
+                    fontSize = 30.sp
+                )
+            }
+            Spacer(modifier.height(24.dp))
+            Row(modifier
+                .height(35.dp)
+            ) {
+                Spacer(modifier.width(13.dp))
+                pokemonTypeBox(pokemonType = PokemonType.GRASS)
+                Spacer(modifier.width(15.dp))
+                pokemonTypeBox(pokemonType = PokemonType.POISON)
+            }
+        }
+    }
+    @Composable
+    fun Bottom(modifier: Modifier  = Modifier){
+        Column(
+            //contentAlignment = Alignment.TopStart,
+            modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .background(Color.Gray, shape = RoundedCornerShape(32.dp)),
+            verticalArrangement = Arrangement.Bottom
+        ){
+            val categories = listOf("About","Stats", "Moves", "Evolution")
+            Spacer(
+                modifier
+                    .width(13.dp)
+                    .height(25.dp))
+            CategoryList(categories = categories, modifier)
+            Spacer(modifier.height(13.dp))
+            Column(
+                modifier
+                    .padding(start = 13.dp)) {
+                AboutSection()
+                Spacer(modifier.height(150.dp))
+            }
+            }
+        }
+    @Composable
+    fun Category(title: String, isSelected: Boolean, onClick: () -> Unit){
+        // remember by boolean
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onClick()
+                }
+        ) {
+            Text(
+                text = title,
+                color = if (isSelected) Color.Black else Color.Black.copy(alpha = 0.2f),
+                textDecoration = if (isSelected) TextDecoration.Underline else TextDecoration.None,
+            )
+        }
+    }
+    @Composable
+    fun CategoryList(categories: List<String>, modifier: Modifier){
+        var selectedCategory by remember { mutableStateOf<String?>(null) }
+
+        Row (modifier.fillMaxWidth()){
+            LazyRow(){
+                items(categories){category ->
+                    Spacer(modifier.width(51.dp))
+                    val isSelected = selectedCategory == category
+                    Category(
+                        title = category,
+                        isSelected = isSelected,
+                        onClick = {
+                            selectedCategory = category
+                        }
+                    )
+
+                }
+            }
+        }
+    }
+
+
+    @Composable
+    fun TwoThings(first: String, second: String){
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                color = Color.Black.copy(alpha = 0.4f),
+                text = first,
+                modifier = Modifier.weight(0.3f)
+            )
+            Text(
+                text = second,
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+    }
+    @Composable
+    fun AboutSection(){
+        Column {
+            TwoThings(first = "Category", second = "Seed")
+            TwoThings(first = "Abilities", second = "Overgrow")
+            TwoThings(first = "Weight", second = "12.2 lbs")
+            TwoThings(first = "Height", second = "2'04")
+            TwoThings(first = "Gender", second = "")
         }
     }
 
@@ -130,7 +305,7 @@ class MainActivity : ComponentActivity() {
         Box(
             modifier = modifier
                 .size(60.dp)
-                .offset(30.dp, 30.dp)
+                .offset(0.dp, 11.dp)
                 .background(
                     Color(android.graphics.Color.parseColor("#DE4A4A")),
                     shape = CircleShape
@@ -180,6 +355,16 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier
                 .padding(vertical = 16.dp, horizontal = 19.dp)
                 .size(49.dp),
+        )
+    }
+    @Composable
+    fun backIcon(){
+        Image(
+            painter =painterResource(id = R.drawable.back_arrow),
+            contentDescription = "search-icon",
+            modifier = Modifier
+                .padding(vertical = 16.dp, horizontal = 19.dp)
+                .size(49.dp)
         )
     }
     //endregion
@@ -287,7 +472,7 @@ class MainActivity : ComponentActivity() {
     //endregion
 
 
-    @Preview(showBackground = true, showSystemUi = true)
+    //@Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun Preview() {
         Column {
