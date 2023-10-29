@@ -2,6 +2,7 @@ package dtu.group21.ui.shared
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,7 +30,7 @@ fun UpperMenu(
     modifier: Modifier = Modifier,
     dividerThickness: Dp = 1.dp,
     dividerColor: Color = Color.Black,
-    content: @Composable () -> Unit
+    content: @Composable (RowScope.() -> Unit)
 ) {
     Box(
         modifier = modifier,
