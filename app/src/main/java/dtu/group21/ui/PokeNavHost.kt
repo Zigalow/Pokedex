@@ -41,6 +41,7 @@ fun PokeNavHost(startDestination: String = "home") {
         }
         composable("search") {
             SearchScreen(
+                onNavigateBack = { navController.popBackStack() },
                 onNavigateToFilter = { navController.navigate("filter") },
                 onNavigateToSort = { navController.navigate("sort") },
                 searchSettings = searchSettings,
@@ -49,6 +50,7 @@ fun PokeNavHost(startDestination: String = "home") {
         }
         composable("filter") {
             FilterScreen(
+                onNavigateBack = { navController.popBackStack() },
                 onDoneFiltering = { navController.popBackStack() },
                 filterSettings = searchSettings.filterSettings,
                 modifier = Modifier.fillMaxSize(),
@@ -56,6 +58,7 @@ fun PokeNavHost(startDestination: String = "home") {
         }
         composable("sort") {
             SortScreen(
+                onNavigateBack = { navController.popBackStack() },
                 onDoneSorting = { navController.popBackStack() },
                 sortSettings = searchSettings.sortSettings,
                 modifier = Modifier.fillMaxSize(),

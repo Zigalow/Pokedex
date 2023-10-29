@@ -1,5 +1,7 @@
 package dtu.group21.ui.search
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -9,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -20,8 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.pokedex.R
 import dtu.group21.ui.shared.BinaryChooser
 import dtu.group21.ui.shared.Title
 import dtu.group21.ui.shared.ToggleButton
@@ -34,6 +40,7 @@ import dtu.group21.ui.shared.unselectedToggleColor
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterScreen(
+    onNavigateBack: () -> Unit,
     onDoneFiltering: () -> Unit,
     filterSettings: FilterSettings,
     modifier: Modifier = Modifier
@@ -43,14 +50,27 @@ fun FilterScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         UpperMenu(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(74.dp)
         ) {
+            Spacer(Modifier.width(10.dp))
+            Image(
+                painter = painterResource(id = R.drawable.back_arrow),
+                contentDescription = "Back Arrow",
+                modifier = Modifier
+                    .size(35.dp)
+                    .align(Alignment.CenterVertically)
+                    .clickable { onNavigateBack() },
+                alignment = Alignment.CenterStart,
+            )
             Text(
                 text = "Filter",
+                modifier = Modifier.weight(0.01f).fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
-                modifier = Modifier.weight(1f),
             )
+            Spacer(Modifier.width(45.dp))
         }
         val options = remember { arrayOf(FilterSettings.FilterType.IncludableTypes, FilterSettings.FilterType.DualType) }
         BinaryChooser(
@@ -60,8 +80,6 @@ fun FilterScreen(
             startsAt = options.indexOf(filterSettings.filterType),
         )
         Spacer(Modifier.height(5.dp))
-        Divider(color = Color.Black, thickness = 1.dp) // horizontal line
-        Spacer(Modifier.height(5.dp))
         /*
         Text(
             text = "Types",
@@ -70,7 +88,6 @@ fun FilterScreen(
         )
         Spacer(Modifier.height(5.dp))
          */
-
 
         Column(
             modifier = Modifier.fillMaxHeight(),
