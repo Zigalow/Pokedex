@@ -7,7 +7,7 @@ class Pokemon(
     val name: String,
     val pokedexNumber: Int,
     val type: PokemonType,
-    val secondaryType: PokemonType?,
+    val secondaryType: PokemonType,
     val gender: PokemonGender,
     val stats: PokemonStats,
     val spriteResourceId: Int
