@@ -89,7 +89,6 @@ fun SettingsPage() {
             onClick = {/* Do something */ },
             modifier = Modifier
                 .padding(top = 8.dp),
-//                .fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(Color.Yellow, Color.Black)
         ) {
             Image(
@@ -109,8 +108,6 @@ fun SettingsPage() {
             onClick = {/* Do something */ },
             modifier = Modifier
                 .padding(top = 8.dp),
-//                .fillMaxWidth()
-//                .align(Alignment.Start),
             colors = ButtonDefaults.buttonColors(Color.Yellow, Color.Black)
 
         ) {
