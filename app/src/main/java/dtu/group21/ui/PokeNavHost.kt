@@ -79,7 +79,7 @@ fun PokeNavHost(startDestination: String = "home") {
             FavoritesPage(
                 onNavigateBack = { navController.popBackStack() },
                 onPokemonClicked = { navController.navigate("pokemon") },
-                favoritePokemons = PokemonSamples.listOfPokemons.subList(0, 4)
+                favoritePokemons = PokemonSamples.listOfPokemons.subList(2, 7)
             )
         }
     }
