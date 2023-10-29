@@ -12,6 +12,7 @@ import dtu.group21.ui.search.FilterScreen
 import dtu.group21.ui.search.SearchScreen
 import dtu.group21.ui.search.SearchSettings
 import dtu.group21.ui.search.SortScreen
+import dtu.group21.ui.settings.SettingsPage
 
 // Step1: get nav controller
 
@@ -62,6 +63,11 @@ fun PokeNavHost(startDestination: String = "home") {
                 onDoneSorting = { navController.popBackStack() },
                 sortSettings = searchSettings.sortSettings,
                 modifier = Modifier.fillMaxSize(),
+            )
+        }
+        composable("settings") {
+            SettingsPage(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }
