@@ -49,7 +49,7 @@ import dtu.group21.ui.frontpage.PokemonTypeBox
 @Composable
 fun SpecificPage() {
     //Mid(modifier = Modifier, PokemonSamples.bulbasaur)
-    val pokemon =  PokemonSamples.butterfree
+    val pokemon =  PokemonSamples.charizard
     Inspect(pokemon = pokemon)
 }
 
@@ -85,7 +85,10 @@ fun Inspect(pokemon: Pokemon) {
 fun Top(modifier: Modifier = Modifier, pokemon: Pokemon) {
     Row(
     ) {
-        backIcon()
+        backIcon(
+            modifier
+                .padding(vertical = 16.dp, horizontal = 19.dp)
+                .size(49.dp))
         Spacer(modifier.width(230.dp))
         FavoritesIcon(color = pokemon.type.secondaryColor) {
         }
@@ -191,7 +194,7 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: Pokemon) {
         ) {
             //based on which category is the coresponding section function will be used
             mySelectedCategory?.let { category ->
-                Sections(selectedCategory = category)
+                Sections(selectedCategory = category, pokemon = pokemon, modifier = modifier)
             }
             Spacer(modifier.height(150.dp))
         }
@@ -262,19 +265,19 @@ fun Table(first: String, second: String) {
 }
 
 @Composable
-fun Sections(selectedCategory: String){
+fun Sections(modifier: Modifier,selectedCategory: String, pokemon: Pokemon){
     if (selectedCategory == "About"){
-        AboutSection()
+        AboutSection(modifier)
     }else if (selectedCategory == "Stats"){
-        StatsSection()
+        StatsSection(modifier)
     }else if(selectedCategory == "Moves"){
         MovesSection()
     }else if(selectedCategory == "Evolution"){
-        EvolutionSection()
+        EvolutionSection(modifier,pokemon)
     }
 }
 @Composable
-fun AboutSection() {
+fun AboutSection(modifier: Modifier) {
     Column {
         Table(first = "Category", second = "Seed")
         Table(first = "Abilities", second = "Overgrow")
@@ -287,9 +290,10 @@ fun AboutSection() {
         Table(first = "87.5%", second = "12.5%")
         Table(first = "Egg cycles", second = "20(4,884-5.140 steps)")
     }
+    Spacer(modifier.fillMaxHeight())
 }
 @Composable
-fun StatsSection(){
+fun StatsSection(modifier: Modifier){
     Column {
         Table(first = "HP", second = "45")
         Table(first = "Attack", second = "45")
@@ -299,6 +303,7 @@ fun StatsSection(){
         Table(first = "Speed", second = "45")
         Table(first = "Total", second = "45")
     }
+    Spacer(modifier.fillMaxHeight())
 }
 @Composable
 fun MovesSection(){
@@ -307,10 +312,22 @@ fun MovesSection(){
     }
 }
 @Composable
-fun EvolutionSection(){
-    Column {
-
+fun EvolutionSection(modifier: Modifier, pokemon :Pokemon){
+    Row (modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween){
+        repeat(2){index ->
+            Column {
+                PokemonImage(pokemon = pokemon, modifier = Modifier.size(75.dp))
+                Text(text = "NameOfEvo", textAlign = TextAlign.Center)
+            }
+                arrow(modifier.size(25.dp))
+        }
+        Column {
+            PokemonImage(pokemon = pokemon, modifier = Modifier.size(75.dp))
+            Text(text = "NameOfEvo", textAlign = TextAlign.Center)
+        }
     }
+    Spacer(modifier.fillMaxHeight())
 }
 
 
@@ -358,12 +375,18 @@ fun FavoritesIcon(modifier: Modifier = Modifier, color: Color, onClicked: () -> 
 
 
 @Composable
-fun backIcon() {
+fun backIcon(modifier: Modifier) {
     Image(
         painter = painterResource(id = R.drawable.back_arrow),
         contentDescription = "search-icon",
-        modifier = Modifier
-            .padding(vertical = 16.dp, horizontal = 19.dp)
-            .size(49.dp)
+        modifier = modifier,
+    )
+}
+@Composable
+fun arrow(modifier: Modifier){
+    Image(
+        painter = painterResource(id = R.drawable.front_arrow),
+        contentDescription = "arrow",
+        modifier = modifier
     )
 }
