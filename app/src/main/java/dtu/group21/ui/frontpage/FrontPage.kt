@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +48,7 @@ import java.util.Locale
 @Composable
 fun FrontPage(onNavigate: (String) -> Unit) {
     var menuIsOpen by remember { mutableStateOf(false) }
+    //var favoritePokemon by remember { mutableStateOf(PokemonSamples.listOfPokemons.filter { it.isFavorit }) }
     Column {
         UpperMenu(
             modifier = Modifier.fillMaxWidth()
@@ -74,9 +76,12 @@ fun FrontPage(onNavigate: (String) -> Unit) {
     FavoritesIcon(
         modifier = Modifier.offset(290.dp, 675.dp),
         onClicked = { onNavigate("favorites") })
-    if (menuIsOpen) {
+
+
+if (menuIsOpen) {
         Column(
             modifier = Modifier.width(80.dp),
+
         ) {
             Menu(
                 modifier = Modifier
@@ -148,7 +153,8 @@ fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
                 shape = CircleShape,
                 color = Color(0xFFDE4A4A),
             )
-            .clickable { onClicked() }, contentAlignment = Alignment.Center
+            .clickable { onClicked() },
+        contentAlignment = Alignment.Center
     ) {
         Image(
             painter = painterResource(id = R.drawable.white_heart),
@@ -233,7 +239,7 @@ fun PokemonImage(modifier: Modifier = Modifier, pokemon: Pokemon) {
     )
 }
 
-private fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
+fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
 
 
@@ -254,7 +260,7 @@ fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: Pokemon, size: Dp) {
     }
 }
 
-private fun formatPokemonId(unformattedNumber: Int): String {
+fun formatPokemonId(unformattedNumber: Int): String {
     return "#${"%04d".format(unformattedNumber)}"
 }
 
@@ -334,5 +340,10 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () ->
         }
     }
 }
-
+@Preview
+@Composable
+fun testFronPage() {
+    FrontPage(onNavigate = {true})
+    
+}
 //endregion
