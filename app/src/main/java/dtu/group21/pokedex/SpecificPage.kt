@@ -47,14 +47,14 @@ import dtu.group21.ui.frontpage.PokemonTypeBox
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun SpecificPage() {
+fun SpecificPage(onNavigateBack: () -> Unit) {
     //Mid(modifier = Modifier, PokemonSamples.bulbasaur)
     val pokemon =  PokemonSamples.charizard
-    Inspect(pokemon = pokemon)
+    Inspect(pokemon = pokemon, onNavigateBack = onNavigateBack)
 }
 
 @Composable
-fun Inspect(pokemon: Pokemon) {
+fun Inspect(pokemon: Pokemon, onNavigateBack: () -> Unit) {
     val modifier = Modifier
     Column(
         modifier
@@ -62,7 +62,7 @@ fun Inspect(pokemon: Pokemon) {
             .fillMaxSize()
     ) {
         Column(verticalArrangement = Arrangement.Top) {
-            Top(pokemon = pokemon)
+            Top(pokemon = pokemon, onClickBack = onNavigateBack)
 
             Mid(modifier, pokemon)
         }
@@ -82,13 +82,18 @@ fun Inspect(pokemon: Pokemon) {
 }
 
 @Composable
-fun Top(modifier: Modifier = Modifier, pokemon: Pokemon) {
-    Row(
-    ) {
+fun Top(
+    pokemon: Pokemon,
+    onClickBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row {
         backIcon(
             modifier
                 .padding(vertical = 16.dp, horizontal = 19.dp)
-                .size(49.dp))
+                .size(49.dp)
+                .clickable { onClickBack() }
+        )
         Spacer(modifier.width(230.dp))
         var favorited by remember { mutableStateOf(false) }
         FavoritesIcon(
