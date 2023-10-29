@@ -133,8 +133,8 @@ fun PokemonColumn(
         for (i in pokemons.indices) {
             PokemonBox(
                 modifier = modifier
-                    .size(190.dp)
-                    .padding(horizontal = 8.dp, vertical = 5.dp),
+                    .size(180.dp)
+                    .padding(horizontal = 4.dp, vertical = 5.dp),
                 pokemon = pokemons[i],
                 onClicked = { onPokemonClicked(pokemons[i].name) }
             )
