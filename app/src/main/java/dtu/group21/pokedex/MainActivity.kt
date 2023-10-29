@@ -9,7 +9,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import dtu.group21.ui.PokeNavHost
-import dtu.group21.ui.frontpage.FrontPage
 
 import dtu.group21.ui.theme.PokedexTheme
 

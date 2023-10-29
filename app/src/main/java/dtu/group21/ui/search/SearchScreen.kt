@@ -1,24 +1,33 @@
 package dtu.group21.ui.search
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.InternalComposeApi
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.internal.liveLiteral
+import androidx.compose.runtime.internal.updateLiveLiteralValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -35,7 +45,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.LiveData
 import com.example.pokedex.R
+import dtu.group21.models.pokemon.Pokemon
+import dtu.group21.ui.favorites.FavoritePokemonBox
 import dtu.group21.ui.shared.Title
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
@@ -118,30 +132,70 @@ fun SearchBar(
     }
 }
 
+@OptIn(InternalComposeApi::class)
 @Composable
 fun SearchScreen(
+    onNavigateBack: () -> Unit,
     onNavigateToFilter: () -> Unit,
     onNavigateToSort: () -> Unit,
+    onPokemonClicked: (String) -> Unit,
     searchSettings: SearchSettings,
+    pokemonPool: List<Pokemon>,
     modifier: Modifier = Modifier,
 ) {
+    val candidates: State<List<Pokemon>> = liveLiteral("searchResults", pokemonPool)
+
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         UpperMenu(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(74.dp)
         ) {
+            Spacer(Modifier.width(10.dp))
+            Image(
+                painter = painterResource(id = R.drawable.back_arrow),
+                contentDescription = "Back Arrow",
+                modifier = Modifier
+                    .size(35.dp)
+                    .align(Alignment.CenterVertically)
+                    .clickable { onNavigateBack() },
+                alignment = Alignment.CenterStart,
+            )
             Text(
                 text = "Search",
+                modifier = Modifier
+                    .weight(0.01f)
+                    .fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
-                modifier = Modifier.weight(1f),
             )
+            Spacer(Modifier.width(45.dp))
         }
         Spacer(modifier = Modifier.height(20.dp))
         SearchBar(
-            onChange = { println("Searched for '$it'"); searchSettings.searchString = it },
+            onChange = {
+                println("Searched for '$it'")
+                searchSettings.searchString = it
+                updateLiveLiteralValue("searchResults", pokemonPool.filter { pokemon ->
+                    // very complicated statement to check if the searchString is either
+                    // - empty
+                    // - a substring of the name of the pokemon
+                    // - a substring of the number of the pokemon
+                    // if either is true, it is a candidate
+                    val isCandidate =
+                        if (searchSettings.searchString == "") true
+                        else if (searchSettings.searchString.isDigitsOnly()) {
+                            val searchNumber = searchSettings.searchString.toInt()
+                            searchNumber.toString() in pokemon.pokedexNumber.toString()
+                        } else searchSettings.searchString.lowercase() in pokemon.name.lowercase()
+
+                    isCandidate
+                })
+            },
             height = 40.dp,
             modifier = Modifier
                 .padding(horizontal = 5.dp)
@@ -178,6 +232,22 @@ fun SearchScreen(
                     text = "Sort",
                     fontSize = mediumFontSize,
                     fontWeight = if (searchSettings.sortSettings.hasSettings()) FontWeight.Black else FontWeight.Normal,
+                )
+            }
+        }
+
+        if (candidates.value.isEmpty()) {
+            Spacer(Modifier.height(10.dp))
+            Text("No Pokémon matching criteria")
+        }
+        else {
+            candidates.value.forEach { pokemon ->
+                FavoritePokemonBox(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    pokemon = pokemon,
+                    onClicked = { onPokemonClicked(pokemon.name) }
                 )
             }
         }
