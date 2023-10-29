@@ -303,7 +303,7 @@ fun AboutSection(modifier: Modifier) {
         Text(text = "Breeding")
         Table("Male", "87.5%")
         Table("Female", "12.5%")
-        Table(first = "Egg cycles", second = "20 (4,884-5.140 steps)")
+        Table(first = "Egg cycles", second = "20 (4.884-5.140 steps)")
     }
     Spacer(modifier.fillMaxHeight())
 }
