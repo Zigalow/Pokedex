@@ -41,32 +41,34 @@ import com.example.pokedex.R
 import dtu.group21.models.pokemon.Pokemon
 import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.ui.frontpage.PokemonImage
+import dtu.group21.ui.frontpage.PokemonTypeBox
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun  SpecificPage(){
+fun SpecificPage() {
     Inspect(PokemonSamples.bulbasaur)
 }
 
 @Composable
-fun Inspect(pokemon: Pokemon){
+fun Inspect(pokemon: Pokemon) {
     val modifier = Modifier
     //val color = Color(PokemonType.GRASS.backgroundColorHexvalue)
     Column(
-        modifier.background(color = Color(android.graphics.Color.parseColor(pokemon.type.backgroundColorHexvalue)))
+        modifier.background(color = pokemon.type.secondaryColor)
     ) {
 
     }
-    Column(verticalArrangement = Arrangement.Top){
-        Top()
+    Column(verticalArrangement = Arrangement.Top) {
+        Top(pokemon = pokemon)
 
-        Mid(modifier,PokemonSamples.bulbasaur)
+        Mid(modifier, PokemonSamples.bulbasaur)
     }
     Column(
         modifier.padding(start = 115.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        pokemonImage(pokemon = pokemon)
+        PokemonImage(pokemon = pokemon)
     }
 
     //Mid()
@@ -75,26 +77,40 @@ fun Inspect(pokemon: Pokemon){
     }
 
 }
+
 @Composable
-fun Top(modifier: Modifier = Modifier){
+fun Top(modifier: Modifier = Modifier, pokemon: Pokemon) {
     Row(
     ) {
         backIcon()
         Spacer(modifier.width(230.dp))
-        favoritesIconF(modifier)
+        FavoritesIcon(color = pokemon.type.secondaryColor) {
+
+        }
+        /*favoritesIconF(
+            modifier = modifier
+                .size(60.dp)
+                .offset(0.dp, 11.dp)
+                .background(
+                    color = pokemonType.secondaryColor,
+                    shape = CircleShape
+                )
+        )*/
         Spacer(modifier.width(11.dp))
     }
 }
+
 @Composable
-fun Mid(modifier: Modifier = Modifier, pokemon: Pokemon){
+fun Mid(modifier: Modifier = Modifier, pokemon: Pokemon) {
     Column(
         modifier
             .height(105.dp)
             .fillMaxWidth()
-    ){
-        Row (modifier
-            .height(35.dp)
-        ){
+    ) {
+        Row(
+            modifier
+                .height(35.dp)
+        ) {
             Spacer(modifier.width(13.dp))
             Text(
                 modifier = Modifier
@@ -112,18 +128,36 @@ fun Mid(modifier: Modifier = Modifier, pokemon: Pokemon){
             )
         }
         Spacer(modifier.height(24.dp))
-        Row(modifier
-            .height(35.dp)
+        Row(
+            modifier
+                .height(35.dp)
         ) {
             Spacer(modifier.width(13.dp))
-            pokemonTypeBoxF(pokemonType = pokemon.type)
+            PokemonTypeBox(
+                modifier = modifier
+                    .width(50.dp)
+                    .height(18.dp)
+                    .background(
+                        color = pokemon.type.primaryColor,
+                        shape = RoundedCornerShape(15.dp)
+                    ), pokemonType = pokemon.type
+            )
             Spacer(modifier.width(15.dp))
-            pokemonTypeBoxF(pokemonType = pokemon.type)
+            PokemonTypeBox(
+                modifier = modifier
+                    .width(50.dp)
+                    .height(18.dp)
+                    .background(
+                        color = pokemon.secondaryType.secondaryColor,
+                        shape = RoundedCornerShape(15.dp)
+                    ), pokemonType = pokemon.secondaryType
+            )
         }
     }
 }
+
 @Composable
-fun Bottom(modifier: Modifier = Modifier){
+fun Bottom(modifier: Modifier = Modifier) {
     Column(
         //contentAlignment = Alignment.TopStart,
         modifier
@@ -138,24 +172,27 @@ fun Bottom(modifier: Modifier = Modifier){
                 )
             ),
         verticalArrangement = Arrangement.Bottom
-    ){
-        val categories = listOf("About","Stats", "Moves", "Evolution")
+    ) {
+        val categories = listOf("About", "Stats", "Moves", "Evolution")
         Spacer(
             modifier
                 .width(13.dp)
-                .height(25.dp))
+                .height(25.dp)
+        )
         CategoryList(categories = categories, modifier)
         Spacer(modifier.height(13.dp))
         Column(
             modifier
-                .padding(start = 13.dp)) {
+                .padding(start = 13.dp)
+        ) {
             AboutSection()
             Spacer(modifier.height(150.dp))
         }
     }
 }
+
 @Composable
-fun Category(title: String, isSelected: Boolean, onClick: () -> Unit){
+fun Category(title: String, isSelected: Boolean, onClick: () -> Unit) {
     // remember by boolean
     Box(
         modifier = Modifier
@@ -166,18 +203,21 @@ fun Category(title: String, isSelected: Boolean, onClick: () -> Unit){
     ) {
         Text(
             text = title,
-            color = if (isSelected) androidx.compose.ui.graphics.Color.Black else androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.2f),
+            color = if (isSelected) androidx.compose.ui.graphics.Color.Black else androidx.compose.ui.graphics.Color.Black.copy(
+                alpha = 0.2f
+            ),
             textDecoration = if (isSelected) TextDecoration.Underline else TextDecoration.None,
         )
     }
 }
+
 @Composable
-fun CategoryList(categories: List<String>, modifier: Modifier){
+fun CategoryList(categories: List<String>, modifier: Modifier) {
     var selectedCategory by remember { mutableStateOf<String?>(null) }
 
-    Row (modifier.fillMaxWidth()){
-        LazyRow(){
-            items(categories){category ->
+    Row(modifier.fillMaxWidth()) {
+        LazyRow() {
+            items(categories) { category ->
                 Spacer(modifier.width(51.dp))
                 val isSelected = selectedCategory == category
                 Category(
@@ -195,7 +235,7 @@ fun CategoryList(categories: List<String>, modifier: Modifier){
 
 
 @Composable
-fun Table(first: String, second: String){
+fun Table(first: String, second: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -211,8 +251,9 @@ fun Table(first: String, second: String){
     }
     Spacer(modifier = Modifier.height(10.dp))
 }
+
 @Composable
-fun AboutSection(){
+fun AboutSection() {
     Column {
         Table(first = "Category", second = "Seed")
         Table(first = "Abilities", second = "Overgrow")
@@ -225,14 +266,14 @@ fun AboutSection(){
 
 //region main components
 
-@Composable
+/*@Composable
 fun favoritesIconF(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .size(60.dp)
             .offset(0.dp, 11.dp)
             .background(
-                Color(android.graphics.Color.parseColor(PokemonType.GRASS.backgroundColorHexvalue)),
+                color = pokemonType.secondaryColor,
                 shape = CircleShape
             ),
         contentAlignment = Alignment.Center
@@ -243,10 +284,31 @@ fun favoritesIconF(modifier: Modifier = Modifier) {
             modifier = Modifier.size(30.dp)
         )
     }
-}
+}*/
 
 @Composable
-fun backIcon(){
+fun FavoritesIcon(modifier: Modifier = Modifier, color: Color, onClicked: () -> Unit) {
+    Box(
+        modifier = modifier
+            .size(60.dp)
+            .offset(0.dp, 11.dp)
+            .background(
+                shape = CircleShape,
+                color = color
+            )
+            .clickable { onClicked() }, contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.white_heart),
+            contentDescription = "White heart",
+            modifier = Modifier.size(30.dp)
+        )
+    }
+}
+
+
+@Composable
+fun backIcon() {
     Image(
         painter = painterResource(id = R.drawable.back_arrow),
         contentDescription = "search-icon",
@@ -258,14 +320,14 @@ fun backIcon(){
 //endregion
 
 //region pokemon column functions
-@Composable
+/*@Composable
 fun pokemonTypeBoxF(modifier: Modifier = Modifier, pokemonType: PokemonType) {
     Box(
         modifier = modifier
             .width(50.dp)
             .height(18.dp)
             .background(
-                Color(android.graphics.Color.parseColor(pokemonType.regularColorHexvalue)),
+                color = pokemonType.primaryColor,
                 shape = RoundedCornerShape(15.dp)
             ), contentAlignment = Alignment.Center
 
@@ -276,9 +338,9 @@ fun pokemonTypeBoxF(modifier: Modifier = Modifier, pokemonType: PokemonType) {
             color = androidx.compose.ui.graphics.Color.White
         )
     }
-}
+}*/
 
-@Composable
+/*@Composable
 fun pokemonImage(modifier: Modifier = Modifier, pokemon: Pokemon) {
     Image(
         painter = painterResource(id = pokemon.spriteResourceId),
@@ -286,12 +348,11 @@ fun pokemonImage(modifier: Modifier = Modifier, pokemon: Pokemon) {
         modifier = Modifier
             .size(174.dp)
             .background(
-                Color(android.graphics.Color.parseColor(pokemon.type.backgroundColorHexvalue)),
+                color = pokemon.type.secondaryColor,
                 shape = RoundedCornerShape(20.dp)
             )
     )
-}
-
+}*/
 
 
 //endregion
