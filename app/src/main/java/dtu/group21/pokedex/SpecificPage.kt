@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -41,7 +42,6 @@ import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.Pokemon
 import dtu.group21.models.pokemon.PokemonSamples
-import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 
@@ -90,8 +90,12 @@ fun Top(modifier: Modifier = Modifier, pokemon: Pokemon) {
                 .padding(vertical = 16.dp, horizontal = 19.dp)
                 .size(49.dp))
         Spacer(modifier.width(230.dp))
-        FavoritesIcon(color = pokemon.type.secondaryColor) {
-        }
+        var favorited by remember { mutableStateOf(false) }
+        FavoritesIcon(
+            active = favorited,
+            color = pokemon.type.secondaryColor,
+            onClicked = { favorited = !favorited }
+        )
         /*favoritesIconF(
             modifier = modifier
                 .size(60.dp)
@@ -121,16 +125,17 @@ fun Mid(modifier: Modifier = Modifier, pokemon: Pokemon) {
                 modifier = Modifier
                     .weight(0.3f)
                     .fillMaxHeight(),
-                text = pokemon.name,
+                text = pokemon.name.replaceFirstChar { it.uppercase() },
                 fontStyle = FontStyle.Normal,
                 fontWeight = FontWeight.SemiBold,
-                color = androidx.compose.ui.graphics.Color.White,
+                color = Color.White,
                 fontSize = 30.sp
             )
             Text(
                 text = "#" + pokemon.pokedexNumber,
                 fontSize = 30.sp
             )
+            Spacer(modifier.width(13.dp))
         }
         Spacer(modifier.height(24.dp))
         Row(
@@ -178,71 +183,76 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: Pokemon) {
         verticalArrangement = Arrangement.Bottom
     ) {
         val categories = listOf("About", "Stats", "Moves", "Evolution")
-        var mySelectedCategory by remember { mutableStateOf<String?>(null) }
+        var selectedCategory by remember { mutableStateOf("About") }
         Spacer(
             modifier
                 .width(13.dp)
                 .height(25.dp)
         )
-        CategoryList(categories = categories, modifier, onCategorySelected = { selectedCategory ->
-            mySelectedCategory = selectedCategory
-        })
+        CategoryList(
+            categories = categories,
+            onCategorySelected = { selectedCategory = it },
+            initiallyChosen = selectedCategory,
+            modifier = Modifier.padding(horizontal = 10.dp)
+        )
         Spacer(modifier.height(13.dp))
         Column(
             modifier
                 .padding(start = 13.dp)
         ) {
             //based on which category is the coresponding section function will be used
-            mySelectedCategory?.let { category ->
-                Sections(selectedCategory = category, pokemon = pokemon, modifier = modifier)
-            }
+            Sections(selectedCategory = selectedCategory, pokemon = pokemon, modifier = modifier)
             Spacer(modifier.height(150.dp))
         }
     }
 }
 
 @Composable
-fun Category(title: String, isSelected: Boolean, onClick: () -> Unit) {
+fun Category(
+    title: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .clickable {
                 onClick()
             }
     ) {
         Text(
             text = title,
-            color = if (isSelected) androidx.compose.ui.graphics.Color.Black else androidx.compose.ui.graphics.Color.Black.copy(
-                alpha = 0.2f
-            ),
+            color = if (isSelected) Color.Black else Color.LightGray,
             textDecoration = if (isSelected) TextDecoration.Underline else TextDecoration.None,
         )
     }
 }
 
 @Composable
-fun CategoryList(categories: List<String>, modifier: Modifier, onCategorySelected: (String) -> Unit) {
-    var selectedCategory by remember { mutableStateOf<String?>(null) }
+fun CategoryList(
+    categories: List<String>,
+    onCategorySelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    initiallyChosen: String = ""
+) {
+    var selectedCategory by remember { mutableStateOf(initiallyChosen) }
 
-    Row(modifier.fillMaxWidth()) {
-        LazyRow() {
-            items(categories) { category ->
-                Spacer(modifier.width(51.dp))
-                val isSelected = selectedCategory == category
-                Category(
-                    title = category,
-                    isSelected = isSelected,
-                    onClick = {
-                        selectedCategory = category
-                    }
-                )
-
-            }
+    LazyRow(
+        modifier = modifier,
+    ) {
+        items(categories) { category ->
+            val isSelected = selectedCategory == category
+            Category(
+                title = category,
+                isSelected = isSelected,
+                onClick = {
+                    selectedCategory = category
+                },
+                modifier = Modifier.padding(horizontal = 15.dp)
+            )
         }
     }
-    selectedCategory?.let { category ->
-        onCategorySelected(category)
-    }
+    onCategorySelected(selectedCategory)
 }
 
 
@@ -252,9 +262,9 @@ fun Table(first: String, second: String) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            color = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.4f),
+            color = Color.Black.copy(alpha = 0.4f),
             text = first,
-            modifier = Modifier.weight(0.3f)
+            modifier = Modifier.weight(0.35f)
         )
         Text(
             text = second,
@@ -266,14 +276,13 @@ fun Table(first: String, second: String) {
 
 @Composable
 fun Sections(modifier: Modifier,selectedCategory: String, pokemon: Pokemon){
-    if (selectedCategory == "About"){
-        AboutSection(modifier)
-    }else if (selectedCategory == "Stats"){
-        StatsSection(modifier)
-    }else if(selectedCategory == "Moves"){
-        MovesSection()
-    }else if(selectedCategory == "Evolution"){
-        EvolutionSection(modifier,pokemon)
+    when (selectedCategory) {
+        "About" -> AboutSection(modifier)
+        "Stats" -> StatsSection(modifier)
+        "Moves" -> MovesSection()
+        "Evolution" -> EvolutionSection(modifier = Modifier
+            .padding(horizontal = 2.dp)
+            .fillMaxWidth(), pokemon)
     }
 }
 @Composable
@@ -283,25 +292,28 @@ fun AboutSection(modifier: Modifier) {
         Table(first = "Abilities", second = "Overgrow")
         Table(first = "Weight", second = "12.2 lbs")
         Table(first = "Height", second = "2'04")
-        Table(first = "Gender", second = "")
+        //Table(first = "Gender", second = "")
     }
     Column{
         Text(text = "Breeding")
-        Table(first = "87.5%", second = "12.5%")
-        Table(first = "Egg cycles", second = "20(4,884-5.140 steps)")
+        Table("Male", "87.5%")
+        Table("Female", "12.5%")
+        Table(first = "Egg cycles", second = "20 (4,884-5.140 steps)")
     }
     Spacer(modifier.fillMaxHeight())
 }
 @Composable
 fun StatsSection(modifier: Modifier){
     Column {
-        Table(first = "HP", second = "45")
-        Table(first = "Attack", second = "45")
-        Table(first = "Defense", second = "45")
-        Table(first = "Sp.Atk", second = "45")
-        Table(first = "Sp.Def", second = "45")
-        Table(first = "Speed", second = "45")
-        Table(first = "Total", second = "45")
+        Table(first = "HP", second = "78")
+        Table(first = "Attack", second = "84")
+        Table(first = "Defense", second = "78")
+        Table(first = "Sp.Atk", second = "109")
+        Table(first = "Sp.Def", second = "85")
+        Table(first = "Speed", second = "100")
+        Divider(Modifier.width(150.dp))
+        Spacer(Modifier.height(5.dp))
+        Table(first = "Total", second = "534")
     }
     Spacer(modifier.fillMaxHeight())
 }
@@ -312,19 +324,29 @@ fun MovesSection(){
     }
 }
 @Composable
-fun EvolutionSection(modifier: Modifier, pokemon :Pokemon){
-    Row (modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween){
-        repeat(2){index ->
+fun EvolutionSection(modifier: Modifier, pokemon: Pokemon){
+    Row (
+        modifier = modifier
+    ) {
+        val evolutionChain = arrayOf(PokemonSamples.charmander, PokemonSamples.charmeleon, PokemonSamples.charizard)
+        for ((index, evolution) in evolutionChain.withIndex()) {
             Column {
-                PokemonImage(pokemon = pokemon, modifier = Modifier.size(75.dp))
-                Text(text = "NameOfEvo", textAlign = TextAlign.Center)
+                PokemonImage(
+                    pokemon = evolution,
+                    modifier = Modifier
+                        .size(75.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .padding(horizontal = 10.dp)
+                )
+                Text(
+                    text = evolution.name.replaceFirstChar { it.uppercase() },
+                    textAlign = TextAlign.Center
+                )
             }
-                arrow(modifier.size(25.dp))
-        }
-        Column {
-            PokemonImage(pokemon = pokemon, modifier = Modifier.size(75.dp))
-            Text(text = "NameOfEvo", textAlign = TextAlign.Center)
+            if (index < 2)
+                arrow(modifier = Modifier
+                    .size(25.dp)
+                    .align(Alignment.CenterVertically))
         }
     }
     Spacer(modifier.fillMaxHeight())
@@ -354,7 +376,12 @@ fun favoritesIconF(modifier: Modifier = Modifier) {
 }*/
 
 @Composable
-fun FavoritesIcon(modifier: Modifier = Modifier, color: Color, onClicked: () -> Unit) {
+fun FavoritesIcon(
+    active: Boolean,
+    color: Color,
+    onClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .size(60.dp)
@@ -363,12 +390,14 @@ fun FavoritesIcon(modifier: Modifier = Modifier, color: Color, onClicked: () -> 
                 shape = CircleShape,
                 color = color
             )
-            .clickable { onClicked() }, contentAlignment = Alignment.Center
+            .clickable { onClicked() },
+        contentAlignment = Alignment.Center
     ) {
+        val imageId = if (active) R.drawable.favorite_icon_active else R.drawable.favorite_icon_inactive
         Image(
-            painter = painterResource(id = R.drawable.white_heart),
+            painter = painterResource(id = imageId),
             contentDescription = "White heart",
-            modifier = Modifier.size(30.dp)
+            modifier = Modifier.size(50.dp)
         )
     }
 }
