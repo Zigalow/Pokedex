@@ -1,4 +1,4 @@
-package dtu.group21.ui.favorit
+package dtu.group21.ui.favorites
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,60 +18,63 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.Pokemon
-import dtu.group21.models.pokemon.PokemonSamples.listOfPokemons
-import dtu.group21.ui.frontpage.PokemonBox
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
+import dtu.group21.ui.shared.UpperMenu
+import dtu.group21.ui.shared.bigFontSize
 
 
 @Composable
-fun FavoritesPage(favoritePokemons: List<Pokemon>, onPokemonClicked: (String) -> Unit) {
+fun FavoritesPage(
+    onNavigateBack: () -> Unit,
+    onPokemonClicked: (String) -> Unit,
+    favoritePokemons: List<Pokemon>
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        Row (modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp, start = 16.dp, end = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+        UpperMenu(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(74.dp)
         ) {
-            BackIcon(
-                size = 30.dp,
-                onClicked = {true},
+            Spacer(Modifier.width(10.dp))
+            Image(
+                painter = painterResource(id = R.drawable.back_arrow),
+                contentDescription = "Back Arrow",
+                modifier = Modifier
+                    .size(35.dp)
+                    .align(Alignment.CenterVertically)
+                    .clickable { onNavigateBack() },
+                alignment = Alignment.CenterStart,
             )
-
             Text(
                 text = "Favorites",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .weight(0.5f)
-                    .padding(top = 1.dp, end = 15.dp),
-                textAlign = TextAlign.Center
+                modifier = Modifier.weight(0.01f).fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontSize = bigFontSize,
             )
+            Spacer(Modifier.width(45.dp))
         }
 
         favoritePokemons.forEach { pokemon ->
-            FavoritPokemonBox(
+            FavoritePokemonBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
@@ -93,7 +96,7 @@ fun BackIcon(modifier: Modifier = Modifier, size: Dp, onClicked: () -> Unit) {
     )
 }
 @Composable
-fun FavoritPokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () -> Unit) {
+fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () -> Unit) {
     Box(
         modifier = modifier
             .clickable { onClicked() }
@@ -121,7 +124,7 @@ fun FavoritPokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked
                 )
                 PokemonTypeBox(
                     pokemonType = pokemon.secondaryType,
-                    modifier = Modifier.fillMaxSize(0.2f)
+                    modifier = Modifier.fillMaxSize(0.25f)
                 )
             }
             Column( modifier = Modifier
@@ -130,7 +133,7 @@ fun FavoritPokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked
                 verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     text = formatPokemonId(pokemon.pokedexNumber),
-                    color = Color.White,
+                    color = pokemon.type.primaryColor,
                     fontSize = 30.sp,
                     textAlign = TextAlign.Center,
                 )
@@ -157,9 +160,14 @@ fun FavoritPokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked
         }
     }
 }
+
+/*
 @Preview
 @Composable
 fun ShowFavoritePage(){
-    FavoritesPage(listOfPokemons, onPokemonClicked = {})
+    FavoritesPage(
+        listOfPokemons,
+        onPokemonClicked = {})
 
 }
+*/
