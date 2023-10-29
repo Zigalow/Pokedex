@@ -54,7 +54,7 @@ import dtu.group21.ui.frontpage.PokemonTypeBox
 @Composable
 fun SpecificPage(onNavigateBack: () -> Unit) {
     //Mid(modifier = Modifier, PokemonSamples.bulbasaur)
-    val pokemon = PokemonSamples.charizard
+    val pokemon = PokemonSamples.bulbasaur
     Inspect(pokemon = pokemon, onNavigateBack = onNavigateBack)
 }
 
@@ -342,16 +342,16 @@ fun MovesSection() {
 @Composable
 fun EvolutionSection(modifier: Modifier, pokemon: Pokemon) {
     Row(
-        modifier = modifier
+        modifier = modifier,
     ) {
         val evolutionChain =
-            arrayOf(PokemonSamples.charmander, PokemonSamples.charmeleon, PokemonSamples.charizard)
+            arrayOf(PokemonSamples.bulbasaur, PokemonSamples.ivysaur, PokemonSamples.venusaur)
         for ((index, evolution) in evolutionChain.withIndex()) {
             Column {
                 PokemonImage(
                     pokemon = evolution,
                     modifier = Modifier
-                        .size(75.dp)
+                        .size(100.dp)
                         .align(Alignment.CenterHorizontally)
                         .padding(horizontal = 10.dp)
                 )
@@ -363,7 +363,7 @@ fun EvolutionSection(modifier: Modifier, pokemon: Pokemon) {
             if (index < 2)
                 arrow(
                     modifier = Modifier
-                        .size(25.dp)
+                        .size(30.dp)
                         .align(Alignment.CenterVertically)
                 )
         }
