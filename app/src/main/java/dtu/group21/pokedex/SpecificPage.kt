@@ -295,14 +295,14 @@ fun AboutSection(modifier: Modifier) {
     Column {
         Table(first = "Category", second = "Seed")
         Table(first = "Abilities", second = "Overgrow")
-        Table(first = "Weight", second = "12.2 lbs")
-        Table(first = "Height", second = "2'04")
+        Table(first = "Weight", second = "12,2 lbs")
+        Table(first = "Height", second = "2'4\"")
         //Table(first = "Gender", second = "")
     }
     Column{
         Text(text = "Breeding")
-        Table("Male", "87.5%")
-        Table("Female", "12.5%")
+        Table("Male", "87,5%")
+        Table("Female", "12,5%")
         Table(first = "Egg cycles", second = "20 (4.884-5.140 steps)")
     }
     Spacer(modifier.fillMaxHeight())
