@@ -295,21 +295,13 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () ->
                 )
                 Spacer(modifier = Modifier.padding(horizontal = 2.dp))
                 // For displaying pokedex number
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(30.dp),
-                        )
-                        .weight(1f),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = formatPokemonId(pokemon.pokedexNumber),
-                        color = Color.Black,
-                        fontSize = 10.sp
-                    )
-                }
+                Text(
+                    text = formatPokemonId(pokemon.pokedexNumber),
+                    modifier = Modifier.weight(1f),
+                    color = pokemon.type.primaryColor,
+                    textAlign = TextAlign.End,
+                    fontSize = 10.sp
+                )
                 Spacer(modifier = Modifier.width(7.dp))
             }
             Spacer(modifier = Modifier.fillMaxHeight(0.8f))
