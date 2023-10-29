@@ -1,4 +1,4 @@
-/*package dtu.group21.ui
+package dtu.group21.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -7,6 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dtu.group21.models.pokemon.PokemonSamples
+import dtu.group21.ui.favorites.FavoritesPage
 import dtu.group21.ui.frontpage.FrontPage
 import dtu.group21.ui.search.FilterScreen
 import dtu.group21.ui.search.SearchScreen
@@ -37,7 +39,10 @@ fun PokeNavHost(startDestination: String = "home") {
     ) {
         composable("home") {
             FrontPage(
-                onNavigate = { navController.navigate(it) }
+                onNavigate = {
+                    val destination = if ("pokemon" in it) "pokemon" else it
+                    navController.navigate(destination)
+                }
             )
         }
         composable("search") {
@@ -70,7 +75,12 @@ fun PokeNavHost(startDestination: String = "home") {
                 onNavigateBack = { navController.popBackStack() }
             )
         }
+        composable("favorites") {
+            FavoritesPage(
+                onNavigateBack = { navController.popBackStack() },
+                onPokemonClicked = { navController.navigate("pokemon") },
+                favoritePokemons = PokemonSamples.listOfPokemons.subList(0, 4)
+            )
+        }
     }
 }
-
- */
