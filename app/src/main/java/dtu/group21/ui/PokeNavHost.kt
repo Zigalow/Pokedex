@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dtu.group21.pokedex.SpecificPage
 import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.ui.favorites.FavoritesPage
 import dtu.group21.ui.frontpage.FrontPage
@@ -68,6 +69,11 @@ fun PokeNavHost(startDestination: String = "home") {
                 onDoneSorting = { navController.popBackStack() },
                 sortSettings = searchSettings.sortSettings,
                 modifier = Modifier.fillMaxSize(),
+            )
+        }
+        composable("pokemon") {
+            SpecificPage(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
         composable("settings") {
