@@ -16,7 +16,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun RoundedSquare(size: Dp, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun RoundedSquare(
+    size: Dp,
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(size),
