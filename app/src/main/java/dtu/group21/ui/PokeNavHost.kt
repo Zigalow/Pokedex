@@ -51,7 +51,9 @@ fun PokeNavHost(startDestination: String = "home") {
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToFilter = { navController.navigate("filter") },
                 onNavigateToSort = { navController.navigate("sort") },
+                onPokemonClicked = { navController.navigate("pokemon") },
                 searchSettings = searchSettings,
+                pokemonPool = PokemonSamples.listOfPokemons,
                 modifier = Modifier.fillMaxSize(),
             )
         }
