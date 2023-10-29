@@ -1,4 +1,4 @@
-package dtu.group21.ui
+package dtu.group21.ui.pokemonView
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

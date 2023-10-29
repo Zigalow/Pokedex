@@ -7,10 +7,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import dtu.group21.pokedex.SpecificPage
 import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.ui.favorites.FavoritesPage
 import dtu.group21.ui.frontpage.FrontPage
+import dtu.group21.ui.pokemonView.SpecificPage
 import dtu.group21.ui.search.FilterScreen
 import dtu.group21.ui.search.SearchScreen
 import dtu.group21.ui.search.SearchSettings
