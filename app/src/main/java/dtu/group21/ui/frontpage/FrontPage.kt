@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -49,57 +50,60 @@ import java.util.Locale
 fun FrontPage(onNavigate: (String) -> Unit) {
     var menuIsOpen by remember { mutableStateOf(false) }
     //var favoritePokemon by remember { mutableStateOf(PokemonSamples.listOfPokemons.filter { it.isFavorit }) }
-    Column {
-        UpperMenu(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            MenuIcon(
-                size = 49.dp,
-                onClicked = { menuIsOpen = true })
-
-            Spacer(
-                modifier = Modifier.padding(horizontal = 14.dp)
-            )
-            PokemonLogo(size = 174.dp)
-            Spacer(
-                modifier = Modifier.padding(horizontal = 14.dp)
-            )
-            SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
-        }
-        Spacer(modifier = Modifier.padding(3.dp))
-        PokemonColumn(
-            pokemons = PokemonSamples.listOfPokemons,
-            onPokemonClicked = {onNavigate("pokemon/$it")},
-            modifier = Modifier.padding(horizontal = 5.dp)
-        )
-    }
-    FavoritesIcon(
-        modifier = Modifier.offset(290.dp, 675.dp),
-        onClicked = { onNavigate("favorites") })
-
-
-if (menuIsOpen) {
-        Column(
-            modifier = Modifier.width(80.dp),
-
-        ) {
-            Menu(
-                modifier = Modifier
-                    .fillMaxHeight(),
+    Box {
+        Column {
+            UpperMenu(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
-                Image(
-                    modifier = Modifier
-                        .padding(vertical = 16.dp, horizontal = 19.dp)
-                        .size(49.dp)
-                        .offset(y = 675.dp)
-                        .clickable { onNavigate("settings") },
-                    painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
-                    contentDescription = "settings-icon", // Set to null if the image is decorative
+                MenuIcon(
+                    size = 49.dp,
+                    onClicked = { menuIsOpen = true })
 
+                Spacer(
+                    modifier = Modifier.padding(horizontal = 14.dp)
                 )
+                PokemonLogo(size = 174.dp)
+                Spacer(
+                    modifier = Modifier.padding(horizontal = 14.dp)
+                )
+                SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
             }
+            Spacer(modifier = Modifier.padding(3.dp))
+            PokemonColumn(
+                pokemons = PokemonSamples.listOfPokemons,
+                onPokemonClicked = {onNavigate("pokemon/$it")},
+                modifier = Modifier.padding(horizontal = 5.dp)
+            )
+        }
+        FavoritesIcon(
+            modifier = Modifier.offset(310.dp, 670.dp).size(90.dp),
+            onClicked = { onNavigate("favorites") }
+        )
 
+
+        if (menuIsOpen) {
+            Column(
+                modifier = Modifier.width(80.dp),
+
+                ) {
+                Menu(
+                    modifier = Modifier
+                        .fillMaxHeight(),
+                ) {
+                    MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
+                    Image(
+                        modifier = Modifier
+                            .padding(vertical = 16.dp, horizontal = 19.dp)
+                            .size(49.dp)
+                            .offset(y = 675.dp)
+                            .clickable { onNavigate("settings") },
+                        painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
+                        contentDescription = "settings-icon", // Set to null if the image is decorative
+
+                    )
+                }
+
+            }
         }
     }
 }
@@ -147,8 +151,6 @@ fun PokemonColumn(
 fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
     Box(
         modifier = modifier
-            .size(60.dp)
-            .offset(30.dp, 30.dp)
             .background(
                 shape = CircleShape,
                 color = Color(0xFFDE4A4A),
@@ -159,7 +161,7 @@ fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
         Image(
             painter = painterResource(id = R.drawable.white_heart),
             contentDescription = "White heart",
-            modifier = Modifier.size(30.dp)
+            modifier = Modifier.fillMaxSize(0.6f)
         )
     }
 }
