@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -447,6 +448,42 @@ fun arrow(modifier: Modifier) {
 fun MoveBoxColumn(moveList: List<PokemonMove>) {
     val primaryWeight = 0.24f
     val secondaryWeight = 0.76f
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            modifier = Modifier.weight(primaryWeight),
+            text = "Level",
+            textAlign = TextAlign.Center
+        )
+        Text(
+            modifier = Modifier.weight(secondaryWeight),
+            text = "Move",
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            modifier = Modifier.weight(primaryWeight),
+
+            text = "Power",
+            textAlign = TextAlign.Center
+        )
+
+
+        Text(
+            modifier = Modifier.weight(primaryWeight),
+            text = "Acc.",
+            textAlign = TextAlign.Center
+        )
+        Text(
+            modifier = Modifier.weight(primaryWeight),
+            text = "PP",
+            textAlign = TextAlign.Center
+        )
+    }
+    Divider(color = Color.Black)
 
     FlowRow(
         modifier = Modifier
@@ -455,43 +492,9 @@ fun MoveBoxColumn(moveList: List<PokemonMove>) {
         horizontalArrangement = Arrangement.Center,
         maxItemsInEachRow = 2
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "Level",
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.weight(secondaryWeight),
-                text = "Move",
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-
-                text = "Power",
-                textAlign = TextAlign.Center
-            )
 
 
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "Acc.",
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "PP",
-                textAlign = TextAlign.Center
-            )
-        }
-        Divider(color = Color.Black)
-
+        Spacer(modifier = Modifier.padding(vertical = 5.dp))
         for (i in moveList.indices) {
             moveBox(
 //                modifier = modifier
