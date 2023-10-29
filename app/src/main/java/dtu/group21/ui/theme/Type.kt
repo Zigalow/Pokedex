@@ -1,4 +1,4 @@
-package com.example.group21.ui.theme
+package dtu.group21.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
