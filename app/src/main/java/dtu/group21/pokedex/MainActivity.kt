@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import dtu.group21.ui.PokeNavHost
 import dtu.group21.ui.frontpage.FrontPage
+
 import dtu.group21.ui.theme.PokedexTheme
 
 
@@ -18,6 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PokedexTheme {
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -29,3 +31,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
