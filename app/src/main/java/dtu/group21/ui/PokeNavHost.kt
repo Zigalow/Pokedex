@@ -1,4 +1,4 @@
-package dtu.group21.ui
+/*package dtu.group21.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -63,3 +63,5 @@ fun PokeNavHost(startDestination: String = "home") {
         }
     }
 }
+
+ */
