@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,26 +67,31 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
-    fun Inspect(){
+    fun inspectPage(){
+        Inspect(PokemonSamples.bulbasaur)
+    }
+    @Composable
+    fun Inspect(pokemon: Pokemon){
         val modifier = Modifier
         //val color = Color(PokemonType.GRASS.backgroundColorHexvalue)
         Column(
-            modifier.background(color = Color(android.graphics.Color.parseColor(PokemonType.GRASS.backgroundColorHexvalue)))
+            modifier.background(color = Color(android.graphics.Color.parseColor(pokemon.type.backgroundColorHexvalue)))
         ) {
 
         }
         Column(verticalArrangement = Arrangement.Top){
             Top()
 
-            Mid()
+            Mid(modifier,PokemonSamples.bulbasaur)
         }
         Column(
             modifier.padding(start = 115.dp),
             verticalArrangement = Arrangement.Center
                 ) {
-            pokemonImage(pokemon = PokemonSamples.bulbasaur)
+            pokemonImage(pokemon = pokemon)
         }
 
         //Mid()
@@ -105,7 +111,7 @@ class MainActivity : ComponentActivity() {
             }
     }
     @Composable
-    fun Mid(modifier: Modifier  = Modifier){
+    fun Mid(modifier: Modifier  = Modifier, pokemon: Pokemon){
         Column(
             modifier
                 .height(105.dp)
@@ -119,14 +125,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .weight(0.3f)
                         .fillMaxHeight(),
-                    text = "Bulbasuar",
+                    text = pokemon.name,
                     fontStyle = FontStyle.Normal,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White,
                     fontSize = 30.sp
                 )
                 Text(
-                    text = "#001",
+                    text = "#" + pokemon.pokedexNumber,
                     fontSize = 30.sp
                 )
             }
@@ -135,9 +141,9 @@ class MainActivity : ComponentActivity() {
                 .height(35.dp)
             ) {
                 Spacer(modifier.width(13.dp))
-                pokemonTypeBox(pokemonType = PokemonType.GRASS)
+                pokemonTypeBox(pokemonType = pokemon.type)
                 Spacer(modifier.width(15.dp))
-                pokemonTypeBox(pokemonType = PokemonType.POISON)
+                pokemonTypeBox(pokemonType = pokemon.type)
             }
         }
     }
@@ -148,11 +154,14 @@ class MainActivity : ComponentActivity() {
             modifier
                 .fillMaxWidth()
                 .height(300.dp)
-                .background(Color.White, shape = RoundedCornerShape(
-                    topStart = 32.dp,
-                    topEnd = 32.dp,
-                    bottomStart = 0.dp,
-                    bottomEnd = 0.dp)),
+                .background(
+                    Color.White, shape = RoundedCornerShape(
+                        topStart = 32.dp,
+                        topEnd = 32.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp
+                    )
+                ),
             verticalArrangement = Arrangement.Bottom
         ){
             val categories = listOf("About","Stats", "Moves", "Evolution")
@@ -167,7 +176,7 @@ class MainActivity : ComponentActivity() {
                     .padding(start = 13.dp)) {
                 AboutSection()
                 Spacer(modifier.height(150.dp))
-            }
+                }
             }
         }
     @Composable
