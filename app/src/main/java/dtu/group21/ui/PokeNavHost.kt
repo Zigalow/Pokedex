@@ -8,11 +8,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dtu.group21.pokedex.SpecificPage
+import dtu.group21.models.pokemon.PokemonSamples
+import dtu.group21.ui.favorites.FavoritesPage
 import dtu.group21.ui.frontpage.FrontPage
 import dtu.group21.ui.search.FilterScreen
 import dtu.group21.ui.search.SearchScreen
 import dtu.group21.ui.search.SearchSettings
 import dtu.group21.ui.search.SortScreen
+import dtu.group21.ui.settings.SettingsPage
 
 // Step1: get nav controller
 
@@ -45,6 +48,7 @@ fun PokeNavHost(startDestination: String = "home") {
         }
         composable("search") {
             SearchScreen(
+                onNavigateBack = { navController.popBackStack() },
                 onNavigateToFilter = { navController.navigate("filter") },
                 onNavigateToSort = { navController.navigate("sort") },
                 searchSettings = searchSettings,
@@ -53,6 +57,7 @@ fun PokeNavHost(startDestination: String = "home") {
         }
         composable("filter") {
             FilterScreen(
+                onNavigateBack = { navController.popBackStack() },
                 onDoneFiltering = { navController.popBackStack() },
                 filterSettings = searchSettings.filterSettings,
                 modifier = Modifier.fillMaxSize(),
@@ -60,6 +65,7 @@ fun PokeNavHost(startDestination: String = "home") {
         }
         composable("sort") {
             SortScreen(
+                onNavigateBack = { navController.popBackStack() },
                 onDoneSorting = { navController.popBackStack() },
                 sortSettings = searchSettings.sortSettings,
                 modifier = Modifier.fillMaxSize(),
@@ -68,6 +74,18 @@ fun PokeNavHost(startDestination: String = "home") {
         composable("pokemon") {
             SpecificPage(
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable("settings") {
+            SettingsPage(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable("favorites") {
+            FavoritesPage(
+                onNavigateBack = { navController.popBackStack() },
+                onPokemonClicked = { navController.navigate("pokemon") },
+                favoritePokemons = PokemonSamples.listOfPokemons.subList(2, 7)
             )
         }
     }
