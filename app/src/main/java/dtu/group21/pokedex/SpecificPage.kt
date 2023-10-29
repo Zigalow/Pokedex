@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,8 +20,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -40,7 +43,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
+import dtu.group21.models.pokemon.BulbasaurMovesList
 import dtu.group21.models.pokemon.Pokemon
+import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
@@ -49,7 +54,7 @@ import dtu.group21.ui.frontpage.PokemonTypeBox
 @Composable
 fun SpecificPage(onNavigateBack: () -> Unit) {
     //Mid(modifier = Modifier, PokemonSamples.bulbasaur)
-    val pokemon =  PokemonSamples.charizard
+    val pokemon = PokemonSamples.charizard
     Inspect(pokemon = pokemon, onNavigateBack = onNavigateBack)
 }
 
@@ -75,7 +80,7 @@ fun Inspect(pokemon: Pokemon, onNavigateBack: () -> Unit) {
 
         //Mid()
         Column(verticalArrangement = Arrangement.Bottom) {
-            Bottom(pokemon  = pokemon)
+            Bottom(pokemon = pokemon)
         }
     }
 
@@ -280,16 +285,19 @@ fun Table(first: String, second: String) {
 }
 
 @Composable
-fun Sections(modifier: Modifier,selectedCategory: String, pokemon: Pokemon){
+fun Sections(modifier: Modifier, selectedCategory: String, pokemon: Pokemon) {
     when (selectedCategory) {
         "About" -> AboutSection(modifier)
         "Stats" -> StatsSection(modifier)
         "Moves" -> MovesSection()
-        "Evolution" -> EvolutionSection(modifier = Modifier
-            .padding(horizontal = 2.dp)
-            .fillMaxWidth(), pokemon)
+        "Evolution" -> EvolutionSection(
+            modifier = Modifier
+                .padding(horizontal = 2.dp)
+                .fillMaxWidth(), pokemon
+        )
     }
 }
+
 @Composable
 fun AboutSection(modifier: Modifier) {
     Column {
@@ -299,7 +307,7 @@ fun AboutSection(modifier: Modifier) {
         Table(first = "Height", second = "2'4\"")
         //Table(first = "Gender", second = "")
     }
-    Column{
+    Column {
         Text(text = "Breeding")
         Table("Male", "87,5%")
         Table("Female", "12,5%")
@@ -307,8 +315,9 @@ fun AboutSection(modifier: Modifier) {
     }
     Spacer(modifier.fillMaxHeight())
 }
+
 @Composable
-fun StatsSection(modifier: Modifier){
+fun StatsSection(modifier: Modifier) {
     Column {
         Table(first = "HP", second = "78")
         Table(first = "Attack", second = "84")
@@ -322,18 +331,21 @@ fun StatsSection(modifier: Modifier){
     }
     Spacer(modifier.fillMaxHeight())
 }
-@Composable
-fun MovesSection(){
-    Column {
 
+@Composable
+fun MovesSection() {
+    Column {
+        MoveBoxColumn(moveList = BulbasaurMovesList)
     }
 }
+
 @Composable
-fun EvolutionSection(modifier: Modifier, pokemon: Pokemon){
-    Row (
+fun EvolutionSection(modifier: Modifier, pokemon: Pokemon) {
+    Row(
         modifier = modifier
     ) {
-        val evolutionChain = arrayOf(PokemonSamples.charmander, PokemonSamples.charmeleon, PokemonSamples.charizard)
+        val evolutionChain =
+            arrayOf(PokemonSamples.charmander, PokemonSamples.charmeleon, PokemonSamples.charizard)
         for ((index, evolution) in evolutionChain.withIndex()) {
             Column {
                 PokemonImage(
@@ -349,9 +361,11 @@ fun EvolutionSection(modifier: Modifier, pokemon: Pokemon){
                 )
             }
             if (index < 2)
-                arrow(modifier = Modifier
-                    .size(25.dp)
-                    .align(Alignment.CenterVertically))
+                arrow(
+                    modifier = Modifier
+                        .size(25.dp)
+                        .align(Alignment.CenterVertically)
+                )
         }
     }
     Spacer(modifier.fillMaxHeight())
@@ -398,7 +412,8 @@ fun FavoritesIcon(
             .clickable { onClicked() },
         contentAlignment = Alignment.Center
     ) {
-        val imageId = if (active) R.drawable.favorite_icon_active else R.drawable.favorite_icon_inactive
+        val imageId =
+            if (active) R.drawable.favorite_icon_active else R.drawable.favorite_icon_inactive
         Image(
             painter = painterResource(id = imageId),
             contentDescription = "White heart",
@@ -416,11 +431,172 @@ fun backIcon(modifier: Modifier) {
         modifier = modifier,
     )
 }
+
 @Composable
-fun arrow(modifier: Modifier){
+fun arrow(modifier: Modifier) {
     Image(
         painter = painterResource(id = R.drawable.front_arrow),
         contentDescription = "arrow",
         modifier = modifier
     )
 }
+
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun MoveBoxColumn(moveList: List<PokemonMove>) {
+    val primaryWeight = 0.24f
+    val secondaryWeight = 0.76f
+
+    FlowRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.Center,
+        maxItemsInEachRow = 2
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                modifier = Modifier.weight(primaryWeight),
+                text = "Level",
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.weight(secondaryWeight),
+                text = "Move",
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                modifier = Modifier.weight(primaryWeight),
+
+                text = "Power",
+                textAlign = TextAlign.Center
+            )
+
+
+            Text(
+                modifier = Modifier.weight(primaryWeight),
+                text = "Acc.",
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.weight(primaryWeight),
+                text = "PP",
+                textAlign = TextAlign.Center
+            )
+        }
+        Divider(color = Color.Black)
+
+        for (i in moveList.indices) {
+            moveBox(
+//                modifier = modifier
+//                    .size(190.dp)
+//                    .padding(horizontal = 8.dp, vertical = 5.dp),
+                move = moveList[i],
+//                onClicked = { onPokemonClicked(pokemons[i].name) }
+            )
+            Divider(modifier = Modifier.padding(vertical = 2.dp), color = Color.Black)
+        }
+    }
+}
+
+
+@Composable
+fun moveBox(move: PokemonMove) {
+    val primaryWeightUpper = 0.24f
+    val secondaryWeightUpper = 0.76f
+
+    val primaryWeightBottom = 0.4f
+    val secondaryWeightBottom = 0.6f
+
+    Box {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    modifier = Modifier.weight(primaryWeightUpper),
+                    text = move.level.toString(),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    modifier = Modifier.weight(secondaryWeightUpper),
+                    text = move.name,
+                    textAlign = TextAlign.Center
+                )
+                val power: String
+                if (move.power == null) {
+                    power = "-"
+                } else {
+                    power = move.power.toString()
+                }
+                Text(
+                    modifier = Modifier.weight(primaryWeightUpper),
+
+                    text = power,
+                    textAlign = TextAlign.Center
+                )
+
+                val accuracy: String
+                if (move.accuracy == null) {
+                    accuracy = "-"
+                } else {
+                    accuracy = move.accuracy.toString()
+                }
+                Text(
+                    modifier = Modifier.weight(primaryWeightUpper),
+                    text = accuracy,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    modifier = Modifier.weight(primaryWeightUpper),
+                    text = move.pp.toString(),
+                    textAlign = TextAlign.Center
+                )
+            }
+            Spacer(modifier = Modifier.padding(vertical = 2.dp))
+            Row()
+            {
+                Box(
+                    modifier = Modifier
+                        .weight(secondaryWeightBottom)
+                        .background(
+                            shape = RoundedCornerShape(15.dp),
+                            color = move.type.primaryColor
+                        ), contentAlignment = Alignment.Center
+                )
+                {
+                    Text(
+                        text = move.type.name,
+                        // todo
+                        fontSize = 12.sp, color = Color.White
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(primaryWeightBottom)
+                        .background(
+                            shape = RoundedCornerShape(15.dp),
+                            color = move.moveEffectCategory.color
+                        ), contentAlignment = Alignment.Center
+                )
+                {
+                    Text(
+                        text = move.moveEffectCategory.name,
+                        // todo
+                        fontSize = 12.sp, color = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
+
+
