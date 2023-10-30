@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.BulbasaurMovesList
 import dtu.group21.models.pokemon.Pokemon
@@ -51,7 +52,6 @@ import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SpecificPage(onNavigateBack: () -> Unit) {
     //Mid(modifier = Modifier, PokemonSamples.bulbasaur)
@@ -72,18 +72,14 @@ fun Inspect(pokemon: Pokemon, onNavigateBack: () -> Unit) {
 
             Mid(modifier, pokemon)
         }
-        Column(
-            modifier.padding(start = 115.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            PokemonImage(pokemon = pokemon)
+        Box(
+            modifier
+                .fillMaxSize()
+                .background(color =  pokemon.type.secondaryColor)){
+            PokemonImage(pokemon = pokemon, modifier = Modifier.align(Alignment.TopCenter).zIndex(1f).padding(vertical = 50.dp))
+            Bottom(pokemon = pokemon, modifier = Modifier.align(Alignment.BottomCenter))
+            }
         }
-
-        //Mid()
-        Column(verticalArrangement = Arrangement.Bottom) {
-            Bottom(pokemon = pokemon)
-        }
-    }
 
 }
 
