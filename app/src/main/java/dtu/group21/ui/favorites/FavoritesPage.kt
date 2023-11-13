@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
-import dtu.group21.models.pokemon.Pokemon
+import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
@@ -42,7 +42,7 @@ import dtu.group21.ui.shared.bigFontSize
 fun FavoritesPage(
     onNavigateBack: () -> Unit,
     onPokemonClicked: (String) -> Unit,
-    favoritePokemons: List<Pokemon>
+    favoritePokemons: List<ComplexPokemon>
 ) {
     Column(
         modifier = Modifier
@@ -79,7 +79,7 @@ fun FavoritesPage(
                     .fillMaxWidth()
                     .padding(16.dp),
                 pokemon = pokemon,
-                onClicked = { onPokemonClicked(pokemon.name) }
+                onClicked = { onPokemonClicked(pokemon.species.name) }
             )
         }
     }
@@ -96,7 +96,7 @@ fun BackIcon(modifier: Modifier = Modifier, size: Dp, onClicked: () -> Unit) {
     )
 }
 @Composable
-fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () -> Unit) {
+fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked: () -> Unit) {
     Box(
         modifier = modifier
             .clickable { onClicked() }
@@ -132,7 +132,7 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicke
                 .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = formatPokemonId(pokemon.pokedexNumber),
+                    text = formatPokemonId(pokemon.id),
                     color = pokemon.type.primaryColor,
                     fontSize = 30.sp,
                     textAlign = TextAlign.Center,
@@ -150,7 +150,7 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicke
                 contentAlignment = Alignment.BottomStart
             ) {
                 Text(
-                    text = capitalizeFirstLetter(pokemon.name),
+                    text = capitalizeFirstLetter(pokemon.species.name),
                     fontSize = 17.sp,
                     color = Color.White,
                     textAlign = TextAlign.Start,

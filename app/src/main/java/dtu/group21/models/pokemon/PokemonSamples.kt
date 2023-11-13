@@ -4,7 +4,7 @@ import com.example.pokedex.R
 
 
 object PokemonSamples {
-    val bulbasaur = Pokemon(
+    val bulbasaur = ComplexPokemon(
         "bulbasaur",
         1,
         PokemonType.GRASS,
@@ -16,8 +16,8 @@ object PokemonSamples {
 
     val vineWhip = PokemonMove(
         "vine_whip",
-        MoveEffectCategory.PHYSICAL,
-        MoveCategory.LEVEL_UP,
+        MoveDamageClass.PHYSICAL,
+        MoveLearnMethod.LEVEL_UP,
         PokemonType.GRASS,
         45,
         100,
@@ -26,7 +26,7 @@ object PokemonSamples {
         13
     )
 
-    val ivysaur = Pokemon(
+    val ivysaur = ComplexPokemon(
         "ivysaur",
         2,
         PokemonType.GRASS,
@@ -36,7 +36,7 @@ object PokemonSamples {
         R.drawable._0002
     )
 
-    val venusaur = Pokemon(
+    val venusaur = ComplexPokemon(
         "venusaur",
         3,
         PokemonType.GRASS,
@@ -46,7 +46,7 @@ object PokemonSamples {
         R.drawable._0003
     )
 
-    val charmander = Pokemon(
+    val charmander = ComplexPokemon(
         "charmander",
         4,
         PokemonType.FIRE,
@@ -56,7 +56,7 @@ object PokemonSamples {
         R.drawable._0004
     )
 
-    val charmeleon = Pokemon(
+    val charmeleon = ComplexPokemon(
         "charmeleon",
         5,
         PokemonType.FIRE,
@@ -66,7 +66,7 @@ object PokemonSamples {
         R.drawable._0005
     )
 
-    val charizard = Pokemon(
+    val charizard = ComplexPokemon(
         "charizard",
         6,
         PokemonType.FIRE,
@@ -76,7 +76,7 @@ object PokemonSamples {
         R.drawable._0006
     )
 
-    val squirtle = Pokemon(
+    val squirtle = ComplexPokemon(
         "squirtle",
         7,
         PokemonType.WATER,
@@ -86,7 +86,7 @@ object PokemonSamples {
         R.drawable._0007
     )
 
-    val wartortle = Pokemon(
+    val wartortle = ComplexPokemon(
         "wartortle",
         8,
         PokemonType.WATER,
@@ -96,7 +96,7 @@ object PokemonSamples {
         R.drawable._0008
     )
 
-    val blastoise = Pokemon(
+    val blastoise = ComplexPokemon(
         "blastoise",
         9,
         PokemonType.WATER,
@@ -106,7 +106,7 @@ object PokemonSamples {
         R.drawable._0009
     )
 
-    val caterpie = Pokemon(
+    val caterpie = ComplexPokemon(
         "caterpie",
         10,
         PokemonType.BUG,
@@ -116,7 +116,7 @@ object PokemonSamples {
         R.drawable._0010
     )
 
-    val metapod = Pokemon(
+    val metapod = ComplexPokemon(
         "metapod",
         11,
         PokemonType.BUG,
@@ -126,7 +126,7 @@ object PokemonSamples {
         R.drawable._0011
     )
 
-    val butterfree = Pokemon(
+    val butterfree = ComplexPokemon(
         "butterfree",
         12,
         PokemonType.BUG,
@@ -136,7 +136,7 @@ object PokemonSamples {
         R.drawable._0012
     )
 
-    var listOfPokemons: List<Pokemon> = listOf(
+    var listOfPokemons: List<ComplexPokemon> = listOf(
         bulbasaur, ivysaur, venusaur, charmander,
         charmeleon, charizard, squirtle, wartortle,
         blastoise, caterpie, metapod, butterfree
@@ -148,8 +148,8 @@ object BulbasaurMoves {
 
     val tackle = PokemonMove(
         "Tackle",
-        MoveEffectCategory.PHYSICAL,
-        MoveCategory.LEVEL_UP,
+        MoveDamageClass.PHYSICAL,
+        MoveLearnMethod.LEVEL_UP,
         PokemonType.NORMAL,
         35,
         95,
@@ -160,8 +160,8 @@ object BulbasaurMoves {
 
     val growl = PokemonMove(
         "Growl",
-        MoveEffectCategory.STATUS,
-        MoveCategory.LEVEL_UP,
+        MoveDamageClass.STATUS,
+        MoveLearnMethod.LEVEL_UP,
         PokemonType.NORMAL,
         0,
         100,
@@ -172,8 +172,8 @@ object BulbasaurMoves {
 
     val leechSeed = PokemonMove(
         "Leech Seed",
-        MoveEffectCategory.STATUS,
-        MoveCategory.LEVEL_UP,
+        MoveDamageClass.STATUS,
+        MoveLearnMethod.LEVEL_UP,
         PokemonType.GRASS,
         0,
         90,
@@ -184,8 +184,8 @@ object BulbasaurMoves {
 
     val vineWhip = PokemonMove(
         "Vine Whip",
-        MoveEffectCategory.PHYSICAL,
-        MoveCategory.LEVEL_UP,
+        MoveDamageClass.PHYSICAL,
+        MoveLearnMethod.LEVEL_UP,
         PokemonType.GRASS,
         45,
         100,
@@ -196,8 +196,8 @@ object BulbasaurMoves {
 
     val poisonPowder = PokemonMove(
         "Poison Powder",
-        MoveEffectCategory.STATUS,
-        MoveCategory.LEVEL_UP,
+        MoveDamageClass.STATUS,
+        MoveLearnMethod.LEVEL_UP,
         PokemonType.POISON,
         0,
         75,
@@ -208,8 +208,8 @@ object BulbasaurMoves {
 
     val sleepPowder = PokemonMove(
         "Sleep Powder",
-        MoveEffectCategory.STATUS,
-        MoveCategory.LEVEL_UP,
+        MoveDamageClass.STATUS,
+        MoveLearnMethod.LEVEL_UP,
         PokemonType.GRASS,
         0,
         75,
@@ -220,8 +220,8 @@ object BulbasaurMoves {
 
     val takeDown = PokemonMove(
         "Take Down",
-        MoveEffectCategory.PHYSICAL,
-        MoveCategory.LEVEL_UP,
+        MoveDamageClass.PHYSICAL,
+        MoveLearnMethod.LEVEL_UP,
         PokemonType.NORMAL,
         90,
         85,
@@ -232,8 +232,8 @@ object BulbasaurMoves {
 
     val razorLeaf = PokemonMove(
         "Razor Leaf",
-        MoveEffectCategory.PHYSICAL,
-        MoveCategory.LEVEL_UP,
+        MoveDamageClass.PHYSICAL,
+        MoveLearnMethod.LEVEL_UP,
         PokemonType.GRASS,
         55,
         95,
@@ -244,8 +244,8 @@ object BulbasaurMoves {
 
     val sweetScent = PokemonMove(
         "Sweet Scent",
-        MoveEffectCategory.STATUS,
-        MoveCategory.LEVEL_UP,
+        MoveDamageClass.STATUS,
+        MoveLearnMethod.LEVEL_UP,
         PokemonType.NORMAL,
         0,
         100,

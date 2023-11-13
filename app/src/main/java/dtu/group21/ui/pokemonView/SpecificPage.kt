@@ -33,20 +33,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.BulbasaurMovesList
-import dtu.group21.models.pokemon.Pokemon
+import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.ui.frontpage.PokemonImage
@@ -60,7 +58,7 @@ fun SpecificPage(onNavigateBack: () -> Unit) {
 }
 
 @Composable
-fun Inspect(pokemon: Pokemon, onNavigateBack: () -> Unit) {
+fun Inspect(pokemon: ComplexPokemon, onNavigateBack: () -> Unit) {
     val modifier = Modifier
     Column(
         modifier
@@ -85,7 +83,7 @@ fun Inspect(pokemon: Pokemon, onNavigateBack: () -> Unit) {
 
 @Composable
 fun Top(
-    pokemon: Pokemon,
+    pokemon: ComplexPokemon,
     onClickBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -117,7 +115,7 @@ fun Top(
 }
 
 @Composable
-fun Mid(modifier: Modifier = Modifier, pokemon: Pokemon) {
+fun Mid(modifier: Modifier = Modifier, pokemon: ComplexPokemon) {
     Column(
         modifier
             .height(105.dp)
@@ -139,7 +137,7 @@ fun Mid(modifier: Modifier = Modifier, pokemon: Pokemon) {
                 fontSize = 30.sp
             )
             Text(
-                text = "#" + pokemon.pokedexNumber,
+                text = "#" + pokemon.id,
                 fontSize = 30.sp
             )
             Spacer(modifier.width(13.dp))
@@ -174,7 +172,7 @@ fun Mid(modifier: Modifier = Modifier, pokemon: Pokemon) {
 }
 
 @Composable
-fun Bottom(modifier: Modifier = Modifier, pokemon: Pokemon) {
+fun Bottom(modifier: Modifier = Modifier, pokemon: ComplexPokemon) {
     Column(
         modifier
             .fillMaxWidth()
@@ -282,7 +280,7 @@ fun Table(first: String, second: String) {
 }
 
 @Composable
-fun Sections(modifier: Modifier, selectedCategory: String, pokemon: Pokemon) {
+fun Sections(modifier: Modifier, selectedCategory: String, pokemon: ComplexPokemon) {
     when (selectedCategory) {
         "About" -> AboutSection(modifier)
         "Stats" -> StatsSection(modifier)
@@ -337,7 +335,7 @@ fun MovesSection() {
 }
 
 @Composable
-fun EvolutionSection(modifier: Modifier, pokemon: Pokemon) {
+fun EvolutionSection(modifier: Modifier, pokemon: ComplexPokemon) {
     Row(
         modifier = modifier,
     ) {
@@ -583,12 +581,12 @@ fun moveBox(move: PokemonMove) {
                         .weight(primaryWeightBottom)
                         .background(
                             shape = RoundedCornerShape(15.dp),
-                            color = move.moveEffectCategory.color
+                            color = move.damageClass.color
                         ), contentAlignment = Alignment.Center
                 )
                 {
                     Text(
-                        text = move.moveEffectCategory.name,
+                        text = move.damageClass.name,
                         // todo
                         fontSize = 12.sp, color = Color.White
                     )
