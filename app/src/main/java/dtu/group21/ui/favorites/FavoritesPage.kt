@@ -84,17 +84,7 @@ fun FavoritesPage(
         }
     }
 }
-@Composable
-fun BackIcon(modifier: Modifier = Modifier, size: Dp, onClicked: () -> Unit) {
-    Image(
-        painter = painterResource(id = R.drawable.back_button), // Replace with your image resource
-        contentDescription = "back-icon", // Set to null if the image is decorative
-        modifier = modifier
-        //    .padding(vertical = size / 3, horizontal = size / 2.5f)
-          //  .size(size)
-            .clickable { onClicked() }
-    )
-}
+
 @Composable
 fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () -> Unit) {
     Box(
