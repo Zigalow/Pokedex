@@ -99,8 +99,7 @@ fun FilterScreen(
                     .weight(1f, false)
             ) {
                 // all type buttons are below
-                val typeNames = remember { arrayOf(PokemonType.NORMAL.name, PokemonType.FLYING.name, PokemonType.FIRE.name, PokemonType.PSYCHIC.name, PokemonType.WATER.name, PokemonType.BUG.name, PokemonType.GRASS.name, PokemonType.ROCK.name, PokemonType.ELECTRIC.name, PokemonType.GHOST.name, PokemonType.ICE.name, PokemonType.DRAGON.name, PokemonType.FIGHTING.name, PokemonType.DARK.name, PokemonType.POISON.name, PokemonType.STEEL.name, PokemonType.GROUND.name, PokemonType.FAIRY.name) }
-                val typeColors = remember { arrayOf(PokemonType.NORMAL, PokemonType.FLYING, PokemonType.FIRE, PokemonType.PSYCHIC, PokemonType.WATER, PokemonType.BUG, PokemonType.GRASS, PokemonType.ROCK, PokemonType.ELECTRIC, PokemonType.GHOST, PokemonType.ICE, PokemonType.DRAGON, PokemonType.FIGHTING, PokemonType.DARK, PokemonType.POISON, PokemonType.STEEL, PokemonType.GROUND, PokemonType.FAIRY) }
+                val types = remember {arrayOf(PokemonType.NORMAL, PokemonType.FLYING, PokemonType.FIRE, PokemonType.PSYCHIC, PokemonType.WATER, PokemonType.BUG, PokemonType.GRASS, PokemonType.ROCK, PokemonType.ELECTRIC, PokemonType.GHOST, PokemonType.ICE, PokemonType.DRAGON, PokemonType.FIGHTING, PokemonType.DARK, PokemonType.POISON, PokemonType.STEEL, PokemonType.GROUND, PokemonType.FAIRY) }
 
                 FlowRow(
                     modifier = Modifier
@@ -109,7 +108,7 @@ fun FilterScreen(
                     horizontalArrangement = Arrangement.Center,
                     maxItemsInEachRow = 2,
                 ) {
-                    val buttonCount = typeNames.size
+                    val buttonCount = types.size
                     val hasExtraButton = (buttonCount % 2 == 1)
                     val columnsButtonCount = buttonCount - if (hasExtraButton) 1 else 0
 
@@ -123,12 +122,12 @@ fun FilterScreen(
                                 .weight(0.5f, true),
                             offBackgroundColor = unselectedToggleColor,
                             offForegroundColor = Color.Black,
-                            onBackgroundColor = typeColors[i],
+                            onBackgroundColor = types[i].primaryColor,
                             onForegroundColor = Color.White,
                             isClickedInitially = filterSettings.types[i],
                         ) {
                             Text(
-                                text = typeNames[i],
+                                text = types[i].name,
                                 fontSize = mediumFontSize,
                             )
                         }
@@ -143,11 +142,11 @@ fun FilterScreen(
                                 .fillMaxWidth(0.5f),
                             offBackgroundColor = unselectedToggleColor,
                             offForegroundColor = Color.Black,
-                            onBackgroundColor = typeColors.last(),
+                            onBackgroundColor = types.last().primaryColor,
                             onForegroundColor = Color.White,
                         ) {
                             Text(
-                                text = typeNames.last(),
+                                text = types.last().name,
                                 fontSize = mediumFontSize,
                             )
                         }
