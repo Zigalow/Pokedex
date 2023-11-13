@@ -22,7 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,7 +38,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
-import dtu.group21.models.pokemon.Pokemon
+import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
@@ -124,7 +122,7 @@ fun Menu(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
 @Composable
 fun PokemonColumn(
     modifier: Modifier = Modifier,
-    pokemons: List<Pokemon>,
+    pokemons: List<ComplexPokemon>,
     onPokemonClicked: (String) -> Unit
 ) {
     FlowRow(
@@ -140,7 +138,7 @@ fun PokemonColumn(
                     .size(180.dp)
                     .padding(horizontal = 4.dp, vertical = 5.dp),
                 pokemon = pokemons[i],
-                onClicked = { onPokemonClicked(pokemons[i].name) }
+                onClicked = { onPokemonClicked(pokemons[i].species.name) }
             )
         }
     }
@@ -233,10 +231,10 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
 }
 
 @Composable
-fun PokemonImage(modifier: Modifier = Modifier, pokemon: Pokemon) {
+fun PokemonImage(modifier: Modifier = Modifier, pokemon: ComplexPokemon) {
     Image(
         painter = painterResource(id = pokemon.spriteResourceId),
-        contentDescription = pokemon.name,
+        contentDescription = pokemon.species.name,
         modifier = modifier,
     )
 }
@@ -246,7 +244,7 @@ fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
 
 
 @Composable
-fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: Pokemon, size: Dp) {
+fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, size: Dp) {
     Box(
         modifier = modifier.background(
             color = pokemon.type.primaryColor,
@@ -254,7 +252,7 @@ fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: Pokemon, size: Dp) {
         ),
     ) {
         Text(
-            text = capitalizeFirstLetter(pokemon.name),
+            text = capitalizeFirstLetter(pokemon.species.name),
             modifier = Modifier.padding(start = 8.dp),
             fontSize = 17.sp,
             color = Color.White,
@@ -267,7 +265,7 @@ fun formatPokemonId(unformattedNumber: Int): String {
 }
 
 @Composable
-fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () -> Unit) {
+fun PokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked: () -> Unit) {
     Box(
         modifier = modifier
             .clickable { onClicked() }
@@ -298,7 +296,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () ->
                 Spacer(modifier = Modifier.padding(horizontal = 2.dp))
                 // For displaying pokedex number
                 Text(
-                    text = formatPokemonId(pokemon.pokedexNumber),
+                    text = formatPokemonId(pokemon.id),
                     modifier = Modifier.weight(1f),
                     color = pokemon.type.primaryColor,
                     textAlign = TextAlign.End,
@@ -318,7 +316,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () ->
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = capitalizeFirstLetter(pokemon.name),
+                        text = capitalizeFirstLetter(pokemon.species.name),
                         modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                         fontSize = 17.sp,
                         color = Color.White,

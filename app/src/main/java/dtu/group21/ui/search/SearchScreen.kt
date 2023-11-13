@@ -2,13 +2,11 @@ package dtu.group21.ui.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -46,11 +43,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import androidx.lifecycle.LiveData
 import com.example.pokedex.R
-import dtu.group21.models.pokemon.Pokemon
+import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.ui.favorites.FavoritePokemonBox
-import dtu.group21.ui.shared.Title
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
 import dtu.group21.ui.shared.buttonColor
@@ -140,10 +135,10 @@ fun SearchScreen(
     onNavigateToSort: () -> Unit,
     onPokemonClicked: (String) -> Unit,
     searchSettings: SearchSettings,
-    pokemonPool: List<Pokemon>,
+    pokemonPool: List<ComplexPokemon>,
     modifier: Modifier = Modifier,
 ) {
-    val candidates: State<List<Pokemon>> = liveLiteral("searchResults", pokemonPool)
+    val candidates: State<List<ComplexPokemon>> = liveLiteral("searchResults", pokemonPool)
 
     Column(
         modifier = modifier
@@ -190,8 +185,8 @@ fun SearchScreen(
                         if (searchSettings.searchString == "") true
                         else if (searchSettings.searchString.isDigitsOnly()) {
                             val searchNumber = searchSettings.searchString.toInt()
-                            searchNumber.toString() in pokemon.pokedexNumber.toString()
-                        } else searchSettings.searchString.lowercase() in pokemon.name.lowercase()
+                            searchNumber.toString() in pokemon.id.toString()
+                        } else searchSettings.searchString.lowercase() in pokemon.species.name.lowercase()
 
                     isCandidate
                 })
@@ -247,7 +242,7 @@ fun SearchScreen(
                         .fillMaxWidth()
                         .padding(16.dp),
                     pokemon = pokemon,
-                    onClicked = { onPokemonClicked(pokemon.name) }
+                    onClicked = { onPokemonClicked(pokemon.species.name) }
                 )
             }
         }
