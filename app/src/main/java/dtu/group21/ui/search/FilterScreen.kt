@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.pokedex.R
+import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.BinaryChooser
 import dtu.group21.ui.shared.Title
 import dtu.group21.ui.shared.ToggleButton
@@ -98,8 +99,7 @@ fun FilterScreen(
                     .weight(1f, false)
             ) {
                 // all type buttons are below
-                val typeNames = remember { arrayOf("Normal", "Flying", "Fire", "Psychic", "Water", "Bug", "Grass", "Rock", "Electric", "Ghost", "Ice", "Dragon", "Fighting", "Dark", "Poison", "Steel", "Ground", "Fairy", /*"Tera"*/) }
-                val typeColors = remember { arrayOf(Color(0xFFA8A878), Color(0xFFA890F0), Color(0xFFEF7F2F), Color(0xFFF85888), Color(0xFF688FEF), Color(0xFFA8B820), Color(0xFF9BCC50), Color(0xFFB8A038), Color(0xFFF8D030), Color(0xFF705898), Color(0xFF98D8D8), Color(0xFF7038F8), Color(0xFFBF3028), Color(0xFF705848), Color(0xFFA040A0), Color(0xFFB8B8D0), Color(0xFFDFBF68), Color(0xFFF0B6BC), Color(0xFF68A090)) }
+                val types = remember {arrayOf(PokemonType.NORMAL, PokemonType.FLYING, PokemonType.FIRE, PokemonType.PSYCHIC, PokemonType.WATER, PokemonType.BUG, PokemonType.GRASS, PokemonType.ROCK, PokemonType.ELECTRIC, PokemonType.GHOST, PokemonType.ICE, PokemonType.DRAGON, PokemonType.FIGHTING, PokemonType.DARK, PokemonType.POISON, PokemonType.STEEL, PokemonType.GROUND, PokemonType.FAIRY) }
 
                 FlowRow(
                     modifier = Modifier
@@ -108,7 +108,7 @@ fun FilterScreen(
                     horizontalArrangement = Arrangement.Center,
                     maxItemsInEachRow = 2,
                 ) {
-                    val buttonCount = typeNames.size
+                    val buttonCount = types.size
                     val hasExtraButton = (buttonCount % 2 == 1)
                     val columnsButtonCount = buttonCount - if (hasExtraButton) 1 else 0
 
@@ -122,12 +122,12 @@ fun FilterScreen(
                                 .weight(0.5f, true),
                             offBackgroundColor = unselectedToggleColor,
                             offForegroundColor = Color.Black,
-                            onBackgroundColor = typeColors[i],
+                            onBackgroundColor = types[i].primaryColor,
                             onForegroundColor = Color.White,
                             isClickedInitially = filterSettings.types[i],
                         ) {
                             Text(
-                                text = typeNames[i],
+                                text = types[i].name,
                                 fontSize = mediumFontSize,
                             )
                         }
@@ -142,11 +142,11 @@ fun FilterScreen(
                                 .fillMaxWidth(0.5f),
                             offBackgroundColor = unselectedToggleColor,
                             offForegroundColor = Color.Black,
-                            onBackgroundColor = typeColors.last(),
+                            onBackgroundColor = types.last().primaryColor,
                             onForegroundColor = Color.White,
                         ) {
                             Text(
-                                text = typeNames.last(),
+                                text = types.last().name,
                                 fontSize = mediumFontSize,
                             )
                         }
