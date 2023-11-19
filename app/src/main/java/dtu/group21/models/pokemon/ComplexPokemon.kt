@@ -8,6 +8,7 @@ class ComplexPokemon(
     val stats: PokemonStats,
     val species: PokemonSpecies,
     val spriteResourceId: Int,
+    val moves: Array<PokemonMove>
 ) {
     val hasTwoTypes = secondaryType != PokemonType.NONE
 }
