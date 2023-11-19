@@ -6,5 +6,4 @@ data class PokemonSpecies(
     val isBaby: Boolean,
     val isLegendary: Boolean,
     val isMythical: Boolean,
-    val evolutionChain: PokemonEvolutionChain,
 )
