@@ -1,6 +1,7 @@
 package dtu.group21.models.pokemon
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.toLowerCase
 
 enum class PokemonType(val primaryColor: Color, val secondaryColor: Color) {
     NONE(Color.Transparent, Color.Transparent),
@@ -22,4 +23,30 @@ enum class PokemonType(val primaryColor: Color, val secondaryColor: Color) {
     DARK(Color(0xFF705848), Color(0xFFFFCFB0)),
     STEEL(Color(0xFF4D5E6D), Color(0xFF8C9EAD)),
     FAIRY(Color(0xFFC2535E), Color(0xFFD8949B));
+
+    companion object {
+        fun getFromName(name: String): PokemonType {
+            return when (name.lowercase()) {
+                "normal" -> NORMAL
+                "fire" -> FIRE
+                "water" -> WATER
+                "electric" -> ELECTRIC
+                "grass" -> GRASS
+                "ice" -> ICE
+                "fighting" -> FIGHTING
+                "poison" -> POISON
+                "ground" -> GROUND
+                "flying" -> FLYING
+                "psychic" -> PSYCHIC
+                "bug" -> BUG
+                "rock" -> ROCK
+                "ghost" -> GHOST
+                "dragon" -> DRAGON
+                "dark" -> DARK
+                "steel" -> STEEL
+                "fairy" -> FAIRY
+                else -> NONE
+            }
+        }
+    }
 }

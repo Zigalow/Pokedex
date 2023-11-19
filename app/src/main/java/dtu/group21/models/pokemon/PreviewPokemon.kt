@@ -5,7 +5,7 @@ data class PreviewPokemon(
     val name: String,
     val type: PokemonType,
     val secondaryType: PokemonType,
-    val spriteResourceId: Int,
 ) {
     val hasTwoTypes = secondaryType != PokemonType.NONE
+    val spriteResourceId = id
 }
