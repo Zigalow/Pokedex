@@ -1,14 +1,15 @@
 package dtu.group21.models.api
 
-import com.example.pokedex.R
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.models.pokemon.PreviewPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
+import dtu.group21.models.pokemon.MoveDamageClass
 import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
+import org.json.JSONArray
 import org.json.JSONObject
 
 class PokedexRequestMaker {
@@ -87,6 +88,18 @@ class PokedexRequestMaker {
         return Pair(info.second, info.third)
     }
 
+    private fun getEnglishString(stringObjects: JSONArray, stringName: String, targetLanguage: String = "en"): String {
+        for (i in 0 until stringObjects.length()) {
+            val languageObject = stringObjects.getJSONObject(i)
+            val languageName = languageObject.getJSONObject("language").getString("name")
+
+            if (languageName.equals(targetLanguage)) {
+                return languageObject.getString(stringName)
+            }
+        }
+        return ""
+    }
+
 
     fun getSimplePokemon(pokedexId: Int): EvolutionChainPokemon {
         val speciesObject = jsonRequestMaker.makeRequest("pokemon-species/$pokedexId")
@@ -109,6 +122,31 @@ class PokedexRequestMaker {
         return PreviewPokemon(pokedexId, name, types.first, types.second)
     }
 
+    private fun getMove(moveName: String): PokemonMove {
+        val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
+
+        val namesArray = moveObject.getJSONArray("names")
+        val name = getEnglishString(namesArray, "name")
+        val descriptionsArray = moveObject.getJSONArray("flavor_text_entries")
+        val description = getEnglishString(descriptionsArray, "flavor_text")
+
+        val power = moveObject.get("power") as? Int
+        val accuracy = moveObject.get("accuracy") as? Int
+        val pp = moveObject.getInt("pp")
+        val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
+        val damageClass = MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
+
+        return PokemonMove(
+            name,
+            description,
+            power,
+            accuracy,
+            pp,
+            type,
+            damageClass,
+        )
+    }
+
     fun getComplexPokemon(pokedexId: Int): ComplexPokemon {
         val species = jsonRequestMaker.makeRequest("pokemon-species/$pokedexId")
         val name = getNameFromSpecies(species)
@@ -123,18 +161,33 @@ class PokedexRequestMaker {
             else -> PokemonGender.MALE
         }
 
+        // Stats
+        val statsArray = pokemon.getJSONArray("stats")
+        val statValues = IntArray(statsArray.length())
+        for (i in 0 until statsArray.length()) {
+            statValues[i] = statsArray.getJSONObject(i).getInt("base_stat")
+        }
+        val pokemonStats = PokemonStats(statValues[0], statValues[1], statValues[2], statValues[3], statValues[4], statValues[5])
+
         // Species
         val hasGenderDifferences = species.getBoolean("has_gender_difference")
         val isLegendary = species.getBoolean("is_legendary")
         val isBaby = species.getBoolean("is_baby")
         val isMythical = species.getBoolean("is_mythical")
 
+        // Moves
+        val movesArray = pokemon.getJSONArray("moves")
+        val pokemonMoves = Array(movesArray.length()) { _ -> PokemonMove("", "", 0, 0, 0, PokemonType.NONE, MoveDamageClass.PHYSICAL) }
+        for (i in 0 until movesArray.length()) {
+            pokemonMoves[i] = getMove(movesArray.getJSONObject(i).getJSONObject("move").getString("name"))
+        }
+
         return ComplexPokemon(
             pokedexId,
             types.first,
             types.second,
             defaultGender,
-            PokemonStats(0, 0, 0, 0, 0, 0),
+            pokemonStats,
             PokemonSpecies(
                 name,
                 hasGenderDifferences,
@@ -142,8 +195,7 @@ class PokedexRequestMaker {
                 isLegendary,
                 isMythical
             ),
-            R.drawable._0001,
-            emptyArray<PokemonMove>()
+            pokemonMoves
         )
     }
 }
