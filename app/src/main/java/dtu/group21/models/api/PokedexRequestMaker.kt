@@ -170,7 +170,7 @@ class PokedexRequestMaker {
         val pokemonStats = PokemonStats(statValues[0], statValues[1], statValues[2], statValues[3], statValues[4], statValues[5])
 
         // Species
-        val hasGenderDifferences = species.getBoolean("has_gender_difference")
+        val hasGenderDifferences = species.getBoolean("has_gender_differences")
         val isLegendary = species.getBoolean("is_legendary")
         val isBaby = species.getBoolean("is_baby")
         val isMythical = species.getBoolean("is_mythical")
