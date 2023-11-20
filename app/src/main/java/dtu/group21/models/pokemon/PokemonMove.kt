@@ -8,7 +8,8 @@ data class PokemonMove(
     val pp: Int,
     val type: PokemonType,
     val damageClass: MoveDamageClass,
-    // how will we get this info? I cannot find it in the API
-    val learnMethod: MoveLearnMethod,
-    val level: Int?,
+
+    // TODO: can only be found on a per-pokemon basis
+    //val learnMethod: MoveLearnMethod,
+    //val level: Int?,
 )
