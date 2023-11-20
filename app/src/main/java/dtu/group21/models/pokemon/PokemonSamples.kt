@@ -1,16 +1,24 @@
 package dtu.group21.models.pokemon
 
 import com.example.pokedex.R
+import dtu.group21.models.api.PokedexRequestMaker
 
 
 object PokemonSamples {
-    val bulbasaur = ComplexPokemon(
+  /*  val bulbasaur = ComplexPokemon(
         1,
         PokemonType.GRASS,
         PokemonType.POISON,
         PokemonGender.MALE,
         PokemonStats(45, 49, 49, 65, 65, 45),
-        PokemonSpecies("Bulbasaur", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+        PokemonSpecies(
+            "Bulbasaur",
+            false,
+            false,
+            false,
+            false,
+            PokemonEvolutionChain(emptyArray())
+        ),
         R.drawable._0001
     )
 
@@ -40,7 +48,14 @@ object PokemonSamples {
         PokemonType.NONE,
         PokemonGender.MALE,
         PokemonStats(39, 52, 43, 60, 50, 65),
-        PokemonSpecies("Charmander", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+        PokemonSpecies(
+            "Charmander",
+            false,
+            false,
+            false,
+            false,
+            PokemonEvolutionChain(emptyArray())
+        ),
         R.drawable._0004
     )
 
@@ -50,7 +65,14 @@ object PokemonSamples {
         PokemonType.NONE,
         PokemonGender.MALE,
         PokemonStats(58, 64, 58, 80, 65, 80),
-        PokemonSpecies("Charmeleon", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+        PokemonSpecies(
+            "Charmeleon",
+            false,
+            false,
+            false,
+            false,
+            PokemonEvolutionChain(emptyArray())
+        ),
         R.drawable._0005
     )
 
@@ -60,7 +82,14 @@ object PokemonSamples {
         PokemonType.FLYING,
         PokemonGender.MALE,
         PokemonStats(78, 84, 78, 109, 85, 100),
-        PokemonSpecies("Charizard", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+        PokemonSpecies(
+            "Charizard",
+            false,
+            false,
+            false,
+            false,
+            PokemonEvolutionChain(emptyArray())
+        ),
         R.drawable._0006
     )
 
@@ -80,7 +109,14 @@ object PokemonSamples {
         PokemonType.NONE,
         PokemonGender.MALE,
         PokemonStats(59, 63, 80, 65, 80, 58),
-        PokemonSpecies("Wartortle", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+        PokemonSpecies(
+            "Wartortle",
+            false,
+            false,
+            false,
+            false,
+            PokemonEvolutionChain(emptyArray())
+        ),
         R.drawable._0008
     )
 
@@ -90,7 +126,14 @@ object PokemonSamples {
         PokemonType.NONE,
         PokemonGender.MALE,
         PokemonStats(79, 83, 100, 85, 105, 78),
-        PokemonSpecies("Blastoise", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+        PokemonSpecies(
+            "Blastoise",
+            false,
+            false,
+            false,
+            false,
+            PokemonEvolutionChain(emptyArray())
+        ),
         R.drawable._0009
     )
 
@@ -120,15 +163,24 @@ object PokemonSamples {
         PokemonType.FLYING,
         PokemonGender.MALE,
         PokemonStats(60, 45, 50, 90, 80, 70),
-        PokemonSpecies("Butterfree", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+        PokemonSpecies(
+            "Butterfree",
+            false,
+            false,
+            false,
+            false,
+            PokemonEvolutionChain(emptyArray())
+        ),
         R.drawable._0012
-    )
-
-    var listOfPokemons: List<ComplexPokemon> = listOf(
-        bulbasaur, ivysaur, venusaur, charmander,
-        charmeleon, charizard, squirtle, wartortle,
-        blastoise, caterpie, metapod, butterfree
-    )
+    )*/
+    
+    
+    val requester = PokedexRequestMaker()
+    
+    val ids = 1..12
+    var listOfPokemons: List<ComplexPokemon> = ids.map { requester.getComplexPokemon(it) }
+    
+ 
 }
 
 
@@ -142,8 +194,8 @@ object BulbasaurMoves {
         35,
         PokemonType.NORMAL,
         MoveDamageClass.PHYSICAL,
-        MoveLearnMethod.LEVEL_UP,
-        1
+      /*  MoveLearnMethod.LEVEL_UP,
+        1*/
     )
 
     val growl = PokemonMove(
@@ -154,8 +206,8 @@ object BulbasaurMoves {
         40,
         PokemonType.NORMAL,
         MoveDamageClass.STATUS,
-        MoveLearnMethod.LEVEL_UP,
-        3
+        /*MoveLearnMethod.LEVEL_UP,
+        3*/
     )
 
     val leechSeed = PokemonMove(
@@ -166,8 +218,8 @@ object BulbasaurMoves {
         10,
         PokemonType.GRASS,
         MoveDamageClass.STATUS,
-        MoveLearnMethod.LEVEL_UP,
-        7
+     /*   MoveLearnMethod.LEVEL_UP,
+        7*/
     )
 
     val vineWhip = PokemonMove(
@@ -178,8 +230,8 @@ object BulbasaurMoves {
         25,
         PokemonType.GRASS,
         MoveDamageClass.PHYSICAL,
-        MoveLearnMethod.LEVEL_UP,
-        13
+       /* MoveLearnMethod.LEVEL_UP,
+        13*/
     )
 
     val poisonPowder = PokemonMove(
@@ -190,11 +242,11 @@ object BulbasaurMoves {
         35,
         PokemonType.POISON,
         MoveDamageClass.STATUS,
-        MoveLearnMethod.LEVEL_UP,
-        20
+        /*MoveLearnMethod.LEVEL_UP,
+        20*/
     )
 
-    val sleepPowder = PokemonMove(
+    /*val sleepPowder = PokemonMove(
         "Sleep Powder",
         "The user scatters a powder that may cause the target to fall asleep.",
         0,
@@ -240,7 +292,7 @@ object BulbasaurMoves {
         MoveDamageClass.STATUS,
         MoveLearnMethod.LEVEL_UP,
         48
-    )
+    )*/
 }
 
 
@@ -250,10 +302,10 @@ var BulbasaurMovesList: List<PokemonMove> = listOf(
     BulbasaurMoves.leechSeed,     // Index 2: Leech Seed
     BulbasaurMoves.vineWhip,      // Index 3: Vine Whip
     BulbasaurMoves.poisonPowder,  // Index 4: Poison Powder
-    BulbasaurMoves.sleepPowder,   // Index 5: Sleep Powder
+   /* BulbasaurMoves.sleepPowder,   // Index 5: Sleep Powder
     BulbasaurMoves.takeDown,      // Index 6: Take Down
     BulbasaurMoves.razorLeaf,     // Index 7: Razor Leaf
-    BulbasaurMoves.sweetScent     // Index 8: Sweet Scent
+    BulbasaurMoves.sweetScent     // Index 8: Sweet Scent*/
 )
 
 
