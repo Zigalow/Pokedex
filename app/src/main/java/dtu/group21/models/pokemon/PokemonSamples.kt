@@ -1,186 +1,235 @@
 package dtu.group21.models.pokemon
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.example.pokedex.R
 import dtu.group21.models.api.PokedexRequestMaker
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
+val requester = PokedexRequestMaker()
 
+@OptIn(DelicateCoroutinesApi::class)
 object PokemonSamples {
-  /*  val bulbasaur = ComplexPokemon(
-        1,
-        PokemonType.GRASS,
-        PokemonType.POISON,
-        PokemonGender.MALE,
-        PokemonStats(45, 49, 49, 65, 65, 45),
-        PokemonSpecies(
-            "Bulbasaur",
-            false,
-            false,
-            false,
-            false,
-            PokemonEvolutionChain(emptyArray())
-        ),
-        R.drawable._0001
-    )
+    /*  val bulbasaur = ComplexPokemon(
+          1,
+          PokemonType.GRASS,
+          PokemonType.POISON,
+          PokemonGender.MALE,
+          PokemonStats(45, 49, 49, 65, 65, 45),
+          PokemonSpecies(
+              "Bulbasaur",
+              false,
+              false,
+              false,
+              false,
+              PokemonEvolutionChain(emptyArray())
+          ),
+          R.drawable._0001
+      )
+  
+      val ivysaur = ComplexPokemon(
+          2,
+          PokemonType.GRASS,
+          PokemonType.POISON,
+          PokemonGender.MALE,
+          PokemonStats(60, 62, 63, 80, 80, 60),
+          PokemonSpecies("Ivysaur", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+          R.drawable._0002
+      )
+  
+      val venusaur = ComplexPokemon(
+          3,
+          PokemonType.GRASS,
+          PokemonType.POISON,
+          PokemonGender.MALE,
+          PokemonStats(80, 82, 83, 100, 100, 80),
+          PokemonSpecies("Venusaur", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+          R.drawable._0003
+      )
+  
+      val charmander = ComplexPokemon(
+          4,
+          PokemonType.FIRE,
+          PokemonType.NONE,
+          PokemonGender.MALE,
+          PokemonStats(39, 52, 43, 60, 50, 65),
+          PokemonSpecies(
+              "Charmander",
+              false,
+              false,
+              false,
+              false,
+              PokemonEvolutionChain(emptyArray())
+          ),
+          R.drawable._0004
+      )
+  
+      val charmeleon = ComplexPokemon(
+          5,
+          PokemonType.FIRE,
+          PokemonType.NONE,
+          PokemonGender.MALE,
+          PokemonStats(58, 64, 58, 80, 65, 80),
+          PokemonSpecies(
+              "Charmeleon",
+              false,
+              false,
+              false,
+              false,
+              PokemonEvolutionChain(emptyArray())
+          ),
+          R.drawable._0005
+      )
+  
+      val charizard = ComplexPokemon(
+          6,
+          PokemonType.FIRE,
+          PokemonType.FLYING,
+          PokemonGender.MALE,
+          PokemonStats(78, 84, 78, 109, 85, 100),
+          PokemonSpecies(
+              "Charizard",
+              false,
+              false,
+              false,
+              false,
+              PokemonEvolutionChain(emptyArray())
+          ),
+          R.drawable._0006
+      )
+  
+      val squirtle = ComplexPokemon(
+          7,
+          PokemonType.WATER,
+          PokemonType.NONE,
+          PokemonGender.MALE,
+          PokemonStats(44, 48, 65, 50, 64, 43),
+          PokemonSpecies("Squirtle", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+          R.drawable._0007
+      )
+  
+      val wartortle = ComplexPokemon(
+          8,
+          PokemonType.WATER,
+          PokemonType.NONE,
+          PokemonGender.MALE,
+          PokemonStats(59, 63, 80, 65, 80, 58),
+          PokemonSpecies(
+              "Wartortle",
+              false,
+              false,
+              false,
+              false,
+              PokemonEvolutionChain(emptyArray())
+          ),
+          R.drawable._0008
+      )
+  
+      val blastoise = ComplexPokemon(
+          9,
+          PokemonType.WATER,
+          PokemonType.NONE,
+          PokemonGender.MALE,
+          PokemonStats(79, 83, 100, 85, 105, 78),
+          PokemonSpecies(
+              "Blastoise",
+              false,
+              false,
+              false,
+              false,
+              PokemonEvolutionChain(emptyArray())
+          ),
+          R.drawable._0009
+      )
+  
+      val caterpie = ComplexPokemon(
+          10,
+          PokemonType.BUG,
+          PokemonType.NONE,
+          PokemonGender.MALE,
+          PokemonStats(45, 30, 35, 20, 20, 45),
+          PokemonSpecies("Caterpie", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+          R.drawable._0010
+      )
+  
+      val metapod = ComplexPokemon(
+          11,
+          PokemonType.BUG,
+          PokemonType.NONE,
+          PokemonGender.MALE,
+          PokemonStats(50, 20, 55, 25, 25, 30),
+          PokemonSpecies("Metapod", false, false, false, false, PokemonEvolutionChain(emptyArray())),
+          R.drawable._0011
+      )
+  
+      val butterfree = ComplexPokemon(
+          12,
+          PokemonType.BUG,
+          PokemonType.FLYING,
+          PokemonGender.MALE,
+          PokemonStats(60, 45, 50, 90, 80, 70),
+          PokemonSpecies(
+              "Butterfree",
+              false,
+              false,
+              false,
+              false,
+              PokemonEvolutionChain(emptyArray())
+          ),
+          R.drawable._0012
+      )*/
 
-    val ivysaur = ComplexPokemon(
-        2,
-        PokemonType.GRASS,
-        PokemonType.POISON,
-        PokemonGender.MALE,
-        PokemonStats(60, 62, 63, 80, 80, 60),
-        PokemonSpecies("Ivysaur", false, false, false, false, PokemonEvolutionChain(emptyArray())),
-        R.drawable._0002
-    )
 
-    val venusaur = ComplexPokemon(
-        3,
-        PokemonType.GRASS,
-        PokemonType.POISON,
-        PokemonGender.MALE,
-        PokemonStats(80, 82, 83, 100, 100, 80),
-        PokemonSpecies("Venusaur", false, false, false, false, PokemonEvolutionChain(emptyArray())),
-        R.drawable._0003
-    )
+    // Original
+    /*val ids = 1..12
+    val listOfPokemons: List<ComplexPokemon> by lazy {
+        ids.map { requester.getComplexPokemon(it) }
+    }*/
 
-    val charmander = ComplexPokemon(
-        4,
-        PokemonType.FIRE,
-        PokemonType.NONE,
-        PokemonGender.MALE,
-        PokemonStats(39, 52, 43, 60, 50, 65),
-        PokemonSpecies(
-            "Charmander",
-            false,
-            false,
-            false,
-            false,
-            PokemonEvolutionChain(emptyArray())
-        ),
-        R.drawable._0004
-    )
 
-    val charmeleon = ComplexPokemon(
-        5,
-        PokemonType.FIRE,
-        PokemonType.NONE,
-        PokemonGender.MALE,
-        PokemonStats(58, 64, 58, 80, 65, 80),
-        PokemonSpecies(
-            "Charmeleon",
-            false,
-            false,
-            false,
-            false,
-            PokemonEvolutionChain(emptyArray())
-        ),
-        R.drawable._0005
-    )
+    // New
+    private val ids = 1..12
+    var listOfPokemons: List<ComplexPokemon> by mutableStateOf(emptyList())
 
-    val charizard = ComplexPokemon(
-        6,
-        PokemonType.FIRE,
-        PokemonType.FLYING,
-        PokemonGender.MALE,
-        PokemonStats(78, 84, 78, 109, 85, 100),
-        PokemonSpecies(
-            "Charizard",
-            false,
-            false,
-            false,
-            false,
-            PokemonEvolutionChain(emptyArray())
-        ),
-        R.drawable._0006
-    )
+    @Composable
+    fun getPokemons(): List<ComplexPokemon> {
+        // Use remember to fetch data only once
+        var listOfPokemons by remember {
+            mutableStateOf<List<ComplexPokemon>>(emptyList())
+        }
 
-    val squirtle = ComplexPokemon(
-        7,
-        PokemonType.WATER,
-        PokemonType.NONE,
-        PokemonGender.MALE,
-        PokemonStats(44, 48, 65, 50, 64, 43),
-        PokemonSpecies("Squirtle", false, false, false, false, PokemonEvolutionChain(emptyArray())),
-        R.drawable._0007
-    )
+        // Fetch data if not already fetched
+        if (listOfPokemons.isEmpty()) {
+            fetchPokemonData()
+        }
 
-    val wartortle = ComplexPokemon(
-        8,
-        PokemonType.WATER,
-        PokemonType.NONE,
-        PokemonGender.MALE,
-        PokemonStats(59, 63, 80, 65, 80, 58),
-        PokemonSpecies(
-            "Wartortle",
-            false,
-            false,
-            false,
-            false,
-            PokemonEvolutionChain(emptyArray())
-        ),
-        R.drawable._0008
-    )
+        return listOfPokemons
+    }
 
-    val blastoise = ComplexPokemon(
-        9,
-        PokemonType.WATER,
-        PokemonType.NONE,
-        PokemonGender.MALE,
-        PokemonStats(79, 83, 100, 85, 105, 78),
-        PokemonSpecies(
-            "Blastoise",
-            false,
-            false,
-            false,
-            false,
-            PokemonEvolutionChain(emptyArray())
-        ),
-        R.drawable._0009
-    )
+    fun fetchPokemonData() {
+        // Fetch data asynchronously
+        // Use Dispatchers.IO for background thread
+        GlobalScope.launch(Dispatchers.IO) {
+            val fetchedPokemons = ids.map { requester.getComplexPokemon(it) }
 
-    val caterpie = ComplexPokemon(
-        10,
-        PokemonType.BUG,
-        PokemonType.NONE,
-        PokemonGender.MALE,
-        PokemonStats(45, 30, 35, 20, 20, 45),
-        PokemonSpecies("Caterpie", false, false, false, false, PokemonEvolutionChain(emptyArray())),
-        R.drawable._0010
-    )
+            // Update the state on the main thread
+            withContext(Dispatchers.Main) {
+                // Use mutableStateOf to update the state
+                listOfPokemons = fetchedPokemons
+            }
+        }
+    }
 
-    val metapod = ComplexPokemon(
-        11,
-        PokemonType.BUG,
-        PokemonType.NONE,
-        PokemonGender.MALE,
-        PokemonStats(50, 20, 55, 25, 25, 30),
-        PokemonSpecies("Metapod", false, false, false, false, PokemonEvolutionChain(emptyArray())),
-        R.drawable._0011
-    )
-
-    val butterfree = ComplexPokemon(
-        12,
-        PokemonType.BUG,
-        PokemonType.FLYING,
-        PokemonGender.MALE,
-        PokemonStats(60, 45, 50, 90, 80, 70),
-        PokemonSpecies(
-            "Butterfree",
-            false,
-            false,
-            false,
-            false,
-            PokemonEvolutionChain(emptyArray())
-        ),
-        R.drawable._0012
-    )*/
     
-    
-    val requester = PokedexRequestMaker()
-    
-    val ids = 1..12
-    var listOfPokemons: List<ComplexPokemon> = ids.map { requester.getComplexPokemon(it) }
-    
- 
+
 }
 
 
@@ -194,8 +243,8 @@ object BulbasaurMoves {
         35,
         PokemonType.NORMAL,
         MoveDamageClass.PHYSICAL,
-      /*  MoveLearnMethod.LEVEL_UP,
-        1*/
+        /*  MoveLearnMethod.LEVEL_UP,
+          1*/
     )
 
     val growl = PokemonMove(
@@ -218,8 +267,8 @@ object BulbasaurMoves {
         10,
         PokemonType.GRASS,
         MoveDamageClass.STATUS,
-     /*   MoveLearnMethod.LEVEL_UP,
-        7*/
+        /*   MoveLearnMethod.LEVEL_UP,
+           7*/
     )
 
     val vineWhip = PokemonMove(
@@ -230,8 +279,8 @@ object BulbasaurMoves {
         25,
         PokemonType.GRASS,
         MoveDamageClass.PHYSICAL,
-       /* MoveLearnMethod.LEVEL_UP,
-        13*/
+        /* MoveLearnMethod.LEVEL_UP,
+         13*/
     )
 
     val poisonPowder = PokemonMove(
@@ -302,10 +351,10 @@ var BulbasaurMovesList: List<PokemonMove> = listOf(
     BulbasaurMoves.leechSeed,     // Index 2: Leech Seed
     BulbasaurMoves.vineWhip,      // Index 3: Vine Whip
     BulbasaurMoves.poisonPowder,  // Index 4: Poison Powder
-   /* BulbasaurMoves.sleepPowder,   // Index 5: Sleep Powder
-    BulbasaurMoves.takeDown,      // Index 6: Take Down
-    BulbasaurMoves.razorLeaf,     // Index 7: Razor Leaf
-    BulbasaurMoves.sweetScent     // Index 8: Sweet Scent*/
+    /* BulbasaurMoves.sleepPowder,   // Index 5: Sleep Powder
+     BulbasaurMoves.takeDown,      // Index 6: Take Down
+     BulbasaurMoves.razorLeaf,     // Index 7: Razor Leaf
+     BulbasaurMoves.sweetScent     // Index 8: Sweet Scent*/
 )
 
 
