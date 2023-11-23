@@ -132,12 +132,13 @@ fun PokemonColumn(
 ) {
     LazyColumn(modifier.fillMaxWidth()) {
         items(pokemons.size / 2) { index ->
-            Row(modifier.fillMaxWidth()) {
+            Row(modifier
+                .fillMaxWidth()) {
                 // First PokemonBox in the row
                 PokemonBox(
                     modifier = Modifier
                         .size(180.dp)
-                        .padding(horizontal = 4.dp, vertical = 5.dp),
+                        .padding(horizontal = 5.dp, vertical = 5.dp),
                     pokemon = pokemons[index * 2],
                     onClicked = { onPokemonClicked(pokemons[index * 2].name) }
                 )
@@ -147,7 +148,7 @@ fun PokemonColumn(
                     PokemonBox(
                         modifier = Modifier
                             .size(180.dp)
-                            .padding(horizontal = 4.dp, vertical = 5.dp),
+                            .padding(horizontal = 5.dp, vertical = 5.dp),
                         pokemon = pokemons[index * 2 + 1],
                         onClicked = { onPokemonClicked(pokemons[index * 2 + 1].name) }
                     )
