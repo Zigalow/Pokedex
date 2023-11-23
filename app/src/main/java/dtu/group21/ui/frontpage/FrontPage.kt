@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -76,7 +77,9 @@ fun FrontPage(onNavigate: (String) -> Unit) {
             )
         }
         FavoritesIcon(
-            modifier = Modifier.offset(310.dp, 670.dp).size(90.dp),
+            modifier = Modifier
+                .offset(310.dp, 670.dp)
+                .size(90.dp),
             onClicked = { onNavigate("favorites") }
         )
 
@@ -127,7 +130,30 @@ fun PokemonColumn(
     pokemons: List<Pokemon>,
     onPokemonClicked: (String) -> Unit
 ) {
-    FlowRow(
+    LazyColumn(modifier.fillMaxWidth()) {
+        items(pokemons.size) { index ->
+           Row(){
+                   PokemonBox(
+                       modifier = modifier
+                            .size(180.dp)
+                            .padding(horizontal = 4.dp, vertical = 5.dp),
+                        pokemon = pokemons[index],
+                        onClicked = { onPokemonClicked(pokemons[index].name) }
+                    )
+                   PokemonBox(
+                       modifier
+                           .size(180.dp)
+                           .padding(horizontal = 4.dp, vertical = 5.dp),
+                       pokemon = pokemons[index],
+                       onClicked = { onPokemonClicked(pokemons[index].name) }
+                   )
+               }
+            }
+        }
+}
+
+
+/*    FlowRow(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
@@ -144,9 +170,8 @@ fun PokemonColumn(
             )
         }
     }
-}
 
-
+ */
 @Composable
 fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
     Box(
@@ -338,6 +363,6 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () ->
 @Composable
 fun testFronPage() {
     FrontPage(onNavigate = {true})
-    
+
 }
 //endregion
