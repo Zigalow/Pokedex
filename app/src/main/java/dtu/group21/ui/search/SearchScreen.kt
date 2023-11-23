@@ -135,10 +135,10 @@ fun SearchScreen(
     onNavigateToSort: () -> Unit,
     onPokemonClicked: (String) -> Unit,
     searchSettings: SearchSettings,
-    pokemonPool: List<ComplexPokemon>,
+    //pokemonPool: List<ComplexPokemon>,
     modifier: Modifier = Modifier,
 ) {
-    val candidates: State<List<ComplexPokemon>> = liveLiteral("searchResults", pokemonPool)
+    val candidates: State<List<ComplexPokemon>> = liveLiteral("searchResults", ArrayList())
 
     Column(
         modifier = modifier
@@ -175,7 +175,7 @@ fun SearchScreen(
             onChange = {
                 println("Searched for '$it'")
                 searchSettings.searchString = it
-                updateLiveLiteralValue("searchResults", pokemonPool.filter { pokemon ->
+                updateLiveLiteralValue("searchResults", ArrayList<ComplexPokemon>().filter { pokemon ->
                     // very complicated statement to check if the searchString is either
                     // - empty
                     // - a substring of the name of the pokemon

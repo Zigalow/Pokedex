@@ -4,10 +4,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import dtu.group21.models.pokemon.PokemonSamples
+import androidx.navigation.navArgument
 import dtu.group21.ui.favorites.FavoritesPage
 import dtu.group21.ui.frontpage.FrontPage
 import dtu.group21.ui.pokemonView.SpecificPage
@@ -53,7 +54,7 @@ fun PokeNavHost(startDestination: String = "home") {
                 onNavigateToSort = { navController.navigate("sort") },
                 onPokemonClicked = { navController.navigate("pokemon") },
                 searchSettings = searchSettings,
-                pokemonPool = PokemonSamples.listOfPokemons,
+                //pokemonPool = PokemonSamples.listOfPokemons,
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -73,10 +74,16 @@ fun PokeNavHost(startDestination: String = "home") {
                 modifier = Modifier.fillMaxSize(),
             )
         }
-        composable("pokemon") {
-            SpecificPage(
-                onNavigateBack = { navController.popBackStack() }
-            )
+        composable(
+            "pokemon/{pokedexId}",
+            arguments = listOf(navArgument("pokedexId") { type = NavType.IntType })
+        ) {
+            it.arguments?.getInt("pokedexId")?.let { it1 ->
+                SpecificPage(
+                    it1,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
         }
         composable("settings") {
             SettingsPage(
@@ -87,7 +94,7 @@ fun PokeNavHost(startDestination: String = "home") {
             FavoritesPage(
                 onNavigateBack = { navController.popBackStack() },
                 onPokemonClicked = { navController.navigate("pokemon") },
-                favoritePokemons = PokemonSamples.listOfPokemons.subList(2, 7)
+                //favoritePokemons = PokemonSamples.listOfPokemons.subList(2, 7)
             )
         }
     }

@@ -80,7 +80,7 @@ class PokedexRequestMaker {
         return Triple(false, -1, IntArray(0))
     }
 
-    private fun getEvolutionInfo(evolutionChainId: Int, pokedexId: Int): Pair<Int, IntArray> {
+    private suspend fun getEvolutionInfo(evolutionChainId: Int, pokedexId: Int): Pair<Int, IntArray> {
         val evolutionChainObject =
             jsonRequestMaker.makeRequest("evolution-chain/$evolutionChainId").getJSONObject("chain")
         val info = getEvolutionInfo(evolutionChainObject, pokedexId)
@@ -101,7 +101,7 @@ class PokedexRequestMaker {
     }
 
 
-    fun getSimplePokemon(pokedexId: Int): EvolutionChainPokemon {
+    suspend fun getSimplePokemon(pokedexId: Int): EvolutionChainPokemon {
         val speciesObject = jsonRequestMaker.makeRequest("pokemon-species/$pokedexId")
         val name = getNameFromSpecies(speciesObject)
         val evolutionChainId =
@@ -112,7 +112,7 @@ class PokedexRequestMaker {
         return EvolutionChainPokemon(pokedexId, name, evolutionInfo.first, evolutionInfo.second)
     }
 
-    fun getPreviewPokemon(pokedexId: Int): PreviewPokemon {
+    suspend fun getPreviewPokemon(pokedexId: Int): PreviewPokemon {
         val species = jsonRequestMaker.makeRequest("pokemon-species/$pokedexId")
         val name = getNameFromSpecies(species)
 
@@ -122,7 +122,7 @@ class PokedexRequestMaker {
         return PreviewPokemon(pokedexId, name, types.first, types.second)
     }
 
-    private fun getMove(moveName: String): PokemonMove {
+    private suspend fun getMove(moveName: String): PokemonMove {
         val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
 
         val namesArray = moveObject.getJSONArray("names")
@@ -147,7 +147,7 @@ class PokedexRequestMaker {
         )
     }
 
-    fun getComplexPokemon(pokedexId: Int): ComplexPokemon {
+    suspend fun getComplexPokemon(pokedexId: Int): ComplexPokemon {
         val species = jsonRequestMaker.makeRequest("pokemon-species/$pokedexId")
         val name = getNameFromSpecies(species)
 

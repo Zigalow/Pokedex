@@ -9,6 +9,6 @@ class ComplexPokemon(
     val species: PokemonSpecies,
     val moves: Array<PokemonMove>,
 ) {
-    val spriteResourceId = id
+    val spriteResourceId = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${id.toString().padStart(3, '0')}.png"
     val hasTwoTypes = secondaryType != PokemonType.NONE
 }

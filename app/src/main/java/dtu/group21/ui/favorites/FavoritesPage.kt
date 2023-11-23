@@ -42,7 +42,7 @@ import dtu.group21.ui.shared.bigFontSize
 fun FavoritesPage(
     onNavigateBack: () -> Unit,
     onPokemonClicked: (String) -> Unit,
-    favoritePokemons: List<ComplexPokemon>
+    //favoritePokemons: List<ComplexPokemon>
 ) {
     Column(
         modifier = Modifier
@@ -73,6 +73,7 @@ fun FavoritesPage(
             Spacer(Modifier.width(45.dp))
         }
 
+        /*
         favoritePokemons.forEach { pokemon ->
             FavoritePokemonBox(
                 modifier = Modifier
@@ -82,6 +83,7 @@ fun FavoritesPage(
                 onClicked = { onPokemonClicked(pokemon.species.name) }
             )
         }
+         */
     }
 }
 @Composable

@@ -7,7 +7,7 @@ import java.net.URL
 class BitmapRequestMaker(
     baseUrl: String
 ) : RequestMaker<Bitmap>(baseUrl) {
-    override fun makeRequest(location: String): Bitmap {
+    override suspend fun makeRequest(location: String): Bitmap {
         val imageBytes = URL("$baseUrl/$location").readBytes()
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }

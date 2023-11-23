@@ -27,6 +27,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,18 +44,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.pokedex.R
-import dtu.group21.models.pokemon.BulbasaurMovesList
+import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonMove
-import dtu.group21.models.pokemon.PokemonSamples
+import dtu.group21.models.pokemon.PokemonSpecies
+import dtu.group21.models.pokemon.PokemonStats
+import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 
 @Composable
-fun SpecificPage(onNavigateBack: () -> Unit) {
-    //Mid(modifier = Modifier, PokemonSamples.bulbasaur)
-    val pokemon = PokemonSamples.listOfPokemons[0]
-    Inspect(pokemon = pokemon, onNavigateBack = onNavigateBack)
+fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
+    val pokemon = remember {
+        mutableStateOf(ComplexPokemon(0, PokemonType.NONE, PokemonType.NONE, PokemonGender.MALE, PokemonStats(0, 0,0,0,0,0), PokemonSpecies("Loading", false, false, false, false), emptyArray()))
+    }
+
+    val viewModel = PokemonViewModel()
+    LaunchedEffect(Unit) {
+        viewModel.getPokemon(pokedexId, pokemon)
+    }
+    Mid(modifier = Modifier, pokemon.value)
+    Inspect(pokemon = pokemon.value, onNavigateBack = onNavigateBack)
 }
 
 @Composable
@@ -73,8 +84,11 @@ fun Inspect(pokemon: ComplexPokemon, onNavigateBack: () -> Unit) {
         Box(
             modifier
                 .fillMaxSize()
-                .background(color =  pokemon.type.secondaryColor)){
-            PokemonImage(pokemon = pokemon, modifier = Modifier.align(Alignment.TopCenter).zIndex(1f).padding(vertical = 50.dp))
+                .background(color = pokemon.type.secondaryColor)){
+            PokemonImage(pokemon = pokemon, modifier = Modifier
+                .align(Alignment.TopCenter)
+                .zIndex(1f)
+                .padding(vertical = 50.dp))
             Bottom(pokemon = pokemon, modifier = Modifier.align(Alignment.BottomCenter))
             }
         }
@@ -285,11 +299,13 @@ fun Sections(modifier: Modifier, selectedCategory: String, pokemon: ComplexPokem
         "About" -> AboutSection(modifier)
         "Stats" -> StatsSection(modifier)
         "Moves" -> MovesSection()
+        /*
         "Evolution" -> EvolutionSection(
             modifier = Modifier
                 .padding(horizontal = 2.dp)
                 .fillMaxWidth(), pokemon
         )
+        */
     }
 }
 
@@ -330,10 +346,11 @@ fun StatsSection(modifier: Modifier) {
 @Composable
 fun MovesSection() {
     Column {
-        MoveBoxColumn(moveList = BulbasaurMovesList)
+//        MoveBoxColumn(moveList = BulbasaurMovesList)
     }
 }
 
+/*
 @Composable
 fun EvolutionSection(modifier: Modifier, pokemon: ComplexPokemon) {
     Row(
@@ -365,6 +382,7 @@ fun EvolutionSection(modifier: Modifier, pokemon: ComplexPokemon) {
     }
     Spacer(modifier.fillMaxHeight())
 }
+ */
 
 
 //region main components
