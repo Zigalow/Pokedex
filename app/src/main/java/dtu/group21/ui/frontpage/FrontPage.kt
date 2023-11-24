@@ -29,7 +29,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,17 +39,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
-import dtu.group21.models.api.PokedexRequestMaker
 import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Locale
-import coil.compose.rememberAsyncImagePainter
 
 @Composable
 fun FrontPage(onNavigate: (String) -> Unit) {
@@ -58,13 +53,14 @@ fun FrontPage(onNavigate: (String) -> Unit) {
     val pokemons = remember {
         mutableListOf<MutableState<ComplexPokemon>>()
     }
-    
+
     val viewModel = PokemonViewModel()
-    val ids = (1..20).toList().toIntArray().toTypedArray()
+    //val ids = (32..35).toList().toIntArray().toTypedArray()
+    val ids = intArrayOf(6,32,35,82,668,669).toTypedArray()
     LaunchedEffect(Unit) {
         viewModel.getPokemons(ids, pokemons)
     }
-    
+
     //var favoritePokemon by remember { mutableStateOf(PokemonSamples.listOfPokemons.filter { it.isFavorit }) }
     Box {
         Column {
@@ -201,7 +197,7 @@ fun PokemonLogo(modifier: Modifier = Modifier, size: Dp) {
         modifier = modifier
             .height(size / 1.75f)
             .width(size)
-//                .height(87.dp)
+//                .height(87½½.dp)
 //                .width(154.dp)
     )
 }
@@ -357,10 +353,11 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked
         }
     }
 }
+
 @Preview
 @Composable
-fun testFronPage() {
-    FrontPage(onNavigate = {true})
-    
+fun TestFronPage() {
+    FrontPage(onNavigate = { true })
+
 }
 //endregion
