@@ -42,8 +42,7 @@ fun PokeNavHost(startDestination: String = "home") {
         composable("home") {
             FrontPage(
                 onNavigate = {
-                    val destination = if ("pokemon" in it) "pokemon" else it
-                    navController.navigate(destination)
+                    navController.navigate(it)
                 }
             )
         }
