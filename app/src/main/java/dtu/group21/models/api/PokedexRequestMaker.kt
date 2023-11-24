@@ -6,6 +6,7 @@ import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.models.pokemon.PreviewPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.MoveDamageClass
+import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
@@ -80,7 +81,10 @@ class PokedexRequestMaker {
         return Triple(false, -1, IntArray(0))
     }
 
-    private suspend fun getEvolutionInfo(evolutionChainId: Int, pokedexId: Int): Pair<Int, IntArray> {
+    private suspend fun getEvolutionInfo(
+        evolutionChainId: Int,
+        pokedexId: Int
+    ): Pair<Int, IntArray> {
         val evolutionChainObject =
             jsonRequestMaker.makeRequest("evolution-chain/$evolutionChainId").getJSONObject("chain")
         val info = getEvolutionInfo(evolutionChainObject, pokedexId)
@@ -88,7 +92,11 @@ class PokedexRequestMaker {
         return Pair(info.second, info.third)
     }
 
-    private fun getEnglishString(stringObjects: JSONArray, stringName: String, targetLanguage: String = "en"): String {
+    private fun getEnglishString(
+        stringObjects: JSONArray,
+        stringName: String,
+        targetLanguage: String = "en"
+    ): String {
         for (i in 0 until stringObjects.length()) {
             val languageObject = stringObjects.getJSONObject(i)
             val languageName = languageObject.getJSONObject("language").getString("name")
@@ -134,7 +142,8 @@ class PokedexRequestMaker {
         val accuracy = moveObject.get("accuracy") as? Int
         val pp = moveObject.getInt("pp")
         val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
-        val damageClass = MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
+        val damageClass =
+            MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
 
         return PokemonMove(
             name,
@@ -144,6 +153,22 @@ class PokedexRequestMaker {
             pp,
             type,
             damageClass,
+        )
+    }
+
+    private suspend fun getAbility(abilityName: String, isHidden: Boolean): PokemonAbility {
+        val abilityObject = jsonRequestMaker.makeRequest("ability/$abilityName")
+
+        val namesArray = abilityObject.getJSONArray("names")
+        val name = getEnglishString(namesArray, "name")
+        val descriptionsArray = abilityObject.getJSONArray("flavor_text_entries")
+        val description = getEnglishString(descriptionsArray, "flavor_text")
+
+
+        return PokemonAbility(
+            name,
+            description,
+            isHidden,
         )
     }
 
@@ -160,6 +185,9 @@ class PokedexRequestMaker {
             8 -> PokemonGender.FEMALE
             else -> PokemonGender.MALE
         }
+        val categoryName = getEnglishString(species.getJSONArray("genera"), "genus")
+        val weightInGrams = pokemon.getInt("weight") * 100
+        val heightInCm = pokemon.getInt("height") * 10
 
         // Stats
         val statsArray = pokemon.getJSONArray("stats")
@@ -167,7 +195,14 @@ class PokedexRequestMaker {
         for (i in 0 until statsArray.length()) {
             statValues[i] = statsArray.getJSONObject(i).getInt("base_stat")
         }
-        val pokemonStats = PokemonStats(statValues[0], statValues[1], statValues[2], statValues[3], statValues[4], statValues[5])
+        val pokemonStats = PokemonStats(
+            statValues[0],
+            statValues[1],
+            statValues[2],
+            statValues[3],
+            statValues[4],
+            statValues[5]
+        )
 
         // Species
         val hasGenderDifferences = species.getBoolean("has_gender_differences")
@@ -177,9 +212,39 @@ class PokedexRequestMaker {
 
         // Moves
         val movesArray = pokemon.getJSONArray("moves")
-        val pokemonMoves = Array(movesArray.length()) { _ -> PokemonMove("", "", 0, 0, 0, PokemonType.NONE, MoveDamageClass.PHYSICAL) }
+        val pokemonMoves = Array(movesArray.length()) { _ ->
+            PokemonMove(
+                "",
+                "",
+                0,
+                0,
+                0,
+                PokemonType.NONE,
+                MoveDamageClass.PHYSICAL
+            )
+        }
         for (i in 0 until movesArray.length()) {
-            pokemonMoves[i] = getMove(movesArray.getJSONObject(i).getJSONObject("move").getString("name"))
+            pokemonMoves[i] =
+                getMove(movesArray.getJSONObject(i).getJSONObject("move").getString("name"))
+        }
+
+        // Abilities
+        val abilitiesArray = pokemon.getJSONArray("abilities")
+        val pokemonAbilities = Array(abilitiesArray.length()) { _ ->
+            PokemonAbility(
+                "",
+                "",
+                false
+            )
+        }
+        var isHidden: Boolean
+        for (i in 0 until abilitiesArray.length()) {
+            isHidden = abilitiesArray.getJSONObject(i).getBoolean("is_hidden")
+            pokemonAbilities[i] =
+                getAbility(
+                    abilitiesArray.getJSONObject(i).getJSONObject("ability").getString("name"),
+                    isHidden
+                )
         }
 
         return ComplexPokemon(
@@ -187,9 +252,14 @@ class PokedexRequestMaker {
             types.first,
             types.second,
             defaultGender,
+            categoryName,
+            pokemonAbilities,
+            weightInGrams,
+            heightInCm,
             pokemonStats,
             PokemonSpecies(
                 name,
+                genderRate,
                 hasGenderDifferences,
                 isBaby,
                 isLegendary,

@@ -57,7 +57,21 @@ import dtu.group21.ui.frontpage.PokemonTypeBox
 @Composable
 fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
     val pokemon = remember {
-        mutableStateOf(ComplexPokemon(0, PokemonType.NONE, PokemonType.NONE, PokemonGender.MALE, PokemonStats(0, 0,0,0,0,0), PokemonSpecies("Loading", false, false, false, false), emptyArray()))
+        mutableStateOf(
+            ComplexPokemon(
+                0,
+                PokemonType.NONE,
+                PokemonType.NONE,
+                PokemonGender.MALE,
+                "",
+                emptyArray(),
+                0,
+                0,
+                PokemonStats(0, 0, 0, 0, 0, 0),
+                PokemonSpecies("Loading", 0, false, false, false, false),
+                emptyArray()
+            )
+        )
     }
 
     val viewModel = PokemonViewModel()
@@ -84,14 +98,17 @@ fun Inspect(pokemon: ComplexPokemon, onNavigateBack: () -> Unit) {
         Box(
             modifier
                 .fillMaxSize()
-                .background(color = pokemon.type.secondaryColor)){
-            PokemonImage(pokemon = pokemon, modifier = Modifier
-                .align(Alignment.TopCenter)
-                .zIndex(1f)
-                .padding(vertical = 50.dp))
+                .background(color = pokemon.type.secondaryColor)
+        ) {
+            PokemonImage(
+                pokemon = pokemon, modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .zIndex(1f)
+                    .padding(vertical = 50.dp)
+            )
             Bottom(pokemon = pokemon, modifier = Modifier.align(Alignment.BottomCenter))
-            }
         }
+    }
 
 }
 
@@ -296,9 +313,9 @@ fun Table(first: String, second: String) {
 @Composable
 fun Sections(modifier: Modifier, selectedCategory: String, pokemon: ComplexPokemon) {
     when (selectedCategory) {
-        "About" -> AboutSection(modifier)
-        "Stats" -> StatsSection(modifier)
-        "Moves" -> MovesSection()
+        "About" -> AboutSection(pokemon, modifier)
+        "Stats" -> StatsSection(pokemon.stats, modifier)
+        "Moves" -> MovesSection(pokemon.moves)
         /*
         "Evolution" -> EvolutionSection(
             modifier = Modifier
@@ -310,43 +327,79 @@ fun Sections(modifier: Modifier, selectedCategory: String, pokemon: ComplexPokem
 }
 
 @Composable
-fun AboutSection(modifier: Modifier) {
+fun AboutSection(
+    pokemon: ComplexPokemon,
+    modifier: Modifier
+) {
+    val weightInGrams: Double = pokemon.weightInGrams.toDouble()
+
+    val pokemonWeight =
+        when (pokemon.weightInGrams) {
+            in 1 until 1000 -> "$weightInGrams g"
+            in 1000 until 1000000 -> "${weightInGrams / 1000} kg"
+            else -> "${weightInGrams / 1000000} t"
+        }
+    val heightInCm = pokemon.heightInCm.toDouble()
+    val pokemonHeight =
+        when (pokemon.heightInCm) {
+            in 1 until 100 -> "$heightInCm cm"
+            in 100 until 10000 -> "${heightInCm / 100} m"
+            else -> "${heightInCm / 100000} km"
+        }
+
     Column {
-        Table(first = "Category", second = "Seed")
-        Table(first = "Abilities", second = "Overgrow")
-        Table(first = "Weight", second = "12,2 lbs")
-        Table(first = "Height", second = "2'4\"")
+        Table(first = "Category", second = pokemon.categoryName)
+        Table(first = "Abilities", second = pokemon.abilities.joinToString {
+            if (!it.isHidden) {
+                it.name
+            } else {
+                "${it.name} (hidden)"
+            }
+        })
+        Table(first = "Weight", second = pokemonWeight)
+        Table(first = "Height", second = pokemonHeight)
         //Table(first = "Gender", second = "")
     }
+
     Column {
-        Text(text = "Breeding")
-        Table("Male", "87,5%")
-        Table("Female", "12,5%")
-        Table(first = "Egg cycles", second = "20 (4.884-5.140 steps)")
+        Text(text = "Gender ratio")
+        if (pokemon.species.genderRate > -1) {
+            Table("Male", "${100 - (pokemon.species.genderRate / 8.0 * 100)}%")
+            Table("Female", "${pokemon.species.genderRate / 8.0 * 100}%")
+            //Table(first = "Egg cycles", second = "20 (4.884-5.140 steps)")
+        } else {
+            Spacer(modifier = Modifier.height(10.dp))
+            Table(first = "Genderless", second = "100%");
+        }
     }
     Spacer(modifier.fillMaxHeight())
 }
 
 @Composable
-fun StatsSection(modifier: Modifier) {
+fun StatsSection(
+    stats: PokemonStats,
+    modifier: Modifier
+) {
     Column {
-        Table(first = "HP", second = "78")
-        Table(first = "Attack", second = "84")
-        Table(first = "Defense", second = "78")
-        Table(first = "Sp.Atk", second = "109")
-        Table(first = "Sp.Def", second = "85")
-        Table(first = "Speed", second = "100")
+        Table(first = "HP", second = stats.hp.toString())
+        Table(first = "Attack", second = stats.attack.toString())
+        Table(first = "Defense", second = stats.defense.toString())
+        Table(first = "Sp.Atk", second = stats.specialAttack.toString())
+        Table(first = "Sp.Def", second = stats.specialDefense.toString())
+        Table(first = "Speed", second = stats.speed.toString())
         Divider(Modifier.width(150.dp))
         Spacer(Modifier.height(5.dp))
-        Table(first = "Total", second = "534")
+        Table(first = "Total", second = stats.total.toString())
     }
     Spacer(modifier.fillMaxHeight())
 }
 
 @Composable
-fun MovesSection() {
+fun MovesSection(
+    moves: Array<PokemonMove>
+) {
     Column {
-//        MoveBoxColumn(moveList = BulbasaurMovesList)
+        MoveBoxColumn(moveList = moves.toList())
     }
 }
 
@@ -613,5 +666,3 @@ fun moveBox(move: PokemonMove) {
         }
     }
 }
-
-

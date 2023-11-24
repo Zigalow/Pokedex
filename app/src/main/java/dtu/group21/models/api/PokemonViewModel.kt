@@ -24,11 +24,36 @@ class PokemonViewModel(
     fun getPokemon(pokedexId: Int, pokemon: MutableState<ComplexPokemon>) {
         coroutineScope.launch {
             getPokemonInternal(pokedexId).collect {
-            pokemon.value = when (it) {
-                is Resource.Failure<*> -> ComplexPokemon(-1, PokemonType.NONE, PokemonType.NONE, PokemonGender.MALE, PokemonStats(0, 0,0,0,0,0), PokemonSpecies("No pokemon found", false, false, false, false), emptyArray())
-                is Resource.Success -> it.data
-                Resource.Loading -> ComplexPokemon(0, PokemonType.NONE, PokemonType.NONE, PokemonGender.MALE, PokemonStats(0, 0,0,0,0,0), PokemonSpecies("Loading", false, false, false, false), emptyArray())
-            }
+                pokemon.value = when (it) {
+                    is Resource.Failure<*> -> ComplexPokemon(
+                        -1,
+                        PokemonType.NONE,
+                        PokemonType.NONE,
+                        PokemonGender.MALE,
+                        "",
+                        emptyArray(),
+                        0,
+                        0,
+                        PokemonStats(0, 0, 0, 0, 0, 0),
+                        PokemonSpecies("No pokemon found", 0,false, false, false, false),
+                        emptyArray()
+                    )
+
+                    is Resource.Success -> it.data
+                    Resource.Loading -> ComplexPokemon(
+                        0,
+                        PokemonType.NONE,
+                        PokemonType.NONE,
+                        PokemonGender.MALE,
+                        "",
+                        emptyArray(),
+                        0,
+                        0,
+                        PokemonStats(0, 0, 0, 0, 0, 0),
+                        PokemonSpecies("Loading", 0,false, false, false, false),
+                        emptyArray()
+                    )
+                }
             }
         }
     }
@@ -45,7 +70,21 @@ class PokemonViewModel(
 
     fun getPokemons(pokedexIds: Array<Int>, list: MutableList<MutableState<ComplexPokemon>>) {
         for (id in pokedexIds) {
-            val mutablePokemon = mutableStateOf(ComplexPokemon(0, PokemonType.NONE, PokemonType.NONE, PokemonGender.MALE, PokemonStats(0, 0,0,0,0,0), PokemonSpecies("Loading", false, false, false, false), emptyArray()))
+            val mutablePokemon = mutableStateOf(
+                ComplexPokemon(
+                    0,
+                    PokemonType.NONE,
+                    PokemonType.NONE,
+                    PokemonGender.MALE,
+                    "",
+                    emptyArray(),
+                    0,
+                    0,
+                    PokemonStats(0, 0, 0, 0, 0, 0),
+                    PokemonSpecies("Loading", 0,false, false, false, false),
+                    emptyArray()
+                )
+            )
             list.add(mutablePokemon)
             getPokemon(id, mutablePokemon)
         }
