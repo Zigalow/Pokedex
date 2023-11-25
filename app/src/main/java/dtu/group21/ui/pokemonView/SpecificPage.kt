@@ -3,6 +3,8 @@ package dtu.group21.ui.pokemonView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +26,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,9 +46,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
 import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
@@ -76,7 +81,7 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
 
     val viewModel = PokemonViewModel()
     LaunchedEffect(Unit) {
-        viewModel.getPokemon(pokedexId, pokemon)
+        viewModel.getComplexPokemon(pokedexId, pokemon)
     }
     Mid(modifier = Modifier, pokemon.value)
     Inspect(pokemon = pokemon.value, onNavigateBack = onNavigateBack)
@@ -164,7 +169,7 @@ fun Mid(modifier: Modifier = Modifier, pokemon: ComplexPokemon) {
                 text = pokemon.species.name.replaceFirstChar { it.uppercase() },
                 fontStyle = FontStyle.Normal,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White,
+                color = Color.Black,
                 fontSize = 30.sp
             )
             Text(
@@ -316,13 +321,12 @@ fun Sections(modifier: Modifier, selectedCategory: String, pokemon: ComplexPokem
         "About" -> AboutSection(pokemon, modifier)
         "Stats" -> StatsSection(pokemon.stats, modifier)
         "Moves" -> MovesSection(pokemon.moves)
-        /*
         "Evolution" -> EvolutionSection(
             modifier = Modifier
                 .padding(horizontal = 2.dp)
-                .fillMaxWidth(), pokemon
+                .fillMaxWidth(),
+            pokemon
         )
-        */
     }
 }
 
@@ -403,39 +407,78 @@ fun MovesSection(
     }
 }
 
-/*
 @Composable
-fun EvolutionSection(modifier: Modifier, pokemon: ComplexPokemon) {
+fun EvolutionSection(
+    modifier: Modifier,
+    pokemon: ComplexPokemon
+) {
+    val evolutionChain = remember {
+        mutableStateOf(ArrayList<List<EvolutionChainPokemon>>())
+    }
+
+    val viewModel = PokemonViewModel()
+    LaunchedEffect(Unit) {
+        if (evolutionChain.value.isEmpty()) {
+            viewModel.getEvolutionChain(pokemon.id, evolutionChain)
+        }
+    }
+
     Row(
         modifier = modifier,
+        horizontalArrangement = Arrangement.Center
     ) {
-        val evolutionChain =
-            arrayOf(PokemonSamples.listOfPokemons[0], PokemonSamples.listOfPokemons[1], PokemonSamples.listOfPokemons[2])
-        for ((index, evolution) in evolutionChain.withIndex()) {
-            Column {
-                PokemonImage(
-                    pokemon = evolution,
-                    modifier = Modifier
-                        .size(100.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .padding(horizontal = 10.dp)
-                )
-                Text(
-                    text = evolution.species.name.replaceFirstChar { it.uppercase() },
-                    textAlign = TextAlign.Center
-                )
+        if (evolutionChain.value.isEmpty()) {
+            println("Loading evolutions")
+            CircularProgressIndicator(
+                color = Color.Black,
+            )
+            return
+        }
+        println("Loaded ${evolutionChain.value.size} pokemons")
+
+        for ((index, evolutions) in evolutionChain.value.iterator().withIndex()) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
+                for (evolution in evolutions) {
+                    Row {
+                        if (index > 0) {
+                            arrow(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .align(Alignment.CenterVertically)
+                            )
+                        }
+                        Column {
+                            EvolutionPokemonImage(
+                                pokemon = evolution,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .align(Alignment.CenterHorizontally)
+                                    .padding(horizontal = 10.dp)
+                            )
+                            Text(
+                                text = evolution.name.replaceFirstChar { it.uppercase() },
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
             }
-            if (index < 2)
-                arrow(
-                    modifier = Modifier
-                        .size(30.dp)
-                        .align(Alignment.CenterVertically)
-                )
         }
     }
     Spacer(modifier.fillMaxHeight())
 }
- */
+
+@Composable
+fun EvolutionPokemonImage(modifier: Modifier = Modifier, pokemon: EvolutionChainPokemon) {
+    Image(
+        painter = rememberAsyncImagePainter(pokemon.spriteResourceId),
+        contentDescription = pokemon.name,
+        modifier = modifier,
+    )
+}
 
 
 //region main components

@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
@@ -11,19 +12,17 @@ import dtu.group21.models.pokemon.PokemonType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 
 class PokemonViewModel(
     private val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
 ) : ViewModel() {
     private val pokedexRequestMaker: PokedexRequestMaker = PokedexRequestMaker()
 
-    fun getPokemon(pokedexId: Int, pokemon: MutableState<ComplexPokemon>) {
+    fun getComplexPokemon(pokedexId: Int, pokemon: MutableState<ComplexPokemon>) {
         coroutineScope.launch {
-            getPokemonInternal(pokedexId).collect {
+            getComplexPokemonInternal(pokedexId).collect {
                 pokemon.value = when (it) {
                     is Resource.Failure<*> -> ComplexPokemon(
                         -1,
@@ -58,7 +57,7 @@ class PokemonViewModel(
         }
     }
 
-    private suspend fun getPokemonInternal(pokedexId: Int) = flow {
+    private suspend fun getComplexPokemonInternal(pokedexId: Int) = flow {
         if (pokedexId < 1 || pokedexId > 1010) {
             emit(Resource.Failure<ComplexPokemon>("Number not valid"))
             return@flow
@@ -86,7 +85,68 @@ class PokemonViewModel(
                 )
             )
             list.add(mutablePokemon)
-            getPokemon(id, mutablePokemon)
+            getComplexPokemon(id, mutablePokemon)
+        }
+    }
+
+    fun getEvolutionChain(pokedexId: Int, pokemons: MutableState<ArrayList<List<EvolutionChainPokemon>>>) {
+        coroutineScope.launch {
+            val evolutionChain = ArrayList<List<EvolutionChainPokemon>>()
+            getEvolutionChainInternal(pokedexId).collect {
+                when (it) {
+                    is Resource.Failure<*> -> {
+                        return@collect
+                    }
+                    is Resource.Success -> {
+                        evolutionChain.add(it.data)
+                    }
+                    Resource.Loading -> {
+                        // Do nothing
+                    }
+                }
+            }
+            println("Coroutine done")
+            println("Evolution steps: ${evolutionChain.size}")
+            pokemons.value = evolutionChain
+        }
+    }
+
+    private suspend fun getEvolutionChainInternal(pokedexId: Int) = flow {
+        if (pokedexId < 1 || pokedexId > 1010) {
+            emit(Resource.Failure<List<EvolutionChainPokemon>>("Number not valid"))
+            return@flow
+        }
+        emit(Resource.Loading)
+
+        val evolutionChain = ArrayList<ArrayList<EvolutionChainPokemon>>()
+        val basePokemon = pokedexRequestMaker.getSimplePokemon(pokedexId)
+        evolutionChain.add(arrayListOf(basePokemon))
+
+        // Load previous
+        var loadPreviousOf = basePokemon
+        while (!loadPreviousOf.isRoot) {
+            val previousPokemon = pokedexRequestMaker.getSimplePokemon(loadPreviousOf.precedingPokemonId)
+            evolutionChain.add(0, arrayListOf(previousPokemon))
+            loadPreviousOf = previousPokemon
+        }
+
+        // Load next
+        var loadNextOf = basePokemon
+        while (loadNextOf.hasEvolutions) {
+            val possibilites = ArrayList<EvolutionChainPokemon>()
+            for (nextId in loadNextOf.evolutionIds) {
+                possibilites.add(pokedexRequestMaker.getSimplePokemon(nextId))
+            }
+            evolutionChain.add(possibilites)
+
+            // TODO actually handle branching
+            break
+        }
+
+        // Return all the pokemons
+        for (pokemons in evolutionChain) {
+            println("Evolution: ${pokemons.size}")
+            emit(Resource.Success(pokemons))
         }
     }
 }

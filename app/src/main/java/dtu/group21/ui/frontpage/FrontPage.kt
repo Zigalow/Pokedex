@@ -22,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,7 +57,7 @@ fun FrontPage(onNavigate: (String) -> Unit) {
 
     val viewModel = PokemonViewModel()
     //val ids = (32..35).toList().toIntArray().toTypedArray()
-    val ids = intArrayOf(6,32,35,82,668,669).toTypedArray()
+    val ids = intArrayOf(6,32,35,82,133,150,668,669).toTypedArray()
     LaunchedEffect(Unit) {
         viewModel.getPokemons(ids, pokemons)
     }
@@ -153,14 +154,25 @@ fun PokemonColumn(
         horizontalArrangement = Arrangement.Center,
         maxItemsInEachRow = 2
     ) {
+        val boxModifier = modifier.size(180.dp).padding(horizontal = 4.dp, vertical = 5.dp)
         for (i in pokemons.indices) {
-            PokemonBox(
-                modifier = modifier
-                    .size(180.dp)
-                    .padding(horizontal = 4.dp, vertical = 5.dp),
-                pokemon = pokemons[i].value,
-                onClicked = { onPokemonClicked("${pokemons[i].value.id}") }
-            )
+            val pokemon = pokemons[i].value
+            if (pokemon.id == 0) {
+                CircularProgressIndicator(
+                    modifier = boxModifier,
+                    color = Color.Black
+                )
+            }
+            else if (pokemon.id == -1) {
+                // fail
+            }
+            else {
+                PokemonBox(
+                    modifier = boxModifier,
+                    pokemon = pokemon,
+                    onClicked = { onPokemonClicked("${pokemon.id}") }
+                )
+            }
         }
     }
 }
