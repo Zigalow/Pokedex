@@ -1,7 +1,11 @@
 package dtu.group21.models.pokemon
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 class ComplexPokemon(
-    val id: Int, // the same as the pokédex number
+    @PrimaryKey val id: Int, // the same as the pokédex number
     val type: PokemonType,
     val secondaryType: PokemonType,
     val gender: PokemonGender,

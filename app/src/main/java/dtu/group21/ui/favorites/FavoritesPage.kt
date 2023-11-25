@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
@@ -41,8 +42,7 @@ import dtu.group21.ui.shared.bigFontSize
 @Composable
 fun FavoritesPage(
     onNavigateBack: () -> Unit,
-    onPokemonClicked: (String) -> Unit,
-    //favoritePokemons: List<ComplexPokemon>
+    onPokemonClicked: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -73,7 +73,9 @@ fun FavoritesPage(
             Spacer(Modifier.width(45.dp))
         }
 
-        /*
+        val favoritesDao = MainActivity.database!!.favoritesDao()
+        val favoritePokemons = favoritesDao.getAll()
+
         favoritePokemons.forEach { pokemon ->
             FavoritePokemonBox(
                 modifier = Modifier
@@ -83,7 +85,6 @@ fun FavoritesPage(
                 onClicked = { onPokemonClicked(pokemon.species.name) }
             )
         }
-         */
     }
 }
 @Composable
