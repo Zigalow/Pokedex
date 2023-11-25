@@ -25,11 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.Pokemon
+import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
@@ -151,13 +153,12 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicke
     }
 }
 
-/*
 @Preview
 @Composable
 fun ShowFavoritePage(){
     FavoritesPage(
-        listOfPokemons,
-        onPokemonClicked = {})
-
+        onNavigateBack = {},
+        onPokemonClicked = {},
+        favoritePokemons = PokemonSamples.listOfPokemons.subList(0,4)
+    )
 }
-*/
