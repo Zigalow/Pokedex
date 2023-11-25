@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -49,7 +50,6 @@ fun FavoritesPage(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
     ) {
         UpperMenu(
             modifier = Modifier
@@ -68,21 +68,29 @@ fun FavoritesPage(
             )
             Text(
                 text = "Favorites",
-                modifier = Modifier.weight(0.01f).fillMaxWidth(),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
             )
             Spacer(Modifier.width(45.dp))
         }
 
-        favoritePokemons.forEach { pokemon ->
-            FavoritePokemonBox(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                pokemon = pokemon,
-                onClicked = { onPokemonClicked(pokemon.name) }
-            )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            items(favoritePokemons.size) { index ->
+                FavoritePokemonBox(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    pokemon = favoritePokemons[index],
+                    onClicked = { onPokemonClicked(favoritePokemons[index].name) }
+                )
+            }
         }
     }
 }
@@ -159,6 +167,6 @@ fun ShowFavoritePage(){
     FavoritesPage(
         onNavigateBack = {},
         onPokemonClicked = {},
-        favoritePokemons = PokemonSamples.listOfPokemons.subList(0,4)
+        favoritePokemons = PokemonSamples.listOfPokemons
     )
 }
