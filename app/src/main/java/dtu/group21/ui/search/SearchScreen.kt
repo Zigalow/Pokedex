@@ -2,13 +2,11 @@ package dtu.group21.ui.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.InternalComposeApi
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.internal.liveLiteral
@@ -35,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -46,11 +44,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import androidx.lifecycle.LiveData
 import com.example.pokedex.R
-import dtu.group21.models.pokemon.Pokemon
+import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.ui.favorites.FavoritePokemonBox
-import dtu.group21.ui.shared.Title
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
 import dtu.group21.ui.shared.buttonColor
@@ -96,7 +92,10 @@ fun SearchBar(
             var isSearching by remember { mutableStateOf(initialText != "") }
             val textStyle = TextStyle(
                 color = if (isSearching) textColor else placeholderColor,
-                fontSize = TextUnit(5f, TextUnitType.Em), // TODO: should respond to size of search box
+                fontSize = TextUnit(
+                    5f,
+                    TextUnitType.Em
+                ), // TODO: should respond to size of search box
                 fontStyle = if (isSearching) FontStyle.Normal else FontStyle.Italic
             )
 
@@ -140,10 +139,15 @@ fun SearchScreen(
     onNavigateToSort: () -> Unit,
     onPokemonClicked: (String) -> Unit,
     searchSettings: SearchSettings,
-    pokemonPool: List<Pokemon>,
+    pokemonPool: MutableList<MutableState<ComplexPokemon>>,
     modifier: Modifier = Modifier,
 ) {
-    val candidates: State<List<Pokemon>> = liveLiteral("searchResults", pokemonPool)
+    val allCandidates = ArrayList<ComplexPokemon>()
+    for (pokemon in pokemonPool) {
+        allCandidates.add(pokemon.value)
+    }
+
+    val candidates: State<List<ComplexPokemon>> = liveLiteral("searchResults", allCandidates)
 
     Column(
         modifier = modifier
@@ -180,21 +184,23 @@ fun SearchScreen(
             onChange = {
                 println("Searched for '$it'")
                 searchSettings.searchString = it
-                updateLiveLiteralValue("searchResults", pokemonPool.filter { pokemon ->
-                    // very complicated statement to check if the searchString is either
-                    // - empty
-                    // - a substring of the name of the pokemon
-                    // - a substring of the number of the pokemon
-                    // if either is true, it is a candidate
-                    val isCandidate =
-                        if (searchSettings.searchString == "") true
-                        else if (searchSettings.searchString.isDigitsOnly()) {
-                            val searchNumber = searchSettings.searchString.toInt()
-                            searchNumber.toString() in pokemon.pokedexNumber.toString()
-                        } else searchSettings.searchString.lowercase() in pokemon.name.lowercase()
+                updateLiveLiteralValue(
+                    "searchResults",
+                    allCandidates.filter { pokemon ->
+                        // very complicated statement to check if the searchString is either
+                        // - empty
+                        // - a substring of the name of the pokemon
+                        // - a substring of the number of the pokemon
+                        // if either is true, it is a candidate
+                        val isCandidate =
+                            if (searchSettings.searchString.isEmpty()) true
+                            else if (searchSettings.searchString.isDigitsOnly()) {
+                                val searchNumber = searchSettings.searchString.toInt()
+                                searchNumber.toString() in pokemon.id.toString()
+                            } else searchSettings.searchString.lowercase() in pokemon.species.name.lowercase()
 
-                    isCandidate
-                })
+                        isCandidate
+                    })
             },
             height = 40.dp,
             modifier = Modifier
@@ -206,7 +212,10 @@ fun SearchScreen(
         Row {
             val buttonPadding = 15.dp
             val buttonWidth = 120.dp
-            val buttonColors = ButtonDefaults.buttonColors(containerColor = buttonColor, contentColor = Color.Black)
+            val buttonColors = ButtonDefaults.buttonColors(
+                containerColor = buttonColor,
+                contentColor = Color.Black
+            )
 
             Button(
                 onClick = { onNavigateToFilter() },
@@ -239,15 +248,14 @@ fun SearchScreen(
         if (candidates.value.isEmpty()) {
             Spacer(Modifier.height(10.dp))
             Text("No Pokémon matching criteria")
-        }
-        else {
+        } else {
             candidates.value.forEach { pokemon ->
                 FavoritePokemonBox(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
                     pokemon = pokemon,
-                    onClicked = { onPokemonClicked(pokemon.name) }
+                    onClicked = { onPokemonClicked(pokemon.id.toString()) }
                 )
             }
         }
