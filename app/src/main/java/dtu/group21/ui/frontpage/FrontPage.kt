@@ -49,18 +49,18 @@ import dtu.group21.ui.shared.UpperMenu
 import java.util.Locale
 
 @Composable
-fun FrontPage(onNavigate: (String) -> Unit) {
+fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<ComplexPokemon>>) {
     var menuIsOpen by remember { mutableStateOf(false) }
-    val pokemons = remember {
+    /*val pokemons = remember {
         mutableListOf<MutableState<ComplexPokemon>>()
-    }
+    }*/
 
-    val viewModel = PokemonViewModel()
+//    val viewModel = PokemonViewModel()
     //val ids = (32..35).toList().toIntArray().toTypedArray()
-    val ids = intArrayOf(6,32,35,82,133,150,668,669).toTypedArray()
+    /*val ids = intArrayOf(6, 32, 35, 82, 133, 150, 668, 669).toTypedArray()
     LaunchedEffect(Unit) {
         viewModel.getPokemons(ids, pokemons)
-    }
+    }*/
 
     //var favoritePokemon by remember { mutableStateOf(PokemonSamples.listOfPokemons.filter { it.isFavorit }) }
     Box {
@@ -154,7 +154,9 @@ fun PokemonColumn(
         horizontalArrangement = Arrangement.Center,
         maxItemsInEachRow = 2
     ) {
-        val boxModifier = modifier.size(180.dp).padding(horizontal = 4.dp, vertical = 5.dp)
+        val boxModifier = modifier
+            .size(180.dp)
+            .padding(horizontal = 4.dp, vertical = 5.dp)
         for (i in pokemons.indices) {
             val pokemon = pokemons[i].value
             if (pokemon.id == 0) {
@@ -162,11 +164,9 @@ fun PokemonColumn(
                     modifier = boxModifier,
                     color = Color.Black
                 )
-            }
-            else if (pokemon.id == -1) {
+            } else if (pokemon.id == -1) {
                 // fail
-            }
-            else {
+            } else {
                 PokemonBox(
                     modifier = boxModifier,
                     pokemon = pokemon,
@@ -366,10 +366,5 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked
     }
 }
 
-@Preview
-@Composable
-fun TestFronPage() {
-    FrontPage(onNavigate = { true })
 
-}
 //endregion

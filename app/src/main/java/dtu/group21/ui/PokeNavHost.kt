@@ -2,6 +2,8 @@ package dtu.group21.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
@@ -9,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import dtu.group21.models.api.PokemonViewModel
+import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.ui.favorites.FavoritesPage
 import dtu.group21.ui.frontpage.FrontPage
 import dtu.group21.ui.pokemonView.SpecificPage
@@ -34,6 +38,18 @@ import dtu.group21.ui.settings.SettingsPage
 fun PokeNavHost(startDestination: String = "home") {
     val navController = rememberNavController()
     val searchSettings = remember { SearchSettings() }
+    val viewModel = remember {
+        PokemonViewModel()
+    }
+    val pokemons = remember {
+        mutableListOf<MutableState<ComplexPokemon>>()
+    }
+    val ids = intArrayOf(6, 32, 35, 82, 133, 150, 668, 669).toTypedArray()
+    LaunchedEffect(Unit) {
+        viewModel.getPokemons(ids, pokemons)
+    }
+    
+
 
     NavHost(
         navController = navController,
@@ -43,7 +59,7 @@ fun PokeNavHost(startDestination: String = "home") {
             FrontPage(
                 onNavigate = {
                     navController.navigate(it)
-                }
+                }, pokemons
             )
         }
         composable("search") {
@@ -51,9 +67,9 @@ fun PokeNavHost(startDestination: String = "home") {
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToFilter = { navController.navigate("filter") },
                 onNavigateToSort = { navController.navigate("sort") },
-                onPokemonClicked = { navController.navigate("pokemon") },
+                onPokemonClicked = { navController.navigate("pokemon/$it") },
                 searchSettings = searchSettings,
-                //pokemonPool = PokemonSamples.listOfPokemons,
+                pokemonPool = pokemons,
                 modifier = Modifier.fillMaxSize(),
             )
         }
