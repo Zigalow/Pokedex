@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
 import dtu.group21.models.api.PokemonViewModel
@@ -265,11 +266,16 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
 
 @Composable
 fun PokemonImage(modifier: Modifier = Modifier, pokemon: ComplexPokemon) {
-    Image(
-        painter = rememberAsyncImagePainter(pokemon.spriteResourceId),
+    AsyncImage(
+        model = pokemon.spriteResourceId,
         contentDescription = pokemon.species.name,
-        modifier = modifier,
+        modifier = modifier
     )
+    /*Image(
+            painter = rememberAsyncImagePainter(pokemon.spriteResourceId),
+            contentDescription = pokemon.species.name,
+            modifier = modifier,
+        )*/
 }
 
 fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
