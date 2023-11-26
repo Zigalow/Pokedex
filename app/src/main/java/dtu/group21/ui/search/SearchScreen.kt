@@ -142,8 +142,12 @@ fun SearchScreen(
     pokemonPool: MutableList<MutableState<ComplexPokemon>>,
     modifier: Modifier = Modifier,
 ) {
-    val candidates: State<MutableList<MutableState<ComplexPokemon>>> =
-        liveLiteral("searchResults", pokemonPool)
+    val allCandidates = ArrayList<ComplexPokemon>()
+    for (pokemon in pokemonPool) {
+        allCandidates.add(pokemon.value)
+    }
+
+    val candidates: State<List<ComplexPokemon>> = liveLiteral("searchResults", allCandidates)
 
     Column(
         modifier = modifier
@@ -182,7 +186,7 @@ fun SearchScreen(
                 searchSettings.searchString = it
                 updateLiveLiteralValue(
                     "searchResults",
-                    ArrayList<ComplexPokemon>().filter { pokemon ->
+                    allCandidates.filter { pokemon ->
                         // very complicated statement to check if the searchString is either
                         // - empty
                         // - a substring of the name of the pokemon
@@ -250,8 +254,8 @@ fun SearchScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    pokemon = pokemon.value,
-                    onClicked = { onPokemonClicked(pokemon.value.id.toString()) }
+                    pokemon = pokemon,
+                    onClicked = { onPokemonClicked(pokemon.id.toString()) }
                 )
             }
         }
