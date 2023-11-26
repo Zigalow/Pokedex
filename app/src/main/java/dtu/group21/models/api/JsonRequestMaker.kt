@@ -6,5 +6,5 @@ import java.net.URL
 class JsonRequestMaker(
     baseUrl: String
 ) : RequestMaker<JSONObject>(baseUrl) {
-    override fun makeRequest(location: String) = JSONObject(URL("$baseUrl/$location").readText())
+    override suspend fun makeRequest(location: String) = JSONObject(URL("$baseUrl/$location").readText())
 }

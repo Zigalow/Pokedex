@@ -20,6 +20,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,7 +33,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
+import dtu.group21.models.database.DatabaseViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
@@ -41,9 +47,19 @@ import dtu.group21.ui.shared.bigFontSize
 @Composable
 fun FavoritesPage(
     onNavigateBack: () -> Unit,
-    onPokemonClicked: (String) -> Unit,
-    favoritePokemons: List<ComplexPokemon>
+    onPokemonClicked: (String) -> Unit
 ) {
+    val pokemons = remember {
+        mutableStateOf(ArrayList<MutableState<ComplexPokemon>>())
+    }
+
+    // Load the favorite pokemons
+    LaunchedEffect(Unit) {
+        val database = MainActivity.database!!
+        val databaseViewModel = DatabaseViewModel()
+        databaseViewModel.getPokemons(pokemons, database)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -73,13 +89,13 @@ fun FavoritesPage(
             Spacer(Modifier.width(45.dp))
         }
 
-        favoritePokemons.forEach { pokemon ->
+        pokemons.value.forEach { pokemon ->
             FavoritePokemonBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                pokemon = pokemon,
-                onClicked = { onPokemonClicked(pokemon.species.name) }
+                pokemon = pokemon.value,
+                onClicked = { onPokemonClicked(pokemon.value.id.toString()) }
             )
         }
     }

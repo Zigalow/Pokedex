@@ -22,8 +22,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,16 +40,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
+import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.models.pokemon.PokemonSamples
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
 import java.util.Locale
 
 @Composable
-fun FrontPage(onNavigate: (String) -> Unit) {
+fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<ComplexPokemon>>) {
     var menuIsOpen by remember { mutableStateOf(false) }
+    /*val pokemons = remember {
+        mutableListOf<MutableState<ComplexPokemon>>()
+    }*/
+
+//    val viewModel = PokemonViewModel()
+    //val ids = (32..35).toList().toIntArray().toTypedArray()
+    /*val ids = intArrayOf(6, 32, 35, 82, 133, 150, 668, 669).toTypedArray()
+    LaunchedEffect(Unit) {
+        viewModel.getPokemons(ids, pokemons)
+    }*/
+
     //var favoritePokemon by remember { mutableStateOf(PokemonSamples.listOfPokemons.filter { it.isFavorit }) }
     Box {
         Column {
@@ -68,14 +84,21 @@ fun FrontPage(onNavigate: (String) -> Unit) {
             }
             Spacer(modifier = Modifier.padding(3.dp))
             PokemonColumn(
-                pokemons = PokemonSamples.listOfPokemons,
-                onPokemonClicked = {onNavigate("pokemon/$it")},
+                pokemons = pokemons,
+                onPokemonClicked = {
+                    println("Navigating to 'pokemon/$it'")
+                    onNavigate("pokemon/$it")
+                },
                 modifier = Modifier.padding(horizontal = 5.dp)
             )
         }
         FavoritesIcon(
-            modifier = Modifier.offset(310.dp, 670.dp).size(90.dp),
-            onClicked = { onNavigate("favorites") }
+            modifier = Modifier
+                .offset(310.dp, 670.dp)
+                .size(90.dp),
+            onClicked = {
+                onNavigate("favorites")
+            }
         )
 
 
@@ -122,7 +145,7 @@ fun Menu(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
 @Composable
 fun PokemonColumn(
     modifier: Modifier = Modifier,
-    pokemons: List<ComplexPokemon>,
+    pokemons: List<MutableState<ComplexPokemon>>,
     onPokemonClicked: (String) -> Unit
 ) {
     FlowRow(
@@ -132,14 +155,25 @@ fun PokemonColumn(
         horizontalArrangement = Arrangement.Center,
         maxItemsInEachRow = 2
     ) {
+        val boxModifier = modifier
+            .size(180.dp)
+            .padding(horizontal = 4.dp, vertical = 5.dp)
         for (i in pokemons.indices) {
-            PokemonBox(
-                modifier = modifier
-                    .size(180.dp)
-                    .padding(horizontal = 4.dp, vertical = 5.dp),
-                pokemon = pokemons[i],
-                onClicked = { onPokemonClicked(pokemons[i].species.name) }
-            )
+            val pokemon = pokemons[i].value
+            if (pokemon.id == 0) {
+                CircularProgressIndicator(
+                    modifier = boxModifier,
+                    color = Color.Black
+                )
+            } else if (pokemon.id == -1) {
+                // fail
+            } else {
+                PokemonBox(
+                    modifier = boxModifier,
+                    pokemon = pokemon,
+                    onClicked = { onPokemonClicked("${pokemon.id}") }
+                )
+            }
         }
     }
 }
@@ -176,7 +210,7 @@ fun PokemonLogo(modifier: Modifier = Modifier, size: Dp) {
         modifier = modifier
             .height(size / 1.75f)
             .width(size)
-//                .height(87.dp)
+//                .height(87½½.dp)
 //                .width(154.dp)
     )
 }
@@ -232,11 +266,16 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
 
 @Composable
 fun PokemonImage(modifier: Modifier = Modifier, pokemon: ComplexPokemon) {
-    Image(
-        painter = painterResource(id = pokemon.spriteResourceId),
+    AsyncImage(
+        model = pokemon.spriteResourceId,
         contentDescription = pokemon.species.name,
-        modifier = modifier,
+        modifier = modifier
     )
+    /*Image(
+            painter = rememberAsyncImagePainter(pokemon.spriteResourceId),
+            contentDescription = pokemon.species.name,
+            modifier = modifier,
+        )*/
 }
 
 fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
@@ -332,10 +371,6 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked
         }
     }
 }
-@Preview
-@Composable
-fun testFronPage() {
-    FrontPage(onNavigate = {true})
-    
-}
+
+
 //endregion
