@@ -96,7 +96,7 @@ fun FrontPage(onNavigate: (String) -> Unit) {
                 .offset(310.dp, 670.dp)
                 .size(90.dp),
             onClicked = {
-                //onNavigate("favorites")
+                onNavigate("favorites")
             }
         )
 

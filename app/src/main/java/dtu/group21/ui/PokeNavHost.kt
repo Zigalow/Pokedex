@@ -92,7 +92,7 @@ fun PokeNavHost(startDestination: String = "home") {
         composable("favorites") {
             FavoritesPage(
                 onNavigateBack = { navController.popBackStack() },
-                onPokemonClicked = { navController.navigate("pokemon") },
+                onPokemonClicked = { navController.navigate("pokemon/$it") },
                 //favoritePokemons = PokemonSamples.listOfPokemons.subList(2, 7)
             )
         }

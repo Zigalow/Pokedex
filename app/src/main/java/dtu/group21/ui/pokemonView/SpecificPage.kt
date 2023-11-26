@@ -79,16 +79,6 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
         )
     }
 
-    println("Pokemon: ${pokemon.value.id}")
-    if (pokemon.value.id > 0 && pokemon.value.abilities.isNotEmpty()) {
-        println("Saving pokemon")
-        LaunchedEffect(Unit) {
-            val database = MainActivity.database!!
-            val databaseViewModel = DatabaseViewModel()
-            databaseViewModel.insertPokemon(pokemon.value, database)
-        }
-    }
-
     LaunchedEffect(Unit) {
         val database = MainActivity.database!!
         val databaseViewModel = DatabaseViewModel()
@@ -142,11 +132,22 @@ fun Top(
                 .clickable { onClickBack() }
         )
         Spacer(modifier.width(230.dp))
-        var favorited by remember { mutableStateOf(false) }
         FavoritesIcon(
-            active = favorited,
+            active = pokemon.isFavorite.value,
             color = pokemon.type.secondaryColor,
-            onClicked = { favorited = !favorited }
+            onClicked = {
+                pokemon.isFavorite.value = !pokemon.isFavorite.value
+                val database = MainActivity.database!!
+                val databaseViewModel = DatabaseViewModel()
+                if (pokemon.isFavorite.value) {
+                    println("Saving pokemon")
+                    databaseViewModel.insertPokemon(pokemon, database)
+                }
+                else {
+                    println("Deleting pokemon")
+                    databaseViewModel.deletePokemon(pokemon, database)
+                }
+            }
         )
         /*favoritesIconF(
             modifier = modifier

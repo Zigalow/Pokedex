@@ -14,7 +14,6 @@ import dtu.group21.models.pokemon.PokemonType
 data class PokemonData(
     @PrimaryKey
     val id: Int,
-    val name: String,
     val primaryTypeString: String,
     val secondaryTypeString: String,
     val genderString: String,
@@ -22,8 +21,8 @@ data class PokemonData(
     // abilities
     val weightInGrams: String,
     val heightInCm: String,
-    // stats
-    // species
+    val statsString: String,
+    val speciesString: String,
     // moves
 ) {
     @Ignore
@@ -32,12 +31,31 @@ data class PokemonData(
     @Ignore
     val secondaryType = PokemonType.getFromName(secondaryTypeString)
 
-    fun getSimplifiedPokemon(): ComplexPokemon {
+    fun getPokemon(): ComplexPokemon {
         val gender = when (genderString.lowercase()) {
             "male" -> PokemonGender.MALE
             "female" -> PokemonGender.FEMALE
             else -> PokemonGender.GENDERLESS
         }
+        val statsParts = statsString.split(";")
+        val stats = PokemonStats(
+            statsParts[0].toInt(),
+            statsParts[1].toInt(),
+            statsParts[2].toInt(),
+            statsParts[3].toInt(),
+            statsParts[4].toInt(),
+            statsParts[5].toInt(),
+        )
+        val speciesParts = speciesString.split(";")
+        val species = PokemonSpecies(
+            speciesParts[0],
+            speciesParts[1].toInt(),
+            speciesParts[2].toBoolean(),
+            speciesParts[3].toBoolean(),
+            speciesParts[4].toBoolean(),
+            speciesParts[5].toBoolean(),
+        )
+
         return ComplexPokemon(
             id,
             primaryType,
@@ -47,14 +65,8 @@ data class PokemonData(
             emptyArray(),
             weightInGrams.toInt(),
             heightInCm.toInt(),
-            PokemonStats(
-                0,0,0,0,0,0
-            ),
-            PokemonSpecies(
-                name,
-                8,
-                false,false,false,false
-            ),
+            stats,
+            species,
             emptyArray()
         )
     }
