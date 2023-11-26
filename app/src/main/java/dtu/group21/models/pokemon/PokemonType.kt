@@ -49,4 +49,5 @@ enum class PokemonType(val primaryColor: Color, val secondaryColor: Color) {
             }
         }
     }
+
 }
