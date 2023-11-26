@@ -19,5 +19,4 @@ interface FavoritesDao {
 
     @Delete
     fun delete(pokemon: ComplexPokemon)
-
 }

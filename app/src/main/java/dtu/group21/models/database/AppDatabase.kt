@@ -1,11 +1,10 @@
 package dtu.group21.models.database
 
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
-import dtu.group21.models.pokemon.ComplexPokemon
 
-@Database(entities = [ComplexPokemon::class], version = 1)
+@Database(entities = [PokemonData::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun favoritesDao(): FavoritesDao
+    //abstract fun favoritesDao(): FavoritesDao
+    abstract fun pokemonDao(): PokemonDao
 }

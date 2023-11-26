@@ -73,6 +73,7 @@ fun FavoritesPage(
             Spacer(Modifier.width(45.dp))
         }
 
+        /*
         val favoritesDao = MainActivity.database!!.favoritesDao()
         val favoritePokemons = favoritesDao.getAll()
 
@@ -85,6 +86,7 @@ fun FavoritesPage(
                 onClicked = { onPokemonClicked(pokemon.species.name) }
             )
         }
+         */
     }
 }
 @Composable

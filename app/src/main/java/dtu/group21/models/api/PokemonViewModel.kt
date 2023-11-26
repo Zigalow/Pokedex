@@ -20,10 +20,10 @@ class PokemonViewModel(
 ) : ViewModel() {
     private val pokedexRequestMaker: PokedexRequestMaker = PokedexRequestMaker()
 
-    fun getComplexPokemon(pokedexId: Int, pokemon: MutableState<ComplexPokemon>) {
+    fun getComplexPokemon(pokedexId: Int, pokemon: MutableState<ComplexPokemon>, emitLoading: Boolean = true) {
         coroutineScope.launch {
             getComplexPokemonInternal(pokedexId).collect {
-                pokemon.value = when (it) {
+                val returnedPokemon = when (it) {
                     is Resource.Failure<*> -> ComplexPokemon(
                         -1,
                         PokemonType.NONE,
@@ -52,6 +52,10 @@ class PokemonViewModel(
                         PokemonSpecies("Loading", 0,false, false, false, false),
                         emptyArray()
                     )
+                }
+
+                if (emitLoading || returnedPokemon.id != 0) {
+                    pokemon.value = returnedPokemon
                 }
             }
         }

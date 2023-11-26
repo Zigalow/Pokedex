@@ -3,8 +3,6 @@ package dtu.group21.ui.pokemonView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +47,7 @@ import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
 import dtu.group21.models.api.PokemonViewModel
+import dtu.group21.models.database.DatabaseViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.PokemonGender
@@ -56,6 +55,7 @@ import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
 import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 
@@ -79,9 +79,20 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
         )
     }
 
-    val viewModel = PokemonViewModel()
+    println("Pokemon: ${pokemon.value.id}")
+    if (pokemon.value.id > 0 && pokemon.value.abilities.isNotEmpty()) {
+        println("Saving pokemon")
+        LaunchedEffect(Unit) {
+            val database = MainActivity.database!!
+            val databaseViewModel = DatabaseViewModel()
+            databaseViewModel.insertPokemon(pokemon.value, database)
+        }
+    }
+
     LaunchedEffect(Unit) {
-        viewModel.getComplexPokemon(pokedexId, pokemon)
+        val database = MainActivity.database!!
+        val databaseViewModel = DatabaseViewModel()
+        databaseViewModel.getPokemon(pokedexId, pokemon, database)
     }
     Mid(modifier = Modifier, pokemon.value)
     Inspect(pokemon = pokemon.value, onNavigateBack = onNavigateBack)
