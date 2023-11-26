@@ -18,10 +18,44 @@ class DatabaseViewModel(
     val requestViewModel = PokemonViewModel()
 
     private fun complexPokemonToPokemonData(pokemon: ComplexPokemon): PokemonData {
+        val abilitiesStringBuilder = StringBuilder()
+        for (ability in pokemon.abilities) {
+            abilitiesStringBuilder.append(ability.name)
+            abilitiesStringBuilder.append(';')
+            abilitiesStringBuilder.append(ability.description)
+            abilitiesStringBuilder.append(';')
+            abilitiesStringBuilder.append(ability.isHidden.toString())
+
+            // for the next ability
+            abilitiesStringBuilder.append("::")
+        }
+        abilitiesStringBuilder.setLength(abilitiesStringBuilder.length - 2)
+
         val stats = pokemon.stats
         val statsString = "${stats.hp};${stats.attack};${stats.defense};${stats.specialAttack};${stats.specialDefense};${stats.speed}"
         val species = pokemon.species
         val speciesString = "${species.name};${species.genderRate};${species.hasGenderDifferences};${species.isBaby};${species.isLegendary};${species.isMythical}"
+
+        val movesStringBuilder = StringBuilder()
+        for (move in pokemon.moves) {
+            movesStringBuilder.append(move.name)
+            movesStringBuilder.append(';')
+            movesStringBuilder.append(move.description)
+            movesStringBuilder.append(';')
+            movesStringBuilder.append(move.power.toString())
+            movesStringBuilder.append(';')
+            movesStringBuilder.append(move.accuracy.toString())
+            movesStringBuilder.append(';')
+            movesStringBuilder.append(move.pp.toString())
+            movesStringBuilder.append(';')
+            movesStringBuilder.append(move.type.toString())
+            movesStringBuilder.append(';')
+            movesStringBuilder.append(move.damageClass.toString())
+
+            // for the next move
+            movesStringBuilder.append("::")
+        }
+        movesStringBuilder.setLength(movesStringBuilder.length - 2)
 
         return PokemonData(
             pokemon.id,
@@ -29,10 +63,12 @@ class DatabaseViewModel(
             pokemon.secondaryType.toString(),
             pokemon.gender.toString(),
             pokemon.categoryName,
+            abilitiesStringBuilder.toString(),
             pokemon.weightInGrams.toString(),
             pokemon.heightInCm.toString(),
             statsString,
             speciesString,
+            movesStringBuilder.toString()
         )
     }
 

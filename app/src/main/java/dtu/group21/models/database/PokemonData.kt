@@ -4,7 +4,10 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.MoveDamageClass
+import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonGender
+import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
 import dtu.group21.models.pokemon.PokemonType
@@ -18,12 +21,12 @@ data class PokemonData(
     val secondaryTypeString: String,
     val genderString: String,
     val categoryName: String,
-    // abilities
+    val abilitiesString: String,
     val weightInGrams: String,
     val heightInCm: String,
     val statsString: String,
     val speciesString: String,
-    // moves
+    val movesString: String
 ) {
     @Ignore
     val primaryType = PokemonType.getFromName(primaryTypeString)
@@ -32,6 +35,17 @@ data class PokemonData(
     val secondaryType = PokemonType.getFromName(secondaryTypeString)
 
     fun getPokemon(): ComplexPokemon {
+        val abilityStrings = abilitiesString.split("::")
+        val abilityArray = Array(abilityStrings.size) {
+            val abilityStringParts = abilityStrings[it].split(";")
+
+            PokemonAbility(
+                abilityStringParts[0],
+                abilityStringParts[1],
+                abilityStringParts[2].toBoolean(),
+            )
+        }
+
         val gender = when (genderString.lowercase()) {
             "male" -> PokemonGender.MALE
             "female" -> PokemonGender.FEMALE
@@ -56,18 +70,33 @@ data class PokemonData(
             speciesParts[5].toBoolean(),
         )
 
+        val moveStrings = movesString.split("::")
+        val movesArray = Array(moveStrings.size) {
+            val moveStringParts = moveStrings[it].split(";")
+
+            PokemonMove(
+                moveStringParts[0],
+                moveStringParts[1],
+                moveStringParts[2].toIntOrNull(),
+                moveStringParts[3].toIntOrNull(),
+                moveStringParts[4].toInt(),
+                PokemonType.getFromName(moveStringParts[5]),
+                MoveDamageClass.getFromName(moveStringParts[6])
+            )
+        }
+
         return ComplexPokemon(
             id,
             primaryType,
             secondaryType,
             gender,
             categoryName,
-            emptyArray(),
+            abilityArray,
             weightInGrams.toInt(),
             heightInCm.toInt(),
             stats,
             species,
-            emptyArray()
+            movesArray
         )
     }
 }
