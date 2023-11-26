@@ -1,6 +1,6 @@
 package dtu.group21.models.pokemon
 
-enum class MoveCategory {
+enum class MoveLearnMethod {
     LEVEL_UP,
     TM_HM,
     EGG,

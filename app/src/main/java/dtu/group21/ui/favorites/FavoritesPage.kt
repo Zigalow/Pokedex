@@ -21,6 +21,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,8 +35,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
-import dtu.group21.models.pokemon.Pokemon
-import dtu.group21.models.pokemon.PokemonSamples
+import dtu.group21.models.database.DatabaseViewModel
+import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
@@ -44,9 +49,19 @@ import dtu.group21.ui.shared.bigFontSize
 @Composable
 fun FavoritesPage(
     onNavigateBack: () -> Unit,
-    onPokemonClicked: (String) -> Unit,
-    favoritePokemons: List<Pokemon>
+    onPokemonClicked: (String) -> Unit
 ) {
+    val pokemons = remember {
+        mutableStateOf(ArrayList<MutableState<ComplexPokemon>>())
+    }
+
+    // Load the favorite pokemons
+    LaunchedEffect(Unit) {
+        val database = MainActivity.database!!
+        val databaseViewModel = DatabaseViewModel()
+        databaseViewModel.getPokemons(pokemons, database)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,26 +92,22 @@ fun FavoritesPage(
             Spacer(Modifier.width(45.dp))
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            items(favoritePokemons.size) { index ->
-                FavoritePokemonBox(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    pokemon = favoritePokemons[index],
-                    onClicked = { onPokemonClicked(favoritePokemons[index].name) }
-                )
-            }
+
+        pokemons.value.forEach { pokemon ->
+         // Check this   FavoritePokemonBox(
+          LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                pokemon = pokemon.value,
+                onClicked = { onPokemonClicked(pokemon.value.id.toString()) }
+            )
         }
     }
 }
 
 @Composable
-fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () -> Unit) {
+fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked: () -> Unit) {
     Box(
         modifier = modifier
             .clickable { onClicked() }
@@ -132,7 +143,7 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicke
                 .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = formatPokemonId(pokemon.pokedexNumber),
+                    text = formatPokemonId(pokemon.id),
                     color = pokemon.type.primaryColor,
                     fontSize = 30.sp,
                     textAlign = TextAlign.Center,
@@ -150,7 +161,7 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicke
                 contentAlignment = Alignment.BottomStart
             ) {
                 Text(
-                    text = capitalizeFirstLetter(pokemon.name),
+                    text = capitalizeFirstLetter(pokemon.species.name),
                     fontSize = 17.sp,
                     color = Color.White,
                     textAlign = TextAlign.Start,
