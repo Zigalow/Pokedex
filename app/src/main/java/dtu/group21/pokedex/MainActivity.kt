@@ -22,6 +22,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         database = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "pokedex-database").build()
 
         setContent {
