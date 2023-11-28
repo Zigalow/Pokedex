@@ -94,8 +94,8 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<C
         }
         FavoritesIcon(
             modifier = Modifier
-                .offset(310.dp, 670.dp)
-                .size(90.dp),
+                .align(Alignment.BottomEnd).padding(end = 20.dp, bottom = 20.dp)
+                .size(70.dp),
             onClicked = {
                 onNavigate("favorites")
             }
@@ -152,7 +152,7 @@ fun PokemonColumn(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.Center, 
         maxItemsInEachRow = 2
     ) {
         val boxModifier = modifier
@@ -193,7 +193,7 @@ fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
         Image(
             painter = painterResource(id = R.drawable.white_heart),
             contentDescription = "White heart",
-            modifier = Modifier.fillMaxSize(0.6f)
+            modifier = Modifier.fillMaxSize(0.56f)
         )
     }
 }
@@ -259,7 +259,7 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
         Text(
             text = capitalizeFirstLetter(name),
             // todo
-            fontSize = 10.sp, color = Color.White
+            fontSize = 11.sp, color = Color.White
         )
     }
 }
