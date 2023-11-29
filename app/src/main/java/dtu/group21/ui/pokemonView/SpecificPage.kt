@@ -110,7 +110,8 @@ fun Inspect(pokemon: ComplexPokemon, onNavigateBack: () -> Unit) {
                 pokemon = pokemon, modifier = Modifier
                     .align(Alignment.TopCenter)
                     .zIndex(1f)
-                    .padding(vertical = 50.dp)
+                    .fillMaxHeight(0.4f)
+//                    .padding(vertical = 0.dp)
             )
             Bottom(pokemon = pokemon, modifier = Modifier.align(Alignment.BottomCenter))
         }
@@ -142,8 +143,7 @@ fun Top(
                 if (pokemon.isFavorite.value) {
                     println("Saving pokemon")
                     databaseViewModel.insertPokemon(pokemon, database)
-                }
-                else {
+                } else {
                     println("Deleting pokemon")
                     databaseViewModel.deletePokemon(pokemon, database)
                 }
