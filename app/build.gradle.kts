@@ -82,4 +82,9 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
     ksp("androidx.room:room-compiler:$room_version")
+ 
+    // Cucumber testing
+    testImplementation("io.cucumber:cucumber-java:7.14.1")
+    testImplementation("io.cucumber:cucumber-junit:7.14.1")
+
 }
