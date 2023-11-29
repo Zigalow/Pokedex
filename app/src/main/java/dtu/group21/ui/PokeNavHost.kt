@@ -44,11 +44,11 @@ fun PokeNavHost(startDestination: String = "home") {
     val pokemons = remember {
         mutableListOf<MutableState<ComplexPokemon>>()
     }
-    val ids = intArrayOf(6, 32, 35, 82, 133, 150, 668, 669).toTypedArray()
+//    val ids = intArrayOf(6, 32, 35, 82, 133, 150, 668, 669).toTypedArray()
+    val ids = IntRange(1, 20).toList().toTypedArray()
     LaunchedEffect(Unit) {
         viewModel.getPokemons(ids, pokemons)
     }
-    
 
 
     NavHost(
