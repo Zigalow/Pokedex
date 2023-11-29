@@ -84,7 +84,10 @@ dependencies {
     ksp("androidx.room:room-compiler:$room_version")
  
     // Cucumber testing
-    testImplementation("io.cucumber:cucumber-java:7.14.1")
-    testImplementation("io.cucumber:cucumber-junit:7.14.1")
+    val cucumberVersion = "7.14.0"
+    
+    testImplementation("io.cucumber:cucumber-java:$cucumberVersion")
+    testImplementation("io.cucumber:cucumber-junit:$cucumberVersion")
+    androidTestImplementation("io.cucumber:cucumber-android:$cucumberVersion")
 
 }
