@@ -14,12 +14,14 @@ android {
 
     defaultConfig {
         applicationId = "com.example.pokedex"
+        testApplicationId = "com.example.group21"
         minSdk = 30
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.group21.CucumberTest"
+//      testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -82,4 +84,12 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
     ksp("androidx.room:room-compiler:$room_version")
+ 
+    // Cucumber testing
+    val cucumberVersion = "7.14.0"
+    
+    testImplementation("io.cucumber:cucumber-java:$cucumberVersion")
+    testImplementation("io.cucumber:cucumber-junit:$cucumberVersion")
+    androidTestImplementation("io.cucumber:cucumber-android:$cucumberVersion")
+
 }
