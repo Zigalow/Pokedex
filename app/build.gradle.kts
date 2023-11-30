@@ -14,12 +14,14 @@ android {
 
     defaultConfig {
         applicationId = "com.example.pokedex"
+        testApplicationId = "com.example.group21"
         minSdk = 30
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.group21.CucumberTest"
+//      testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
