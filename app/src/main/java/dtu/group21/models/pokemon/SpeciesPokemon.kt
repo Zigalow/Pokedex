@@ -11,5 +11,5 @@ interface SpeciesPokemon : DisplayPokemon {
     val generation: Int
     val weightInGrams: Int
     val heightInCm: Int
-    val abilities: List<PokemonAbility>
+    val abilities: Array<PokemonAbility>
 }

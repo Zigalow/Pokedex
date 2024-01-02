@@ -24,7 +24,7 @@ interface DetailedPokemon : SpeciesPokemon {
     //    val heightInCm: Int
     //    val abilities: List<PokemonAbility>
     var isFavorite: MutableState<Boolean>
-    val moves: List<List<DisplayMove>>
+    val moves: Array<PokemonMove>
     
     
     
