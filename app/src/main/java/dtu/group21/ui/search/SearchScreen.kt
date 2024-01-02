@@ -196,7 +196,7 @@ fun SearchScreen(
                             if (searchSettings.searchString.isEmpty()) true
                             else if (searchSettings.searchString.isDigitsOnly()) {
                                 val searchNumber = searchSettings.searchString.toInt()
-                                searchNumber.toString() in pokemon.id.toString()
+                                searchNumber.toString() in pokemon.pokedexId.toString()
                             } else searchSettings.searchString.lowercase() in pokemon.species.name.lowercase()
 
                         isCandidate
@@ -255,7 +255,7 @@ fun SearchScreen(
                         .fillMaxWidth()
                         .padding(16.dp),
                     pokemon = pokemon,
-                    onClicked = { onPokemonClicked(pokemon.id.toString()) }
+                    onClicked = { onPokemonClicked(pokemon.pokedexId.toString()) }
                 )
             }
         }

@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
@@ -95,7 +94,7 @@ fun FavoritesPage(
                     .fillMaxWidth()
                     .padding(16.dp),
                 pokemon = pokemon.value,
-                onClicked = { onPokemonClicked(pokemon.value.id.toString()) }
+                onClicked = { onPokemonClicked(pokemon.value.pokedexId.toString()) }
             )
         }
     }
@@ -107,7 +106,7 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, o
         modifier = modifier
             .clickable { onClicked() }
             .background(
-                color = pokemon.type.secondaryColor,
+                color = pokemon.primaryType.secondaryColor,
                 shape = RoundedCornerShape(20.dp)
             )
     ) {
@@ -125,7 +124,7 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, o
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 PokemonTypeBox(
-                    pokemonType = pokemon.type,
+                    pokemonType = pokemon.primaryType,
                     modifier = Modifier.fillMaxSize(0.2f)
                 )
                 PokemonTypeBox(
@@ -138,8 +137,8 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, o
                 .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = formatPokemonId(pokemon.id),
-                    color = pokemon.type.primaryColor,
+                    text = formatPokemonId(pokemon.pokedexId),
+                    color = pokemon.primaryType.primaryColor,
                     fontSize = 30.sp,
                     textAlign = TextAlign.Center,
                 )
@@ -149,7 +148,7 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, o
             Box(
                 modifier = Modifier
                     .background(
-                        color = pokemon.type.primaryColor,
+                        color = pokemon.primaryType.primaryColor,
                         shape = RoundedCornerShape(30.dp)
                     ),
 

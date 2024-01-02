@@ -54,7 +54,7 @@ class PokemonViewModel(
                     )
                 }
 
-                if (emitLoading || returnedPokemon.id != 0) {
+                if (emitLoading || returnedPokemon.pokedexId != 0) {
                     pokemon.value = returnedPokemon
                 }
             }

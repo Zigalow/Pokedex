@@ -93,7 +93,7 @@ fun Inspect(pokemon: ComplexPokemon, onNavigateBack: () -> Unit) {
     val modifier = Modifier
     Column(
         modifier
-            .background(color = pokemon.type.secondaryColor)
+            .background(color = pokemon.primaryType.secondaryColor)
             .fillMaxSize()
     ) {
         Column(verticalArrangement = Arrangement.Top) {
@@ -104,7 +104,7 @@ fun Inspect(pokemon: ComplexPokemon, onNavigateBack: () -> Unit) {
         Box(
             modifier
                 .fillMaxSize()
-                .background(color = pokemon.type.secondaryColor)
+                .background(color = pokemon.primaryType.secondaryColor)
         ) {
             PokemonImage(
                 pokemon = pokemon, modifier = Modifier
@@ -135,7 +135,7 @@ fun Top(
         Spacer(modifier.width(230.dp))
         FavoritesIcon(
             active = pokemon.isFavorite.value,
-            color = pokemon.type.secondaryColor,
+            color = pokemon.primaryType.secondaryColor,
             onClicked = {
                 pokemon.isFavorite.value = !pokemon.isFavorite.value
                 val database = MainActivity.database!!
@@ -185,7 +185,7 @@ fun Mid(modifier: Modifier = Modifier, pokemon: ComplexPokemon) {
                 fontSize = 30.sp
             )
             Text(
-                text = "#" + pokemon.id,
+                text = "#" + pokemon.pokedexId,
                 fontSize = 30.sp
             )
             Spacer(modifier.width(13.dp))
@@ -201,9 +201,9 @@ fun Mid(modifier: Modifier = Modifier, pokemon: ComplexPokemon) {
                     .width(50.dp)
                     .height(18.dp)
                     .background(
-                        color = pokemon.type.primaryColor,
+                        color = pokemon.primaryType.primaryColor,
                         shape = RoundedCornerShape(15.dp)
-                    ), pokemonType = pokemon.type
+                    ), pokemonType = pokemon.primaryType
             )
             Spacer(modifier.width(15.dp))
             PokemonTypeBox(
@@ -431,7 +431,7 @@ fun EvolutionSection(
     val viewModel = PokemonViewModel()
     LaunchedEffect(Unit) {
         if (evolutionChain.value.isEmpty()) {
-            viewModel.getEvolutionChain(pokemon.id, evolutionChain)
+            viewModel.getEvolutionChain(pokemon.pokedexId, evolutionChain)
         }
     }
 

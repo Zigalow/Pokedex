@@ -25,7 +25,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,14 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
-import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
@@ -160,18 +156,18 @@ fun PokemonColumn(
             .padding(horizontal = 4.dp, vertical = 5.dp)
         for (i in pokemons.indices) {
             val pokemon = pokemons[i].value
-            if (pokemon.id == 0) {
+            if (pokemon.pokedexId == 0) {
                 CircularProgressIndicator(
                     modifier = boxModifier,
                     color = Color.Black
                 )
-            } else if (pokemon.id == -1) {
+            } else if (pokemon.pokedexId == -1) {
                 // fail
             } else {
                 PokemonBox(
                     modifier = boxModifier,
                     pokemon = pokemon,
-                    onClicked = { onPokemonClicked("${pokemon.id}") }
+                    onClicked = { onPokemonClicked("${pokemon.pokedexId}") }
                 )
             }
         }
@@ -267,7 +263,7 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
 @Composable
 fun PokemonImage(modifier: Modifier = Modifier, pokemon: ComplexPokemon) {
     AsyncImage(
-        model = pokemon.spriteResourceId,
+        model = pokemon.spriteId,
         contentDescription = pokemon.species.name,
         modifier = modifier
     )
@@ -286,7 +282,7 @@ fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
 fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, size: Dp) {
     Box(
         modifier = modifier.background(
-            color = pokemon.type.primaryColor,
+            color = pokemon.primaryType.primaryColor,
             shape = RoundedCornerShape(30.dp)
         ),
     ) {
@@ -309,7 +305,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked
         modifier = modifier
             .clickable { onClicked() }
             .background(
-                color = pokemon.type.secondaryColor,
+                color = pokemon.primaryType.secondaryColor,
                 shape = RoundedCornerShape(20.dp)
             )
 
@@ -324,7 +320,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked
                 Spacer(modifier = Modifier.width(7.dp))
                 val pokemonTypeBoxModifier = Modifier.weight(1f)
                 PokemonTypeBox(
-                    pokemonType = pokemon.type,
+                    pokemonType = pokemon.primaryType,
                     modifier = pokemonTypeBoxModifier
                 )
                 Spacer(modifier = Modifier.padding(horizontal = 2.dp))
@@ -335,9 +331,9 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked
                 Spacer(modifier = Modifier.padding(horizontal = 2.dp))
                 // For displaying pokedex number
                 Text(
-                    text = formatPokemonId(pokemon.id),
+                    text = formatPokemonId(pokemon.pokedexId),
                     modifier = Modifier.weight(1f),
-                    color = pokemon.type.primaryColor,
+                    color = pokemon.primaryType.primaryColor,
                     textAlign = TextAlign.End,
                     fontSize = 10.sp
                 )
@@ -349,7 +345,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked
                 Box(
                     modifier = Modifier
                         .background(
-                            color = pokemon.type.primaryColor,
+                            color = pokemon.primaryType.primaryColor,
                             shape = RoundedCornerShape(30.dp)
                         ),
                     contentAlignment = Alignment.Center,

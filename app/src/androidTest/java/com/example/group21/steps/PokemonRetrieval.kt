@@ -25,7 +25,7 @@ class PokemonRetrieval {
             assert(false)
         }
         val pokemon = latestPokemon!!
-        assert(pokemon.id > 0)
+        assert(pokemon.pokedexId > 0)
         assert(pokemon.species.name.isNotEmpty())
         assert(pokemon.moves.isNotEmpty())
     }

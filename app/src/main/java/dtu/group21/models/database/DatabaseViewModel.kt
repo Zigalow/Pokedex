@@ -58,8 +58,8 @@ class DatabaseViewModel(
         movesStringBuilder.setLength(movesStringBuilder.length - 2)
 
         return PokemonData(
-            pokemon.id,
-            pokemon.type.toString(),
+            pokemon.pokedexId,
+            pokemon.primaryType.toString(),
             pokemon.secondaryType.toString(),
             pokemon.gender.toString(),
             pokemon.categoryName,
