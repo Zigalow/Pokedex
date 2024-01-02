@@ -7,7 +7,7 @@ interface SpeciesPokemon : DisplayPokemon {
     val isBaby: Boolean
     val isLegendary: Boolean
     val isMythical: Boolean
-    val pokemonCategory: String
+    val category: String
     val generation: Int
     val weightInGrams: Int
     val heightInCm: Int

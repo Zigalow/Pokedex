@@ -4,13 +4,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 
 //@Entity(tableName = "favorites")
-class ComplexPokemon (
+class ComplexPokemon(
     //@PrimaryKey
     override val pokedexId: Int, // the same as the pokédex number
     override val primaryType: PokemonType,
     override val secondaryType: PokemonType,
-    val gender: PokemonGender,
-    val categoryName: String,
+    override val gender: PokemonGender,
+    override val category: String,
     override val abilities: Array<PokemonAbility>,
     override val weightInGrams: Int,
     override val heightInCm: Int,
@@ -18,25 +18,26 @@ class ComplexPokemon (
     val species: PokemonSpecies,
     override val moves: Array<PokemonMove>,
     override var isFavorite: MutableState<Boolean> = mutableStateOf(false)
-) : DisplayPokemon, DetailedPokemon {
+) : GenderedPokemon, DetailedPokemon {
     //@Ignore
     override val spriteId = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${
         pokedexId.toString().padStart(3, '0')
     }.png"
     override val evolutionChainId: Int
-        get() = evolutionChainId
+        get() = -1 // TODO:  
     override val genderRate: Int
-        get() = TODO("Not yet implemented")
+        get() = species.genderRate
     override val isBaby: Boolean
-        get() = TODO("Not yet implemented")
+        get() = species.isBaby
     override val isLegendary: Boolean
-        get() = TODO("Not yet implemented")
+        get() = species.isLegendary
     override val isMythical: Boolean
-        get() = TODO("Not yet implemented")
-    override val pokemonCategory: String
-        get() = TODO("Not yet implemented")
+        get() = species.isMythical
     override val generation: Int
-        get() = TODO("Not yet implemented")
+        get() = -1 // TODO:
+    override val hasGenderDifferences: Boolean
+        get() = species.hasGenderDifferences
+    
     override val name = species.name
 
     //@Ignore
