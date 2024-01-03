@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.ui.favorites.FavoritePokemonBox
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
@@ -139,15 +140,15 @@ fun SearchScreen(
     onNavigateToSort: () -> Unit,
     onPokemonClicked: (String) -> Unit,
     searchSettings: SearchSettings,
-    pokemonPool: MutableList<MutableState<ComplexPokemon>>,
+    pokemonPool: MutableList<MutableState<DisplayPokemon>>,
     modifier: Modifier = Modifier,
 ) {
-    val allCandidates = ArrayList<ComplexPokemon>()
+    val allCandidates = ArrayList<DisplayPokemon>()
     for (pokemon in pokemonPool) {
         allCandidates.add(pokemon.value)
     }
 
-    val candidates: State<List<ComplexPokemon>> = liveLiteral("searchResults", allCandidates)
+    val candidates: State<List<DisplayPokemon>> = liveLiteral("searchResults", allCandidates)
 
     Column(
         modifier = modifier
@@ -197,7 +198,7 @@ fun SearchScreen(
                             else if (searchSettings.searchString.isDigitsOnly()) {
                                 val searchNumber = searchSettings.searchString.toInt()
                                 searchNumber.toString() in pokemon.pokedexId.toString()
-                            } else searchSettings.searchString.lowercase() in pokemon.species.name.lowercase()
+                            } else searchSettings.searchString.lowercase() in pokemon.name.lowercase()
 
                         isCandidate
                     })
@@ -254,9 +255,8 @@ fun SearchScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    pokemon = pokemon,
-                    onClicked = { onPokemonClicked(pokemon.pokedexId.toString()) }
-                )
+                    pokemon = pokemon
+                ) { onPokemonClicked(pokemon.pokedexId.toString()) }
             }
         }
     }

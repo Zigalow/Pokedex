@@ -14,7 +14,7 @@ class ComplexPokemon(
     override val abilities: Array<PokemonAbility>,
     override val weightInGrams: Int,
     override val heightInCm: Int,
-    val stats: PokemonStats,
+    override val stats: PokemonStats,
     val species: PokemonSpecies,
     override val moves: Array<PokemonMove>,
     override var isFavorite: MutableState<Boolean> = mutableStateOf(false)

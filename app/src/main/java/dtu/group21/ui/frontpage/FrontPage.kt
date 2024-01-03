@@ -41,12 +41,13 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
 import java.util.Locale
 
 @Composable
-fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<ComplexPokemon>>) {
+fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<DisplayPokemon>>) {
     var menuIsOpen by remember { mutableStateOf(false) }
     /*val pokemons = remember {
         mutableListOf<MutableState<ComplexPokemon>>()
@@ -141,7 +142,7 @@ fun Menu(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
 @Composable
 fun PokemonColumn(
     modifier: Modifier = Modifier,
-    pokemons: List<MutableState<ComplexPokemon>>,
+    pokemons: MutableList<MutableState<DisplayPokemon>>,
     onPokemonClicked: (String) -> Unit
 ) {
     FlowRow(
@@ -166,9 +167,11 @@ fun PokemonColumn(
             } else {
                 PokemonBox(
                     modifier = boxModifier,
-                    pokemon = pokemon,
-                    onClicked = { onPokemonClicked("${pokemon.pokedexId}") }
+                    pokemon = pokemon
                 )
+                {
+                    onPokemonClicked("${pokemon.pokedexId}")
+                }
             }
         }
     }
@@ -261,10 +264,10 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
 }
 
 @Composable
-fun PokemonImage(modifier: Modifier = Modifier, pokemon: ComplexPokemon) {
+fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon) {
     AsyncImage(
         model = pokemon.spriteId,
-        contentDescription = pokemon.species.name,
+        contentDescription = pokemon.name,
         modifier = modifier
     )
     /*Image(
@@ -300,7 +303,7 @@ fun formatPokemonId(unformattedNumber: Int): String {
 }
 
 @Composable
-fun PokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked: () -> Unit) {
+fun PokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, onClicked: () -> Unit) {
     Box(
         modifier = modifier
             .clickable { onClicked() }
@@ -351,7 +354,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = capitalizeFirstLetter(pokemon.species.name),
+                        text = capitalizeFirstLetter(pokemon.name),
                         modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                         fontSize = 17.sp,
                         color = Color.White,

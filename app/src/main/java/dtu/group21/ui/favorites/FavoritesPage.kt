@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
 import dtu.group21.models.database.DatabaseViewModel
-import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
@@ -49,7 +49,7 @@ fun FavoritesPage(
     onPokemonClicked: (String) -> Unit
 ) {
     val pokemons = remember {
-        mutableStateOf(ArrayList<MutableState<ComplexPokemon>>())
+        mutableStateOf(ArrayList<MutableState<DisplayPokemon>>())
     }
 
     // Load the favorite pokemons
@@ -93,15 +93,17 @@ fun FavoritesPage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                pokemon = pokemon.value,
-                onClicked = { onPokemonClicked(pokemon.value.pokedexId.toString()) }
+                pokemon = pokemon.value
             )
+            {
+                onPokemonClicked(pokemon.value.pokedexId.toString())
+            }
         }
     }
 }
 
 @Composable
-fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, onClicked: () -> Unit) {
+fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, onClicked: () -> Unit) {
     Box(
         modifier = modifier
             .clickable { onClicked() }
@@ -155,7 +157,7 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, o
                 contentAlignment = Alignment.BottomStart
             ) {
                 Text(
-                    text = capitalizeFirstLetter(pokemon.species.name),
+                    text = capitalizeFirstLetter(pokemon.name),
                     fontSize = 17.sp,
                     color = Color.White,
                     textAlign = TextAlign.Start,

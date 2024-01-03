@@ -25,8 +25,6 @@ interface DetailedPokemon : SpeciesPokemon {
     //    val abilities: List<PokemonAbility>
     var isFavorite: MutableState<Boolean>
     val moves: Array<PokemonMove>
-    
-    
-    
+    val stats: PokemonStats
     
 }

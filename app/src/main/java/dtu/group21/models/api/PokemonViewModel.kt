@@ -4,6 +4,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.DetailedPokemon
+import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonSpecies
@@ -20,7 +22,7 @@ class PokemonViewModel(
 ) : ViewModel() {
     private val pokedexRequestMaker: PokedexRequestMaker = PokedexRequestMaker()
 
-    fun getComplexPokemon(pokedexId: Int, pokemon: MutableState<ComplexPokemon>, emitLoading: Boolean = true) {
+    fun getComplexPokemon(pokedexId: Int, pokemon: MutableState<DetailedPokemon>, emitLoading: Boolean = true) {
         coroutineScope.launch {
             getComplexPokemonInternal(pokedexId).collect {
                 val returnedPokemon = when (it) {
@@ -71,7 +73,7 @@ class PokemonViewModel(
         emit(Resource.Success(pokemon))
     }
 
-    fun getPokemons(pokedexIds: Array<Int>, list: MutableList<MutableState<ComplexPokemon>>) {
+    fun getPokemons(pokedexIds: Array<Int>, list: MutableList<MutableState<DetailedPokemon>>) {
         for (id in pokedexIds) {
             val mutablePokemon = mutableStateOf(
                 ComplexPokemon(
@@ -86,7 +88,7 @@ class PokemonViewModel(
                     PokemonStats(0, 0, 0, 0, 0, 0),
                     PokemonSpecies("Loading", 0,false, false, false, false),
                     emptyArray()
-                )
+                ) as DetailedPokemon
             )
             list.add(mutablePokemon)
             getComplexPokemon(id, mutablePokemon)

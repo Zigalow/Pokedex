@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.DetailedPokemon
+import dtu.group21.models.pokemon.DisplayPokemon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -62,7 +64,7 @@ class DatabaseViewModel(
             pokemon.primaryType.toString(),
             pokemon.secondaryType.toString(),
             pokemon.gender.toString(),
-            pokemon.categoryName,
+            pokemon.category,
             abilitiesStringBuilder.toString(),
             pokemon.weightInGrams.toString(),
             pokemon.heightInCm.toString(),
@@ -72,9 +74,9 @@ class DatabaseViewModel(
         )
     }
 
-    fun getPokemons(pokemons: MutableState<ArrayList<MutableState<ComplexPokemon>>>, database: AppDatabase) {
+    fun getPokemons(pokemons: MutableState<ArrayList<MutableState<DisplayPokemon>>>, database: AppDatabase) {
         coroutineScope.launch {
-            val pokemonList: ArrayList<MutableState<ComplexPokemon>> = ArrayList()
+            val pokemonList: ArrayList<MutableState<DisplayPokemon>> = ArrayList()
             getPokemonsInternal(database).collect {
                 when (it) {
                     is Resource.Success -> {
@@ -108,7 +110,7 @@ class DatabaseViewModel(
         }
     }
 
-    fun getPokemon(pokedexId: Int, pokemon: MutableState<ComplexPokemon>, database: AppDatabase) {
+    fun getPokemon(pokedexId: Int, pokemon: MutableState<DetailedPokemon>, database: AppDatabase) {
         coroutineScope.launch {
             getPokemonInternal(pokedexId, database).collect {
                 when (it) {
