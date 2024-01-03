@@ -29,6 +29,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.database.DatabaseViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
@@ -91,6 +93,10 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
 
 @Composable
 fun Inspect(pokemon: DetailedPokemon, onNavigateBack: () -> Unit) {
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(pokemon.primaryType.secondaryColor)
+    }
     val modifier = Modifier
     Column(
         modifier

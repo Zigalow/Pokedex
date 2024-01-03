@@ -74,7 +74,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.navigation:navigation-compose:2.7.4")
-    
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.20.0")
+
     // Images
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 
