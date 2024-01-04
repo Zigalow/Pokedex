@@ -47,6 +47,7 @@ import dtu.group21.ui.shared.bigFontSize
 fun FavoritesPage(
     onNavigateBack: () -> Unit,
     onPokemonClicked: (String) -> Unit
+
 ) {
     val pokemons = remember {
         mutableStateOf(ArrayList<MutableState<DisplayPokemon>>())
