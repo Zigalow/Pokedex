@@ -91,7 +91,8 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
         }
         FavoritesIcon(
             modifier = Modifier
-                .align(Alignment.BottomEnd).padding(end = 20.dp, bottom = 20.dp)
+                .align(Alignment.BottomEnd)
+                .padding(end = 20.dp, bottom = 20.dp)
                 .size(70.dp),
             onClicked = {
                 onNavigate("favorites")
@@ -109,23 +110,22 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
                         .fillMaxHeight(),
                 ) {
                     MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
-                    Row(
+                    /*Row(
                         modifier = Modifier
                             .padding(vertical = 16.dp, horizontal = 19.dp)
                             .size(49.dp)
                             .offset(y = 675.dp)
-                    ) {
-                        Image(
-                            modifier = Modifier
-                                //.padding(vertical = 16.dp, horizontal = 19.dp)
-                                .size(49.dp)
-                                //.offset(y = 675.dp)
-                                .clickable { onNavigate("settings") },
-                            painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
-                            contentDescription = "settings-icon", // Set to null if the image is decorative
-
-                        )
-                    }
+                    ) {*/
+                    Image(
+                        modifier = Modifier
+                            .padding(vertical = 16.dp, horizontal = 19.dp)
+                            .size(49.dp)
+                            .offset(y = 675.dp)
+                            .clickable { onNavigate("settings") },
+                        painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
+                        contentDescription = "settings-icon", // Set to null if the image is decorative
+                    )
+                    //}
                 }
 
             }
@@ -156,7 +156,7 @@ fun PokemonColumn(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.Center, 
+        horizontalArrangement = Arrangement.Center,
         maxItemsInEachRow = 2
     ) {
         val boxModifier = modifier
