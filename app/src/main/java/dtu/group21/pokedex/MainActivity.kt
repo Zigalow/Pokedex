@@ -39,28 +39,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.White//MaterialTheme.colorScheme.background
                 ) {
-                    //PokeNavHost()
-                    //val windowSizeClass = calculateWindowSizeClass(this)
-                    //PokedexApp(windowSizeClass)
                     PokeNavHost()
                 }
             }
         }
     }
-
-    /*@Composable
-    fun PokedexApp(windowSizeClass: WindowSizeClass) {
-        PokeNavHost()
-        //val showTopAppBar = windowSizeClass.heightSizeClass != WindowHeightSizeClass.Compact
-        if(windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact){
-            println("1")
-        } else if(windowSizeClass.heightSizeClass == WindowHeightSizeClass.Medium){
-
-        }
-        else {
-
-        }
-    }*/
 
     companion object {
         var database: AppDatabase? = null
