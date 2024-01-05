@@ -61,7 +61,6 @@ import dtu.group21.models.pokemon.PokemonStats
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
-import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 
 @Composable
