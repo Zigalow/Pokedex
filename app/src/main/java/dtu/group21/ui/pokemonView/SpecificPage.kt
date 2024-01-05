@@ -62,6 +62,7 @@ import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
+import dtu.group21.ui.frontpage.capitalizeFirstLetter
 
 @Composable
 fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
@@ -109,19 +110,17 @@ fun Inspect(pokemon: DetailedPokemon, onNavigateBack: () -> Unit) {
 
             Mid(modifier, pokemon)
         }
-        Box(
+        Column(
             modifier
                 .fillMaxSize()
                 .background(color = pokemon.primaryType.secondaryColor)
         ) {
             PokemonImage(
                 pokemon = pokemon, modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .zIndex(1f)
+                    .align(Alignment.CenterHorizontally)
                     .fillMaxHeight(0.4f)
-//                    .padding(vertical = 0.dp)
             )
-            Bottom(pokemon = pokemon, modifier = Modifier.align(Alignment.BottomCenter))
+            Bottom(pokemon = pokemon)
         }
     }
 
@@ -219,20 +218,20 @@ fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 .height(35.dp)
         ) {
             Spacer(modifier.width(13.dp))
-            PokemonTypeBox(
+            LargerPokemonTypeBox(
                 modifier
-                    .width(50.dp)
-                    .height(18.dp)
+                    .width(80.dp)
+                    .height(29.dp)
                     .background(
                         color = pokemon.primaryType.primaryColor,
                         shape = RoundedCornerShape(15.dp)
                     ), pokemonType = pokemon.primaryType
             )
             Spacer(modifier.width(15.dp))
-            PokemonTypeBox(
+            LargerPokemonTypeBox(
                 modifier
-                    .width(50.dp)
-                    .height(18.dp)
+                    .width(80.dp)
+                    .height(29.dp)
                     .background(
                         color = pokemon.secondaryType.secondaryColor,
                         shape = RoundedCornerShape(15.dp)
@@ -246,8 +245,7 @@ fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
 fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
     Column(
         modifier
-            .fillMaxWidth()
-            .height(400.dp)
+            .fillMaxSize()
             .background(
                 androidx.compose.ui.graphics.Color.White, shape = RoundedCornerShape(
                     topStart = 32.dp,
@@ -750,5 +748,22 @@ fun moveBox(move: PokemonMove) {
                 }
             }
         }
+    }
+}
+@Composable
+fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
+    Box(
+        modifier = modifier.background(
+            color = pokemonType.primaryColor,
+            shape = RoundedCornerShape(15.dp)
+        ), contentAlignment = Alignment.Center
+
+    ) {
+        val name = if (pokemonType == PokemonType.NONE) "" else pokemonType.name
+        Text(
+            text = capitalizeFirstLetter(name),
+            // todo
+            fontSize = 17.sp, color = Color.White
+        )
     }
 }
