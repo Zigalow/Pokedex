@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -250,12 +251,18 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 .width(13.dp)
                 .height(25.dp)
         )
-        CategoryList(
-            categories = categories,
-            onCategorySelected = { selectedCategory = it },
-            initiallyChosen = selectedCategory,
-            modifier = Modifier.padding(horizontal = 20.dp)
-        )
+        Box( modifier = Modifier
+            //.padding(horizontal = 5.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()) {
+            CategoryList(
+                categories = categories,
+                onCategorySelected = { selectedCategory = it },
+                initiallyChosen = selectedCategory,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+
         Spacer(modifier.height(13.dp))
         Column(
             modifier
