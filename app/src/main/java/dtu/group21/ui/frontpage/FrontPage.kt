@@ -94,7 +94,8 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<C
         }
         FavoritesIcon(
             modifier = Modifier
-                .align(Alignment.BottomEnd).padding(end = 20.dp, bottom = 20.dp)
+                .align(Alignment.BottomEnd)
+                .padding(end = 5.dp, bottom = 5.dp)
                 .size(70.dp),
             onClicked = {
                 onNavigate("favorites")
