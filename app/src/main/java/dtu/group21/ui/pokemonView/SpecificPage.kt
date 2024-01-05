@@ -133,14 +133,26 @@ fun Top(
     onClickBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+        ) {
         backIcon(
             modifier
                 .padding(vertical = 16.dp, horizontal = 19.dp)
                 .size(49.dp)
                 .clickable { onClickBack() }
         )
-        Spacer(modifier.width(230.dp))
+        }
+        //Spacer(modifier.width(230.dp))
+        Box(
+            modifier = Modifier
+                .weight(0.1f)
+        ) {
         FavoritesIcon(
             active = pokemon.isFavorite.value,
             color = pokemon.primaryType.secondaryColor,
@@ -157,7 +169,9 @@ fun Top(
                     databaseViewModel.deletePokemon(saveablePokemon, database)
                 }
             }
+
         )
+        }
         /*favoritesIconF(
             modifier = modifier
                 .size(60.dp)
