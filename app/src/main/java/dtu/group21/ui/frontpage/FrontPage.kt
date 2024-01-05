@@ -109,16 +109,23 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
                         .fillMaxHeight(),
                 ) {
                     MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
-                    Image(
+                    Row(
                         modifier = Modifier
                             .padding(vertical = 16.dp, horizontal = 19.dp)
                             .size(49.dp)
                             .offset(y = 675.dp)
-                            .clickable { onNavigate("settings") },
-                        painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
-                        contentDescription = "settings-icon", // Set to null if the image is decorative
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                //.padding(vertical = 16.dp, horizontal = 19.dp)
+                                .size(49.dp)
+                                //.offset(y = 675.dp)
+                                .clickable { onNavigate("settings") },
+                            painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
+                            contentDescription = "settings-icon", // Set to null if the image is decorative
 
-                    )
+                        )
+                    }
                 }
 
             }
