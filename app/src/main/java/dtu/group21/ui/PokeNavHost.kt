@@ -7,6 +7,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,6 +37,17 @@ import dtu.group21.ui.settings.SettingsPage
 
 // Step6: add navigation arguments
 
+/**
+ *  Prevents rendering issues when clicking too quickly on back button. Functions the same way navController.popBackStack()
+ */
+fun popBackStackCustom(navController: NavHostController): Boolean {
+
+    return if (navController.previousBackStackEntry == null) {
+        false;
+    } else
+        navController.popBackStack();
+}
+
 @Composable
 fun PokeNavHost(startDestination: String = "home") {
     val navController = rememberNavController()
@@ -62,23 +74,25 @@ fun PokeNavHost(startDestination: String = "home") {
                 onNavigate = {
                     navController.navigate(it)
                 },
-                pokemons.map { remember { mutableStateOf(it.value as DisplayPokemon) } }.toMutableList()
+                pokemons.map { remember { mutableStateOf(it.value as DisplayPokemon) } }
+                    .toMutableList()
             )
         }
         composable("search") {
             SearchScreen(
-                onNavigateBack = { navController.popBackStack() },
+                onNavigateBack = { popBackStackCustom(navController) },
                 onNavigateToFilter = { navController.navigate("filter") },
                 onNavigateToSort = { navController.navigate("sort") },
                 onPokemonClicked = { navController.navigate("pokemon/$it") },
                 searchSettings = searchSettings,
-                pokemonPool = pokemons.map { remember { mutableStateOf(it.value as DisplayPokemon) } }.toMutableList(),
+                pokemonPool = pokemons.map { remember { mutableStateOf(it.value as DisplayPokemon) } }
+                    .toMutableList(),
                 modifier = Modifier.fillMaxSize(),
             )
         }
         composable("filter") {
             FilterScreen(
-                onNavigateBack = { navController.popBackStack() },
+                onNavigateBack = { popBackStackCustom(navController) },
                 onDoneFiltering = { navController.popBackStack() },
                 filterSettings = searchSettings.filterSettings,
                 modifier = Modifier.fillMaxSize(),
@@ -86,7 +100,7 @@ fun PokeNavHost(startDestination: String = "home") {
         }
         composable("sort") {
             SortScreen(
-                onNavigateBack = { navController.popBackStack() },
+                onNavigateBack = { popBackStackCustom(navController) },
                 onDoneSorting = { navController.popBackStack() },
                 sortSettings = searchSettings.sortSettings,
                 modifier = Modifier.fillMaxSize(),
@@ -99,18 +113,18 @@ fun PokeNavHost(startDestination: String = "home") {
             it.arguments?.getInt("pokedexId")?.let { it1 ->
                 SpecificPage(
                     it1,
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { popBackStackCustom(navController) }
                 )
             }
         }
         composable("settings") {
             SettingsPage(
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { popBackStackCustom(navController) }
             )
         }
         composable("favorites") {
             FavoritesPage(
-                onNavigateBack = { navController.popBackStack() },
+                onNavigateBack = { popBackStackCustom(navController) },
                 onPokemonClicked = { navController.navigate("pokemon/$it") },
                 //favoritePokemons = PokemonSamples.listOfPokemons.subList(2, 7)
             )
