@@ -254,7 +254,7 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
             categories = categories,
             onCategorySelected = { selectedCategory = it },
             initiallyChosen = selectedCategory,
-            modifier = Modifier.padding(horizontal = 10.dp)
+            modifier = Modifier.padding(horizontal = 20.dp)
         )
         Spacer(modifier.height(13.dp))
         Column(
@@ -263,7 +263,9 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
         ) {
             //based on which category is the coresponding section function will be used
             Sections(selectedCategory = selectedCategory, pokemon = pokemon, modifier = modifier)
-            Spacer(modifier.height(150.dp))
+            Spacer(
+                modifier = Modifier
+                    .weight(1f))
         }
     }
 }
