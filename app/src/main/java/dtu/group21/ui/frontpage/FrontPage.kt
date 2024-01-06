@@ -110,24 +110,19 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
                         .fillMaxHeight(),
                 ) {
                     MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
-                    /*Row(
-                        modifier = Modifier
-                            .padding(vertical = 16.dp, horizontal = 19.dp)
-                            .size(49.dp)
-                            .offset(y = 675.dp)
-                    ) {*/
-                    Image(
-                        modifier = Modifier
-                            .padding(vertical = 16.dp, horizontal = 19.dp)
-                            .size(49.dp)
-                            .offset(y = 675.dp)
-                            .clickable { onNavigate("settings") },
-                        painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
-                        contentDescription = "settings-icon", // Set to null if the image is decorative
-                    )
-                    //}
                 }
-
+                Box(modifier = Modifier.width(90.dp)
+                    .fillMaxHeight()){
+                    SettingsIcon(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(end = 16.dp, bottom = 5.dp)
+                            .size(70.dp),
+                        onClicked = {
+                            onNavigate("settings")
+                        }
+                    )
+                }
             }
         }
     }
@@ -184,6 +179,20 @@ fun PokemonColumn(
     }
 }
 
+@Composable
+fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit){
+    Box(modifier = modifier
+        .clickable { onClicked() },
+        contentAlignment = Alignment.Center
+    )
+    {
+        Image(
+            painter = painterResource(id = R.drawable.settings_icon),
+            contentDescription = "settings-icon",
+            modifier = Modifier.fillMaxSize(0.56f)
+        )
+    }
+}
 
 @Composable
 fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
