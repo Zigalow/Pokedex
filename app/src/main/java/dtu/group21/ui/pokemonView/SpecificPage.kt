@@ -45,7 +45,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -62,6 +61,9 @@ import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
+import dtu.group21.ui.frontpage.formatPokemonId
+import dtu.group21.ui.theme.EggWhite
+
 
 @Composable
 fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
@@ -206,8 +208,9 @@ fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 fontSize = 30.sp
             )
             Text(
-                text = "#" + pokemon.pokedexId,
-                fontSize = 30.sp
+                text = formatPokemonId(pokemon.pokedexId),
+                fontSize = 30.sp,
+                color = pokemon.primaryType.primaryColor
             )
             Spacer(modifier.width(13.dp))
         }
@@ -246,7 +249,8 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
         modifier
             .fillMaxSize()
             .background(
-                androidx.compose.ui.graphics.Color.White, shape = RoundedCornerShape(
+                Color.White,
+                shape = RoundedCornerShape(
                     topStart = 32.dp,
                     topEnd = 32.dp,
                     bottomStart = 0.dp,
@@ -319,7 +323,9 @@ fun CategoryList(
     var selectedCategory by remember { mutableStateOf(initiallyChosen) }
 
     LazyRow(
-        modifier = modifier,
+        modifier = modifier
+            .height(25.dp)
+            .background(shape = RoundedCornerShape(10.dp), color = EggWhite),
     ) {
         items(categories) { category ->
             val isSelected = selectedCategory == category
