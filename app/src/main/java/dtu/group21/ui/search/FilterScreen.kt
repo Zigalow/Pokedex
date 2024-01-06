@@ -62,8 +62,12 @@ fun FilterScreen(
                 modifier = Modifier
                     .size(35.dp)
                     .align(Alignment.CenterVertically)
-                    .clickable { onNavigateBack() },
+                    .clickable {
+                        onDoneFiltering()
+                        //onNavigateBack()
+                        },
                 alignment = Alignment.CenterStart,
+
             )
             Text(
                 text = "Filter",
@@ -153,7 +157,8 @@ fun FilterScreen(
                     }
                 }
             }
-            Button(
+            //REMOVE Apply Button
+            /*Button(
                 onClick = { onDoneFiltering() },
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -163,7 +168,7 @@ fun FilterScreen(
                     text = "Apply",
                     fontSize = bigFontSize,
                 )
-            }
+            }*/
 
         }
     }

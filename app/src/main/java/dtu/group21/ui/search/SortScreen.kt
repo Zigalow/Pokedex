@@ -52,7 +52,9 @@ fun SortScreen(
                 modifier = Modifier
                     .size(35.dp)
                     .align(Alignment.CenterVertically)
-                    .clickable { onNavigateBack() },
+                    .clickable { //onNavigateBack()
+                        onDoneSorting()
+                               },
                 alignment = Alignment.CenterStart,
             )
             Text(
@@ -77,8 +79,8 @@ fun SortScreen(
             modifier = Modifier.padding(horizontal = 5.dp),
             selectedInitially = sortSettings.sortMethod,
         )
-
-        Button(
+        //REMOVE Apply Button
+        /*Button(
             onClick = { onDoneSorting() },
             modifier = Modifier
                 .fillMaxWidth(),
@@ -88,6 +90,6 @@ fun SortScreen(
                 text = "Apply",
                 fontSize = bigFontSize,
             )
-        }
+        }*/
     }
 }
