@@ -111,18 +111,18 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
                 ) {
                     MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
                 }
-                Box(modifier = Modifier.width(90.dp)
-                    .fillMaxHeight()){
-                    SettingsIcon(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(end = 16.dp, bottom = 5.dp)
-                            .size(70.dp),
-                        onClicked = {
-                            onNavigate("settings")
-                        }
-                    )
-                }
+            }
+            Box(modifier = Modifier.width(90.dp)
+                .fillMaxHeight()){
+                SettingsIcon(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 16.dp, bottom = 5.dp)
+                        .size(70.dp),
+                    onClicked = {
+                        onNavigate("settings")
+                    }
+                )
             }
         }
     }
