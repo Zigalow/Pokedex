@@ -59,11 +59,8 @@ fun FavoritesPage(
         databaseViewModel.getPokemons(pokemons, database)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
+    Column(modifier = Modifier
+        .fillMaxSize()){
         UpperMenu(
             modifier = Modifier
                 .fillMaxWidth()
@@ -87,19 +84,25 @@ fun FavoritesPage(
             )
             Spacer(Modifier.width(45.dp))
         }
-
-        pokemons.value.forEach { pokemon ->
-            FavoritePokemonBox(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                pokemon = pokemon.value
-            )
-            {
-                onPokemonClicked(pokemon.value.pokedexId.toString())
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            pokemons.value.forEach { pokemon ->
+                FavoritePokemonBox(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    pokemon = pokemon.value
+                )
+                {
+                    onPokemonClicked(pokemon.value.pokedexId.toString())
+                }
             }
         }
     }
+
 }
 
 @Composable
