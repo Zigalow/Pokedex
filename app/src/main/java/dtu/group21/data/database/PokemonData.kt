@@ -1,4 +1,4 @@
-package dtu.group21.models.database
+package dtu.group21.data.database
 
 import androidx.room.Entity
 import androidx.room.Ignore

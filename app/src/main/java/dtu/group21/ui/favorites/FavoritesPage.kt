@@ -18,10 +18,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,9 +32,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
-import dtu.group21.models.database.DatabaseViewModel
+import dtu.group21.data.PokedexViewModel
+import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.DisplayPokemon
-import dtu.group21.pokedex.MainActivity
+import dtu.group21.ui.frontpage.PokemonBox
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
@@ -48,15 +49,12 @@ fun FavoritesPage(
     onNavigateBack: () -> Unit,
     onPokemonClicked: (String) -> Unit
 ) {
-    val pokemons = remember {
-        mutableStateOf(ArrayList<MutableState<DisplayPokemon>>())
-    }
+    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
 
     // Load the favorite pokemons
     LaunchedEffect(Unit) {
-        val database = MainActivity.database!!
-        val databaseViewModel = DatabaseViewModel()
-        databaseViewModel.getPokemons(pokemons, database)
+        val pokedexViewModel = PokedexViewModel()
+        pokedexViewModel.getFavoritePokemons(pokemons)
     }
 
     Column(
@@ -81,22 +79,38 @@ fun FavoritesPage(
             )
             Text(
                 text = "Favorites",
-                modifier = Modifier.weight(0.01f).fillMaxWidth(),
+                modifier = Modifier
+                    .weight(0.01f)
+                    .fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
             )
             Spacer(Modifier.width(45.dp))
         }
 
-        pokemons.value.forEach { pokemon ->
-            FavoritePokemonBox(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                pokemon = pokemon.value
-            )
-            {
-                onPokemonClicked(pokemon.value.pokedexId.toString())
+        val boxModifier = Modifier.fillMaxWidth().padding(16.dp)
+        pokemons.value.forEach { pokemonResource ->
+            when (pokemonResource) {
+                is Resource.Success -> {
+                    val pokemon = pokemonResource.data
+                    FavoritePokemonBox(
+                        modifier = boxModifier,
+                        pokemon = pokemon
+                    )
+                    {
+                        onPokemonClicked(pokemon.pokedexId.toString())
+                    }
+                }
+                is Resource.Failure -> {
+                    // fail
+                    // TODO handle??
+                }
+                Resource.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = boxModifier,
+                        color = Color.Black
+                    )
+                }
             }
         }
     }

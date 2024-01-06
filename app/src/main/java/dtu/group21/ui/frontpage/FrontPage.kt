@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pokedex.R
+import dtu.group21.data.PokedexViewModel
+import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
@@ -49,18 +52,15 @@ import java.util.Locale
 @Composable
 fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<DisplayPokemon>>) {
     var menuIsOpen by remember { mutableStateOf(false) }
-    /*val pokemons = remember {
-        mutableListOf<MutableState<ComplexPokemon>>()
-    }*/
 
-//    val viewModel = PokemonViewModel()
-    //val ids = (32..35).toList().toIntArray().toTypedArray()
-    /*val ids = intArrayOf(6, 32, 35, 82, 133, 150, 668, 669).toTypedArray()
+    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+
+    // Load the favorite pokemons
     LaunchedEffect(Unit) {
-        viewModel.getPokemons(ids, pokemons)
-    }*/
+        val pokedexViewModel = PokedexViewModel()
+        pokedexViewModel.getPokemons((1..20).toList(), pokemons)
+    }
 
-    //var favoritePokemon by remember { mutableStateOf(PokemonSamples.listOfPokemons.filter { it.isFavorit }) }
     Box {
         Column {
             UpperMenu(
@@ -142,7 +142,7 @@ fun Menu(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
 @Composable
 fun PokemonColumn(
     modifier: Modifier = Modifier,
-    pokemons: MutableList<MutableState<DisplayPokemon>>,
+    pokemons: MutableState<List<Resource<DisplayPokemon>>>,
     onPokemonClicked: (String) -> Unit
 ) {
     FlowRow(
@@ -155,22 +155,27 @@ fun PokemonColumn(
         val boxModifier = modifier
             .size(180.dp)
             .padding(horizontal = 4.dp, vertical = 5.dp)
-        for (i in pokemons.indices) {
-            val pokemon = pokemons[i].value
-            if (pokemon.pokedexId == 0) {
-                CircularProgressIndicator(
-                    modifier = boxModifier,
-                    color = Color.Black
-                )
-            } else if (pokemon.pokedexId == -1) {
-                // fail
-            } else {
-                PokemonBox(
-                    modifier = boxModifier,
-                    pokemon = pokemon
-                )
-                {
-                    onPokemonClicked("${pokemon.pokedexId}")
+        for (pokemonResource in pokemons.value) {
+            when (pokemonResource) {
+                is Resource.Success -> {
+                    val pokemon = pokemonResource.data
+                    PokemonBox(
+                        modifier = boxModifier,
+                        pokemon = pokemon
+                    )
+                    {
+                        onPokemonClicked("${pokemon.pokedexId}")
+                    }
+                }
+                is Resource.Failure -> {
+                    // fail
+                    // TODO handle??
+                }
+                Resource.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = boxModifier,
+                        color = Color.Black
+                    )
                 }
             }
         }
