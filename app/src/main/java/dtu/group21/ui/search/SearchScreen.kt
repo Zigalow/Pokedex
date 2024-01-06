@@ -149,12 +149,9 @@ fun SearchScreen(
     }
 
     val candidates: State<List<DisplayPokemon>> = liveLiteral("searchResults", allCandidates)
-
     Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    ){
         UpperMenu(
             modifier = Modifier
                 .fillMaxWidth()
@@ -246,17 +243,24 @@ fun SearchScreen(
             }
         }
 
-        if (candidates.value.isEmpty()) {
-            Spacer(Modifier.height(10.dp))
-            Text("No Pokémon matching criteria")
-        } else {
-            candidates.value.forEach { pokemon ->
-                FavoritePokemonBox(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    pokemon = pokemon
-                ) { onPokemonClicked(pokemon.pokedexId.toString()) }
+        Column(
+            modifier = modifier
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,)
+        {
+
+            if (candidates.value.isEmpty()) {
+                Spacer(Modifier.height(10.dp))
+                Text("No Pokémon matching criteria")
+            } else {
+                candidates.value.forEach { pokemon ->
+                    FavoritePokemonBox(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        pokemon = pokemon
+                    ) { onPokemonClicked(pokemon.pokedexId.toString()) }
+                }
             }
         }
     }
