@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.pokedex.R
-import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.ui.favorites.FavoritePokemonBox
 import dtu.group21.ui.shared.UpperMenu
@@ -140,13 +140,11 @@ fun SearchScreen(
     onNavigateToSort: () -> Unit,
     onPokemonClicked: (String) -> Unit,
     searchSettings: SearchSettings,
-    pokemonPool: MutableList<MutableState<DisplayPokemon>>,
+    pokemonPool: MutableState<List<Resource<DisplayPokemon>>>,
     modifier: Modifier = Modifier,
 ) {
-    val allCandidates = ArrayList<DisplayPokemon>()
-    for (pokemon in pokemonPool) {
-        allCandidates.add(pokemon.value)
-    }
+    val allCandidates = pokemonPool.value.filter { it is Resource.Success }.map { (it as Resource.Success).data }
+
 
     val candidates: State<List<DisplayPokemon>> = liveLiteral("searchResults", allCandidates)
 
