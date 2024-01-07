@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.models.database.DatabaseViewModel
 import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.pokedex.MainActivity
@@ -50,6 +52,10 @@ fun FavoritesPage(
 ) {
     val pokemons = remember {
         mutableStateOf(ArrayList<MutableState<DisplayPokemon>>())
+    }
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(Color.White)
     }
 
     // Load the favorite pokemons
