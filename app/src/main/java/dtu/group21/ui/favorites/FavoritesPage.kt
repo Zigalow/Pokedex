@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,6 +30,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.pokedex.R
+import dtu.group21.models.pokemon.Pokemon
+import dtu.group21.models.pokemon.PokemonSamples
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
@@ -60,7 +68,6 @@ fun FavoritesPage(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
     ) {
         UpperMenu(
             modifier = Modifier
@@ -80,7 +87,7 @@ fun FavoritesPage(
             Text(
                 text = "Favorites",
                 modifier = Modifier
-                    .weight(0.01f)
+                    .weight(1f)
                     .fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
@@ -88,7 +95,14 @@ fun FavoritesPage(
             Spacer(Modifier.width(45.dp))
         }
 
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            items(favoritePokemons.size) { index ->
         val boxModifier = Modifier.fillMaxWidth().padding(16.dp)
+        
         pokemons.value.forEach { pokemonResource ->
             when (pokemonResource) {
                 is Resource.Success -> {
@@ -98,7 +112,7 @@ fun FavoritesPage(
                         pokemon = pokemon
                     )
                     {
-                        onPokemonClicked(pokemon.pokedexId.toString())
+                        onPokemonClicked("${pokemon.pokedexId}")
                     }
                 }
                 is Resource.Failure -> {
@@ -182,13 +196,12 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, o
     }
 }
 
-/*
 @Preview
 @Composable
 fun ShowFavoritePage(){
     FavoritesPage(
-        listOfPokemons,
-        onPokemonClicked = {})
-
+        onNavigateBack = {},
+        onPokemonClicked = {},
+        favoritePokemons = PokemonSamples.listOfPokemons
+    )
 }
-*/

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -91,11 +92,9 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
         }
         FavoritesIcon(
             modifier = Modifier
-                .align(Alignment.BottomEnd).padding(end = 20.dp, bottom = 20.dp)
-                .size(70.dp),
-            onClicked = {
-                onNavigate("favorites")
-            }
+                .offset(310.dp, 670.dp)
+                .size(90.dp),
+            onClicked = { onNavigate("favorites") }
         )
 
 
@@ -145,7 +144,36 @@ fun PokemonColumn(
     pokemons: MutableState<List<Resource<DisplayPokemon>>>,
     onPokemonClicked: (String) -> Unit
 ) {
-    FlowRow(
+    LazyColumn(modifier.fillMaxWidth()) {
+        items(pokemons.size / 2) { index ->
+            Row(modifier
+                .fillMaxWidth()) {
+                // First PokemonBox in the row
+                PokemonBox(
+                    modifier = Modifier
+                        .size(180.dp)
+                        .padding(horizontal = 5.dp, vertical = 5.dp),
+                    pokemon = pokemons[index * 2],
+                    onClicked = { onPokemonClicked(pokemons[index * 2].name) }
+                )
+
+                // Check if the second PokemonBox should be added in this row
+                if (index * 2 + 1 < pokemons.size) {
+                    PokemonBox(
+                        modifier = Modifier
+                            .size(180.dp)
+                            .padding(horizontal = 5.dp, vertical = 5.dp),
+                        pokemon = pokemons[index * 2 + 1],
+                        onClicked = { onPokemonClicked(pokemons[index * 2 + 1].name) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+/*    FlowRow(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
@@ -180,9 +208,8 @@ fun PokemonColumn(
             }
         }
     }
-}
 
-
+ */
 @Composable
 fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
     Box(
@@ -376,5 +403,10 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, onClicked
     }
 }
 
+@Preview
+@Composable
+fun testFronPage() {
+    FrontPage(onNavigate = {true})
 
+}
 //endregion
