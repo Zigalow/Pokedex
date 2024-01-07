@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -34,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -161,12 +159,12 @@ fun PokemonColumn(
             .verticalScroll(rememberScrollState())
     ) {
         val rows = pokemons.chunked(2) // Divide items into pairs for two items per row
-        rows.forEach { row ->
+        rows.forEach { innerRow ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(itemSpacing)
             ) {
-                row.forEach { pokemonState ->
+                innerRow.forEach { pokemonState ->
                     val pokemon = pokemonState.value
                     Box(
                         modifier = Modifier
