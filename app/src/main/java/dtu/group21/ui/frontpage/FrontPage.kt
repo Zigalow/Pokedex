@@ -74,7 +74,7 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
                     PokemonLogo(size = 174.dp)
                 }
 
-                Box(modifier = Modifier.weight(0.1f).fillMaxWidth()) {
+                Box(modifier = Modifier.weight(0.1f).fillMaxWidth(),contentAlignment = Alignment.CenterEnd) {
                     SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
                 }
 
@@ -328,6 +328,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, onClicked
                 color = pokemon.primaryType.secondaryColor,
                 shape = RoundedCornerShape(20.dp)
             )
+            .fillMaxSize()
 
     ) {
         PokemonImage(modifier = Modifier.align(Alignment.BottomEnd), pokemon = pokemon)
