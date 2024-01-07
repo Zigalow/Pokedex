@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -66,18 +65,19 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
             UpperMenu(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                MenuIcon(
-                    size = 49.dp,
-                    onClicked = { menuIsOpen = true })
+                Box(modifier = Modifier.weight(0.1f).fillMaxWidth()){
+                    MenuIcon(
+                        size = 49.dp,
+                        onClicked = { menuIsOpen = true })
+                }
+                Box(modifier = Modifier.weight(0.5f).fillMaxWidth(),contentAlignment = Alignment.Center) {
+                    PokemonLogo(size = 174.dp)
+                }
 
-                Spacer(
-                    modifier = Modifier.padding(horizontal = 14.dp)
-                )
-                PokemonLogo(size = 174.dp)
-                Spacer(
-                    modifier = Modifier.padding(horizontal = 14.dp)
-                )
-                SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
+                Box(modifier = Modifier.weight(0.1f).fillMaxWidth()) {
+                    SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
+                }
+
             }
             Spacer(modifier = Modifier.padding(3.dp))
             PokemonColumn(
@@ -112,7 +112,8 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
                     MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
                 }
             }
-            Box(modifier = Modifier.width(90.dp)
+            Box(modifier = Modifier
+                .width(90.dp)
                 .fillMaxHeight()){
                 SettingsIcon(
                     modifier = Modifier
@@ -236,7 +237,7 @@ fun SearchIcon(modifier: Modifier = Modifier, size: Dp, onClicked: () -> Unit) {
         painter = painterResource(id = R.drawable.search_icon),
         contentDescription = "search icon",
         modifier = modifier
-            .padding(vertical = size / 3, horizontal = size / 2.5f)
+            .padding(vertical = size / 3)
             .size(size)
             .clickable { onClicked() }
 //                .padding(vertical = 16.dp, horizontal = 19.dp)
@@ -250,7 +251,7 @@ fun MenuIcon(modifier: Modifier = Modifier, size: Dp, onClicked: () -> Unit) {
         painter = painterResource(id = R.drawable.menu_icon), // Replace with your image resource
         contentDescription = "menu-icon", // Set to null if the image is decorative
         modifier = modifier
-            .padding(vertical = size / 3, horizontal = size / 2.5f)
+            .padding(vertical = size / 3)
             .size(size)
             .clickable { onClicked() }
 //                .padding(vertical = 16.dp, horizontal = 19.dp)

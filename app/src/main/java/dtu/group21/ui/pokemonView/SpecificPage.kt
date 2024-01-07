@@ -63,6 +63,7 @@ import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.EggWhite
+import dtu.group21.ui.theme.LightWhite
 
 
 @Composable
@@ -172,15 +173,6 @@ fun Top(
 
         )
         }
-        /*favoritesIconF(
-            modifier = modifier
-                .size(60.dp)
-                .offset(0.dp, 11.dp)
-                .background(
-                    color = pokemonType.secondaryColor,
-                    shape = CircleShape
-                )
-        )*/
         Spacer(modifier.width(11.dp))
     }
 }
@@ -307,7 +299,7 @@ fun Category(
     ) {
         Text(
             text = title,
-            color = if (isSelected) Color.Black else Color.LightGray,
+            color = if (isSelected) Color.Black else Color.Gray,
             textDecoration = if (isSelected) TextDecoration.Underline else TextDecoration.None,
         )
     }
@@ -325,7 +317,7 @@ fun CategoryList(
     LazyRow(
         modifier = modifier
             .height(25.dp)
-            .background(shape = RoundedCornerShape(10.dp), color = EggWhite),
+            .background(shape = RoundedCornerShape(10.dp), color = LightWhite),
     ) {
         items(categories) { category ->
             val isSelected = selectedCategory == category
@@ -409,8 +401,8 @@ fun AboutSection(
         Table(first = "Weight", second = pokemonWeight)
         Table(first = "Height", second = pokemonHeight)
         //Table(first = "Gender", second = "")
+        Spacer(modifier.height(30.dp))
     }
-
     Column {
         Text(text = "Gender ratio")
         if (pokemon.genderRate > -1) {
