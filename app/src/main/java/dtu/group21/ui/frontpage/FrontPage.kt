@@ -207,7 +207,7 @@ fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.white_heart),
+            painter = painterResource(id = R.drawable.favorite_icon_active),
             contentDescription = "White heart",
             modifier = Modifier.fillMaxSize(0.56f)
         )
