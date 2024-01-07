@@ -151,14 +151,16 @@ fun PokemonColumn(
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val itemSpacing = 4.dp
-    val itemWidth = (screenWidth - itemSpacing) / 2
+    val chunks = if (screenWidth > 500.dp) 4 else 2
+    val itemWidth = (screenWidth - itemSpacing) / chunks
+
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {
-        val rows = pokemons.chunked(2) // Divide items into pairs for two items per row
+        val rows = pokemons.chunked(chunks) // Divide items into pairs for two items per row
         rows.forEach { innerRow ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
