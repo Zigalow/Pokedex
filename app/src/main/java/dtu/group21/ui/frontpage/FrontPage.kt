@@ -151,7 +151,7 @@ fun PokemonColumn(
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val itemSpacing = 4.dp
-    val chunks = if (screenWidth > 500.dp) 4 else 2
+    val chunks = if (screenWidth > 600.dp) 4 else 2
     val itemWidth = (screenWidth - itemSpacing) / chunks
 
 
