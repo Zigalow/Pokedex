@@ -46,8 +46,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
+import dtu.group21.data.PokedexViewModel
 import dtu.group21.models.api.PokemonViewModel
-import dtu.group21.models.database.DatabaseViewModel
+import dtu.group21.data.database.DatabaseViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.DetailedPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
@@ -81,9 +82,8 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
     }
 
     LaunchedEffect(Unit) {
-        val database = MainActivity.database!!
-        val databaseViewModel = DatabaseViewModel()
-        databaseViewModel.getPokemon(pokedexId, pokemon, database)
+        val viewModel = PokedexViewModel()
+        viewModel.getDetails(pokedexId, pokemon)
     }
     Mid(modifier = Modifier, pokemon.value)
     Inspect(pokemon = pokemon.value, onNavigateBack = onNavigateBack)
