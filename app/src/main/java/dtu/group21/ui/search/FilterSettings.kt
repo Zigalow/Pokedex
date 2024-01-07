@@ -16,5 +16,5 @@ class FilterSettings {
         }
     }
 
-    fun hasSettings() = (filterType != FilterType.IncludableTypes) || (types.contains(true))
+    fun hasSettings() = (types.contains(true))
 }
