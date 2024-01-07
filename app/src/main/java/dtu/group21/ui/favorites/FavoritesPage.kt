@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
@@ -41,14 +42,18 @@ import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
+import dtu.group21.ui.frontpage.SearchIcon
 
 
 @Composable
 fun FavoritesPage(
+    onNavigate: (String) -> Unit,
     onNavigateBack: () -> Unit,
-    onPokemonClicked: (String) -> Unit
+    onPokemonClicked: (String) -> Unit,
+    //showIcon: Boolean = true,
+    //height: Dp,
 
-) {
+    ) {
     val pokemons = remember {
         mutableStateOf(ArrayList<MutableState<DisplayPokemon>>())
     }
@@ -59,7 +64,6 @@ fun FavoritesPage(
         val databaseViewModel = DatabaseViewModel()
         databaseViewModel.getPokemons(pokemons, database)
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -87,6 +91,9 @@ fun FavoritesPage(
                 fontSize = bigFontSize,
             )
             Spacer(Modifier.width(45.dp))
+
+            //Search icon
+            SearchIcon(size = 49.dp, onClicked = { onNavigate("searchFavourites") })
         }
 
         pokemons.value.forEach { pokemon ->

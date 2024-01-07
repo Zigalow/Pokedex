@@ -76,6 +76,17 @@ fun PokeNavHost(startDestination: String = "home") {
                 modifier = Modifier.fillMaxSize(),
             )
         }
+        composable("searchFavourites") {
+            SearchScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToFilter = { navController.navigate("filter") },
+                onNavigateToSort = { navController.navigate("sort") },
+                onPokemonClicked = { navController.navigate("pokemon/$it") },
+                searchSettings = searchSettings,
+                pokemonPool = pokemons.map { remember { mutableStateOf(it.value as DisplayPokemon) } }.toMutableList(),
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
         composable("filter") {
             FilterScreen(
                 onNavigateBack = { navController.popBackStack() },
@@ -110,6 +121,9 @@ fun PokeNavHost(startDestination: String = "home") {
         }
         composable("favorites") {
             FavoritesPage(
+                onNavigate = {
+                    navController.navigate(it)
+                },
                 onNavigateBack = { navController.popBackStack() },
                 onPokemonClicked = { navController.navigate("pokemon/$it") },
                 //favoritePokemons = PokemonSamples.listOfPokemons.subList(2, 7)
