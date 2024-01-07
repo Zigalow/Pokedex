@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -148,37 +151,53 @@ fun PokemonColumn(
     pokemons: MutableList<MutableState<DisplayPokemon>>,
     onPokemonClicked: (String) -> Unit
 ) {
-    FlowRow(
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val itemSpacing = 4.dp
+    val itemWidth = (screenWidth - itemSpacing) / 2
+
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.Center,
-        maxItemsInEachRow = 2
+            .verticalScroll(rememberScrollState())
     ) {
-        val boxModifier = modifier
-            .size(180.dp)
-            .padding(horizontal = 4.dp, vertical = 5.dp)
-        for (i in pokemons.indices) {
-            val pokemon = pokemons[i].value
-            if (pokemon.pokedexId == 0) {
-                CircularProgressIndicator(
-                    modifier = boxModifier,
-                    color = Color.Black
-                )
-            } else if (pokemon.pokedexId == -1) {
-                // fail
-            } else {
-                PokemonBox(
-                    modifier = boxModifier,
-                    pokemon = pokemon
-                )
-                {
-                    onPokemonClicked("${pokemon.pokedexId}")
+        val rows = pokemons.chunked(2) // Divide items into pairs for two items per row
+        rows.forEach { row ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(itemSpacing)
+            ) {
+                row.forEach { pokemonState ->
+                    val pokemon = pokemonState.value
+                    Box(
+                        modifier = Modifier
+                            .width(itemWidth)
+                            .aspectRatio(1f)
+                            .padding(2.dp)
+                    ) {
+                        if (pokemon.pokedexId == 0) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.fillMaxSize(),
+                                color = Color.Black
+                            )
+                        } else if (pokemon.pokedexId == -1) {
+                            // Handle failure case
+                        } else {
+                            PokemonBox(
+                                modifier = Modifier.fillMaxSize(),
+                                pokemon = pokemon
+                            ) {
+                                onPokemonClicked("${pokemon.pokedexId}")
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+
+
 
 @Composable
 fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit){
