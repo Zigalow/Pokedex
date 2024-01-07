@@ -1,4 +1,4 @@
-package dtu.group21.ui.favorites
+package dtu.group21.ui.favorites.Search
 
 class FavoritesSortSettings {
     enum class SortType {

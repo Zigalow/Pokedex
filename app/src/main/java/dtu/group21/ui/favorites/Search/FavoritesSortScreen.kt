@@ -1,4 +1,4 @@
-package dtu.group21.ui.favorites
+package dtu.group21.ui.favorites.Search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -61,7 +61,10 @@ fun SortScreen(
             )
             Spacer(Modifier.width(45.dp))
         }
-        val options = remember { arrayOf(FavoritesSortSettings.SortType.Ascending, FavoritesSortSettings.SortType.Descending) }
+        val options = remember { arrayOf(
+            FavoritesSortSettings.SortType.Ascending,
+            FavoritesSortSettings.SortType.Descending
+        ) }
         BinaryChooser(
             option1 = "Ascending",
             option2 = "Descending",
