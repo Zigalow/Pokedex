@@ -1,6 +1,6 @@
 package dtu.group21.ui.favorites.Search
 
-class FavoritesFilterSettings {
+class FavouritesFilterSettings {
     enum class FilterType {
         IncludableTypes,
         DualType,

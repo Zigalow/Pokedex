@@ -88,8 +88,11 @@ fun PokeNavHost(startDestination: String = "home") {
         composable("searchFavourites") {
             SearchScreen(
                 onNavigateBack = { navController.popBackStack() },
+
+                //Changed to favourite filter and sort, so it filters and sorts accordingly to the favourite page.
                 onNavigateToFilter = { navController.navigate("filter") },
                 onNavigateToSort = { navController.navigate("sort") },
+
                 onPokemonClicked = { navController.navigate("pokemon/$it") },
                 searchSettings = searchSettings,
                 pokemonPool = favouritePokemons,

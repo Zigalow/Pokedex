@@ -31,7 +31,7 @@ import dtu.group21.ui.shared.buttonColor
 fun SortScreen(
     onNavigateBack: () -> Unit,
     onDoneSorting: () -> Unit,
-    sortSettings: FavoritesSortSettings,
+    sortSettings: FavouritesSortSettings,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -62,8 +62,8 @@ fun SortScreen(
             Spacer(Modifier.width(45.dp))
         }
         val options = remember { arrayOf(
-            FavoritesSortSettings.SortType.Ascending,
-            FavoritesSortSettings.SortType.Descending
+            FavouritesSortSettings.SortType.Ascending,
+            FavouritesSortSettings.SortType.Descending
         ) }
         BinaryChooser(
             option1 = "Ascending",

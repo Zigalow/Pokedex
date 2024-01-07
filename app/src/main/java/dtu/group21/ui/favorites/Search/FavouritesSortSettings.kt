@@ -1,6 +1,6 @@
 package dtu.group21.ui.favorites.Search
 
-class FavoritesSortSettings {
+class FavouritesSortSettings {
     enum class SortType {
         Ascending,
         Descending,
