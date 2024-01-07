@@ -23,34 +23,45 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.pokedex.R
-import dtu.group21.models.pokemon.Pokemon
-import dtu.group21.models.pokemon.PokemonSamples
+import dtu.group21.data.PokedexViewModel
+import dtu.group21.models.api.Resource
+import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
 import java.util.Locale
 
 @Composable
-fun FrontPage(onNavigate: (String) -> Unit) {
+fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<DisplayPokemon>>) {
     var menuIsOpen by remember { mutableStateOf(false) }
-    //var favoritePokemon by remember { mutableStateOf(PokemonSamples.listOfPokemons.filter { it.isFavorit }) }
+
+    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+
+    // Load the favorite pokemons
+    LaunchedEffect(Unit) {
+        val pokedexViewModel = PokedexViewModel()
+        pokedexViewModel.getPokemons((1..20).toList(), pokemons)
+    }
+
     Box {
         Column {
             UpperMenu(
@@ -71,8 +82,11 @@ fun FrontPage(onNavigate: (String) -> Unit) {
             }
             Spacer(modifier = Modifier.padding(3.dp))
             PokemonColumn(
-                pokemons = PokemonSamples.listOfPokemons,
-                onPokemonClicked = {onNavigate("pokemon/$it")},
+                pokemons = pokemons,
+                onPokemonClicked = {
+                    println("Navigating to 'pokemon/$it'")
+                    onNavigate("pokemon/$it")
+                },
                 modifier = Modifier.padding(horizontal = 5.dp)
             )
         }
@@ -127,7 +141,7 @@ fun Menu(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
 @Composable
 fun PokemonColumn(
     modifier: Modifier = Modifier,
-    pokemons: List<Pokemon>,
+    pokemons: MutableState<List<Resource<DisplayPokemon>>>,
     onPokemonClicked: (String) -> Unit
 ) {
     LazyColumn(modifier.fillMaxWidth()) {
@@ -163,17 +177,35 @@ fun PokemonColumn(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.Center, 
         maxItemsInEachRow = 2
     ) {
-        for (i in pokemons.indices) {
-            PokemonBox(
-                modifier = modifier
-                    .size(180.dp)
-                    .padding(horizontal = 4.dp, vertical = 5.dp),
-                pokemon = pokemons[i],
-                onClicked = { onPokemonClicked(pokemons[i].name) }
-            )
+        val boxModifier = modifier
+            .size(180.dp)
+            .padding(horizontal = 4.dp, vertical = 5.dp)
+        for (pokemonResource in pokemons.value) {
+            when (pokemonResource) {
+                is Resource.Success -> {
+                    val pokemon = pokemonResource.data
+                    PokemonBox(
+                        modifier = boxModifier,
+                        pokemon = pokemon
+                    )
+                    {
+                        onPokemonClicked("${pokemon.pokedexId}")
+                    }
+                }
+                is Resource.Failure -> {
+                    // fail
+                    // TODO handle??
+                }
+                Resource.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = boxModifier,
+                        color = Color.Black
+                    )
+                }
+            }
         }
     }
 
@@ -192,7 +224,7 @@ fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
         Image(
             painter = painterResource(id = R.drawable.white_heart),
             contentDescription = "White heart",
-            modifier = Modifier.fillMaxSize(0.6f)
+            modifier = Modifier.fillMaxSize(0.56f)
         )
     }
 }
@@ -209,7 +241,7 @@ fun PokemonLogo(modifier: Modifier = Modifier, size: Dp) {
         modifier = modifier
             .height(size / 1.75f)
             .width(size)
-//                .height(87.dp)
+//                .height(87½½.dp)
 //                .width(154.dp)
     )
 }
@@ -258,18 +290,23 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
         Text(
             text = capitalizeFirstLetter(name),
             // todo
-            fontSize = 10.sp, color = Color.White
+            fontSize = 11.sp, color = Color.White
         )
     }
 }
 
 @Composable
-fun PokemonImage(modifier: Modifier = Modifier, pokemon: Pokemon) {
-    Image(
-        painter = painterResource(id = pokemon.spriteResourceId),
+fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon) {
+    AsyncImage(
+        model = pokemon.spriteId,
         contentDescription = pokemon.name,
-        modifier = modifier,
+        modifier = modifier
     )
+    /*Image(
+            painter = rememberAsyncImagePainter(pokemon.spriteResourceId),
+            contentDescription = pokemon.species.name,
+            modifier = modifier,
+        )*/
 }
 
 fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
@@ -277,15 +314,15 @@ fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
 
 
 @Composable
-fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: Pokemon, size: Dp) {
+fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, size: Dp) {
     Box(
         modifier = modifier.background(
-            color = pokemon.type.primaryColor,
+            color = pokemon.primaryType.primaryColor,
             shape = RoundedCornerShape(30.dp)
         ),
     ) {
         Text(
-            text = capitalizeFirstLetter(pokemon.name),
+            text = capitalizeFirstLetter(pokemon.species.name),
             modifier = Modifier.padding(start = 8.dp),
             fontSize = 17.sp,
             color = Color.White,
@@ -298,12 +335,12 @@ fun formatPokemonId(unformattedNumber: Int): String {
 }
 
 @Composable
-fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () -> Unit) {
+fun PokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, onClicked: () -> Unit) {
     Box(
         modifier = modifier
             .clickable { onClicked() }
             .background(
-                color = pokemon.type.secondaryColor,
+                color = pokemon.primaryType.secondaryColor,
                 shape = RoundedCornerShape(20.dp)
             )
 
@@ -318,7 +355,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () ->
                 Spacer(modifier = Modifier.width(7.dp))
                 val pokemonTypeBoxModifier = Modifier.weight(1f)
                 PokemonTypeBox(
-                    pokemonType = pokemon.type,
+                    pokemonType = pokemon.primaryType,
                     modifier = pokemonTypeBoxModifier
                 )
                 Spacer(modifier = Modifier.padding(horizontal = 2.dp))
@@ -329,9 +366,9 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () ->
                 Spacer(modifier = Modifier.padding(horizontal = 2.dp))
                 // For displaying pokedex number
                 Text(
-                    text = formatPokemonId(pokemon.pokedexNumber),
+                    text = formatPokemonId(pokemon.pokedexId),
                     modifier = Modifier.weight(1f),
-                    color = pokemon.type.primaryColor,
+                    color = pokemon.primaryType.primaryColor,
                     textAlign = TextAlign.End,
                     fontSize = 10.sp
                 )
@@ -343,7 +380,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () ->
                 Box(
                     modifier = Modifier
                         .background(
-                            color = pokemon.type.primaryColor,
+                            color = pokemon.primaryType.primaryColor,
                             shape = RoundedCornerShape(30.dp)
                         ),
                     contentAlignment = Alignment.Center,
@@ -365,6 +402,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemon: Pokemon, onClicked: () ->
         }
     }
 }
+
 @Preview
 @Composable
 fun testFronPage() {

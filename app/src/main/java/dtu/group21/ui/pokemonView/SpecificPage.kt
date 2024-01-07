@@ -24,47 +24,77 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
-import dtu.group21.models.pokemon.BulbasaurMovesList
-import dtu.group21.models.pokemon.Pokemon
+import dtu.group21.data.PokedexViewModel
+import dtu.group21.models.api.PokemonViewModel
+import dtu.group21.data.database.DatabaseViewModel
+import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.DetailedPokemon
+import dtu.group21.models.pokemon.EvolutionChainPokemon
+import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonMove
-import dtu.group21.models.pokemon.PokemonSamples
+import dtu.group21.models.pokemon.PokemonSpecies
+import dtu.group21.models.pokemon.PokemonStats
+import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 
 @Composable
-fun SpecificPage(onNavigateBack: () -> Unit) {
-    //Mid(modifier = Modifier, PokemonSamples.bulbasaur)
-    val pokemon = PokemonSamples.bulbasaur
-    Inspect(pokemon = pokemon, onNavigateBack = onNavigateBack)
+fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
+    val pokemon = remember {
+        mutableStateOf(
+            ComplexPokemon(
+                0,
+                PokemonType.NONE,
+                PokemonType.NONE,
+                PokemonGender.MALE,
+                "",
+                emptyArray(),
+                0,
+                0,
+                PokemonStats(0, 0, 0, 0, 0, 0),
+                PokemonSpecies("Loading", 0, false, false, false, false),
+                emptyArray()
+            ) as DetailedPokemon
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        val viewModel = PokedexViewModel()
+        viewModel.getDetails(pokedexId, pokemon)
+    }
+    Mid(modifier = Modifier, pokemon.value)
+    Inspect(pokemon = pokemon.value, onNavigateBack = onNavigateBack)
 }
 
 @Composable
-fun Inspect(pokemon: Pokemon, onNavigateBack: () -> Unit) {
+fun Inspect(pokemon: DetailedPokemon, onNavigateBack: () -> Unit) {
     val modifier = Modifier
     Column(
         modifier
-            .background(color = pokemon.type.secondaryColor)
+            .background(color = pokemon.primaryType.secondaryColor)
             .fillMaxSize()
     ) {
         Column(verticalArrangement = Arrangement.Top) {
@@ -75,17 +105,24 @@ fun Inspect(pokemon: Pokemon, onNavigateBack: () -> Unit) {
         Box(
             modifier
                 .fillMaxSize()
-                .background(color =  pokemon.type.secondaryColor)){
-            PokemonImage(pokemon = pokemon, modifier = Modifier.align(Alignment.TopCenter).zIndex(1f).padding(vertical = 50.dp))
+                .background(color = pokemon.primaryType.secondaryColor)
+        ) {
+            PokemonImage(
+                pokemon = pokemon, modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .zIndex(1f)
+                    .fillMaxHeight(0.4f)
+//                    .padding(vertical = 0.dp)
+            )
             Bottom(pokemon = pokemon, modifier = Modifier.align(Alignment.BottomCenter))
-            }
         }
+    }
 
 }
 
 @Composable
 fun Top(
-    pokemon: Pokemon,
+    pokemon: DetailedPokemon,
     onClickBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -97,11 +134,22 @@ fun Top(
                 .clickable { onClickBack() }
         )
         Spacer(modifier.width(230.dp))
-        var favorited by remember { mutableStateOf(false) }
         FavoritesIcon(
-            active = favorited,
-            color = pokemon.type.secondaryColor,
-            onClicked = { favorited = !favorited }
+            active = pokemon.isFavorite.value,
+            color = pokemon.primaryType.secondaryColor,
+            onClicked = {
+                pokemon.isFavorite.value = !pokemon.isFavorite.value
+                val database = MainActivity.database!!
+                val databaseViewModel = DatabaseViewModel()
+                val saveablePokemon = (pokemon as ComplexPokemon) // TODO
+                if (pokemon.isFavorite.value) {
+                    println("Saving pokemon")
+                    databaseViewModel.insertPokemon(saveablePokemon, database)
+                } else {
+                    println("Deleting pokemon")
+                    databaseViewModel.deletePokemon(saveablePokemon, database)
+                }
+            }
         )
         /*favoritesIconF(
             modifier = modifier
@@ -117,7 +165,7 @@ fun Top(
 }
 
 @Composable
-fun Mid(modifier: Modifier = Modifier, pokemon: Pokemon) {
+fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
     Column(
         modifier
             .height(105.dp)
@@ -135,11 +183,11 @@ fun Mid(modifier: Modifier = Modifier, pokemon: Pokemon) {
                 text = pokemon.name.replaceFirstChar { it.uppercase() },
                 fontStyle = FontStyle.Normal,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White,
+                color = Color.Black,
                 fontSize = 30.sp
             )
             Text(
-                text = "#" + pokemon.pokedexNumber,
+                text = "#" + pokemon.pokedexId,
                 fontSize = 30.sp
             )
             Spacer(modifier.width(13.dp))
@@ -155,9 +203,9 @@ fun Mid(modifier: Modifier = Modifier, pokemon: Pokemon) {
                     .width(50.dp)
                     .height(18.dp)
                     .background(
-                        color = pokemon.type.primaryColor,
+                        color = pokemon.primaryType.primaryColor,
                         shape = RoundedCornerShape(15.dp)
-                    ), pokemonType = pokemon.type
+                    ), pokemonType = pokemon.primaryType
             )
             Spacer(modifier.width(15.dp))
             PokemonTypeBox(
@@ -174,7 +222,7 @@ fun Mid(modifier: Modifier = Modifier, pokemon: Pokemon) {
 }
 
 @Composable
-fun Bottom(modifier: Modifier = Modifier, pokemon: Pokemon) {
+fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
     Column(
         modifier
             .fillMaxWidth()
@@ -282,90 +330,168 @@ fun Table(first: String, second: String) {
 }
 
 @Composable
-fun Sections(modifier: Modifier, selectedCategory: String, pokemon: Pokemon) {
+fun Sections(modifier: Modifier, selectedCategory: String, pokemon: DetailedPokemon) {
     when (selectedCategory) {
-        "About" -> AboutSection(modifier)
-        "Stats" -> StatsSection(modifier)
-        "Moves" -> MovesSection()
+        "About" -> AboutSection(pokemon, modifier)
+        "Stats" -> StatsSection(pokemon.stats, modifier)
+        "Moves" -> MovesSection(pokemon.moves)
         "Evolution" -> EvolutionSection(
             modifier = Modifier
                 .padding(horizontal = 2.dp)
-                .fillMaxWidth(), pokemon
+                .fillMaxWidth(),
+            pokemon
         )
     }
 }
 
 @Composable
-fun AboutSection(modifier: Modifier) {
+fun AboutSection(
+    pokemon: DetailedPokemon,
+    modifier: Modifier
+) {
+    val weightInGrams: Double = pokemon.weightInGrams.toDouble()
+
+    val pokemonWeight =
+        when (pokemon.weightInGrams) {
+            in 1 until 1000 -> "$weightInGrams g"
+            in 1000 until 1000000 -> "${weightInGrams / 1000} kg"
+            else -> "${weightInGrams / 1000000} t"
+        }
+    val heightInCm = pokemon.heightInCm.toDouble()
+    val pokemonHeight =
+        when (pokemon.heightInCm) {
+            in 1 until 100 -> "$heightInCm cm"
+            in 100 until 10000 -> "${heightInCm / 100} m"
+            else -> "${heightInCm / 100000} km"
+        }
+
     Column {
-        Table(first = "Category", second = "Seed")
-        Table(first = "Abilities", second = "Overgrow")
-        Table(first = "Weight", second = "12,2 lbs")
-        Table(first = "Height", second = "2'4\"")
+        Table(first = "Category", second = pokemon.category)
+        Table(first = "Abilities", second = pokemon.abilities.joinToString {
+            if (!it.isHidden) {
+                it.name
+            } else {
+                "${it.name} (hidden)"
+            }
+        })
+        Table(first = "Weight", second = pokemonWeight)
+        Table(first = "Height", second = pokemonHeight)
         //Table(first = "Gender", second = "")
     }
-    Column {
-        Text(text = "Breeding")
-        Table("Male", "87,5%")
-        Table("Female", "12,5%")
-        Table(first = "Egg cycles", second = "20 (4.884-5.140 steps)")
-    }
-    Spacer(modifier.fillMaxHeight())
-}
 
-@Composable
-fun StatsSection(modifier: Modifier) {
     Column {
-        Table(first = "HP", second = "78")
-        Table(first = "Attack", second = "84")
-        Table(first = "Defense", second = "78")
-        Table(first = "Sp.Atk", second = "109")
-        Table(first = "Sp.Def", second = "85")
-        Table(first = "Speed", second = "100")
-        Divider(Modifier.width(150.dp))
-        Spacer(Modifier.height(5.dp))
-        Table(first = "Total", second = "534")
-    }
-    Spacer(modifier.fillMaxHeight())
-}
-
-@Composable
-fun MovesSection() {
-    Column {
-        MoveBoxColumn(moveList = BulbasaurMovesList)
-    }
-}
-
-@Composable
-fun EvolutionSection(modifier: Modifier, pokemon: Pokemon) {
-    Row(
-        modifier = modifier,
-    ) {
-        val evolutionChain =
-            arrayOf(PokemonSamples.bulbasaur, PokemonSamples.ivysaur, PokemonSamples.venusaur)
-        for ((index, evolution) in evolutionChain.withIndex()) {
-            Column {
-                PokemonImage(
-                    pokemon = evolution,
-                    modifier = Modifier
-                        .size(100.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .padding(horizontal = 10.dp)
-                )
-                Text(
-                    text = evolution.name.replaceFirstChar { it.uppercase() },
-                    textAlign = TextAlign.Center
-                )
-            }
-            if (index < 2)
-                arrow(
-                    modifier = Modifier
-                        .size(30.dp)
-                        .align(Alignment.CenterVertically)
-                )
+        Text(text = "Gender ratio")
+        if (pokemon.genderRate > -1) {
+            Table("Male", "${100 - (pokemon.genderRate / 8.0 * 100)}%")
+            Table("Female", "${pokemon.genderRate / 8.0 * 100}%")
+            //Table(first = "Egg cycles", second = "20 (4.884-5.140 steps)")
+        } else {
+            Spacer(modifier = Modifier.height(10.dp))
+            Table(first = "Genderless", second = "100%");
         }
     }
     Spacer(modifier.fillMaxHeight())
+}
+
+@Composable
+fun StatsSection(
+    stats: PokemonStats,
+    modifier: Modifier
+) {
+    Column {
+        Table(first = "HP", second = stats.hp.toString())
+        Table(first = "Attack", second = stats.attack.toString())
+        Table(first = "Defense", second = stats.defense.toString())
+        Table(first = "Sp.Atk", second = stats.specialAttack.toString())
+        Table(first = "Sp.Def", second = stats.specialDefense.toString())
+        Table(first = "Speed", second = stats.speed.toString())
+        Divider(Modifier.width(150.dp))
+        Spacer(Modifier.height(5.dp))
+        Table(first = "Total", second = stats.total.toString())
+    }
+    Spacer(modifier.fillMaxHeight())
+}
+
+@Composable
+fun MovesSection(
+    moves: Array<PokemonMove>
+) {
+    Column {
+        MoveBoxColumn(moveList = moves.toList())
+    }
+}
+
+@Composable
+fun EvolutionSection(
+    modifier: Modifier,
+    pokemon: DetailedPokemon
+) {
+    val evolutionChain = remember {
+        mutableStateOf(ArrayList<List<EvolutionChainPokemon>>())
+    }
+
+    val viewModel = PokemonViewModel()
+    LaunchedEffect(Unit) {
+        if (evolutionChain.value.isEmpty()) {
+            viewModel.getEvolutionChain(pokemon.pokedexId, evolutionChain)
+        }
+    }
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        if (evolutionChain.value.isEmpty()) {
+            println("Loading evolutions")
+            CircularProgressIndicator(
+                color = Color.Black,
+            )
+            return
+        }
+        println("Loaded ${evolutionChain.value.size} pokemons")
+
+        for ((index, evolutions) in evolutionChain.value.iterator().withIndex()) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
+                for (evolution in evolutions) {
+                    Row {
+                        if (index > 0) {
+                            arrow(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .align(Alignment.CenterVertically)
+                            )
+                        }
+                        Column {
+                            EvolutionPokemonImage(
+                                pokemon = evolution,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .align(Alignment.CenterHorizontally)
+                                    .padding(horizontal = 10.dp)
+                            )
+                            Text(
+                                text = evolution.name.replaceFirstChar { it.uppercase() },
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Spacer(modifier.fillMaxHeight())
+}
+
+@Composable
+fun EvolutionPokemonImage(modifier: Modifier = Modifier, pokemon: EvolutionChainPokemon) {
+    Image(
+        painter = rememberAsyncImagePainter(pokemon.spriteResourceId),
+        contentDescription = pokemon.name,
+        modifier = modifier,
+    )
 }
 
 
@@ -522,7 +648,7 @@ fun moveBox(move: PokemonMove) {
             ) {
                 Text(
                     modifier = Modifier.weight(primaryWeightUpper),
-                    text = move.level.toString(),
+                    text = "7"/*"move.level.toString()"*/,
                     textAlign = TextAlign.Center
                 )
                 Text(
@@ -583,12 +709,12 @@ fun moveBox(move: PokemonMove) {
                         .weight(primaryWeightBottom)
                         .background(
                             shape = RoundedCornerShape(15.dp),
-                            color = move.moveEffectCategory.color
+                            color = move.damageClass.color
                         ), contentAlignment = Alignment.Center
                 )
                 {
                     Text(
-                        text = move.moveEffectCategory.name,
+                        text = move.damageClass.name,
                         // todo
                         fontSize = 12.sp, color = Color.White
                     )
@@ -597,5 +723,3 @@ fun moveBox(move: PokemonMove) {
         }
     }
 }
-
-
