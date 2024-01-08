@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
@@ -41,10 +43,12 @@ import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
+import dtu.group21.ui.frontpage.SearchIcon
 
 
 @Composable
 fun FavoritesPage(
+    onNavigate: (String) -> Unit,
     onNavigateBack: () -> Unit,
     onPokemonClicked: (String) -> Unit
 ) {
@@ -55,7 +59,6 @@ fun FavoritesPage(
         val pokedexViewModel = PokedexViewModel()
         pokedexViewModel.getFavoritePokemons(pokemons)
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -84,6 +87,9 @@ fun FavoritesPage(
                 fontSize = bigFontSize,
             )
             Spacer(Modifier.width(45.dp))
+
+            //Search icon
+            SearchIcon(size = 49.dp, onClicked = { onNavigate("searchFavourites") })
         }
 
         LazyColumn(

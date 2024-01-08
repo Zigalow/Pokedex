@@ -47,16 +47,8 @@ import dtu.group21.ui.shared.UpperMenu
 import java.util.Locale
 
 @Composable
-fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<DisplayPokemon>>) {
+fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource<DisplayPokemon>>>) {
     var menuIsOpen by remember { mutableStateOf(false) }
-
-    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
-
-    // Load the favorite pokemons
-    LaunchedEffect(Unit) {
-        val pokedexViewModel = PokedexViewModel()
-        pokedexViewModel.getPokemons((1..151).toList(), pokemons)
-    }
 
     Box {
         Column {

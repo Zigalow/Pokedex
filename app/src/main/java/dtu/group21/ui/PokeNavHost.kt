@@ -3,7 +3,6 @@ package dtu.group21.ui
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -13,8 +12,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import dtu.group21.data.PokedexViewModel
 import dtu.group21.models.api.PokemonViewModel
-import dtu.group21.models.pokemon.DetailedPokemon
+import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.ui.favorites.FavoritesPage
 import dtu.group21.ui.frontpage.FrontPage
@@ -55,15 +55,26 @@ fun PokeNavHost(startDestination: String = "home") {
     val viewModel = remember {
         PokemonViewModel()
     }
+    val favouritePokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+
     val pokemons = remember {
         mutableListOf<MutableState<DetailedPokemon>>()
     }
     val ids = intArrayOf(1,4,7,10,13,16,19,23,27,32,35,37,42,46,51,56,61,66,71,76,81,86,91, 92,96,101, 197, 373).toTypedArray()
-//    val ids = IntRange(1, 20).toList().toTypedArray()
     LaunchedEffect(Unit) {
-        viewModel.getPokemons(ids, pokemons)
-    }
 
+        val pokedexViewModel = PokedexViewModel()
+        pokedexViewModel.getFavoritePokemons(favouritePokemons)
+
+    }
+    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+
+    LaunchedEffect(Unit) {
+
+        val pokedexViewModel = PokedexViewModel()
+        pokedexViewModel.getPokemons(ids.toList(),pokemons)
+
+    }
 
     NavHost(
         navController = navController,
@@ -74,8 +85,7 @@ fun PokeNavHost(startDestination: String = "home") {
                 onNavigate = {
                     navController.navigate(it)
                 },
-                pokemons.map { remember { mutableStateOf(it.value as DisplayPokemon) } }
-                    .toMutableList()
+                pokemons = pokemons
             )
         }
         composable("search") {
@@ -85,8 +95,21 @@ fun PokeNavHost(startDestination: String = "home") {
                 onNavigateToSort = { navController.navigate("sort") },
                 onPokemonClicked = { navController.navigate("pokemon/$it") },
                 searchSettings = searchSettings,
-                pokemonPool = pokemons.map { remember { mutableStateOf(it.value as DisplayPokemon) } }
-                    .toMutableList(),
+                pokemonPool = pokemons,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        composable("searchFavourites") {
+            SearchScreen(
+                onNavigateBack = { navController.popBackStack() },
+
+                //Changed to favourite filter and sort, so it filters and sorts accordingly to the favourite page.
+                onNavigateToFilter = { navController.navigate("filter") },
+                onNavigateToSort = { navController.navigate("sort") },
+
+                onPokemonClicked = { navController.navigate("pokemon/$it") },
+                searchSettings = searchSettings,
+                pokemonPool = favouritePokemons,
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -124,7 +147,10 @@ fun PokeNavHost(startDestination: String = "home") {
         }
         composable("favorites") {
             FavoritesPage(
-                onNavigateBack = { popBackStackCustom(navController) },
+                onNavigate = {
+                    navController.navigate(it)
+                },
+                onNavigateBack = { navController.popBackStack() },
                 onPokemonClicked = { navController.navigate("pokemon/$it") },
                 //favoritePokemons = PokemonSamples.listOfPokemons.subList(2, 7)
             )
