@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,29 +30,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import dtu.group21.models.database.DatabaseViewModel
+import dtu.group21.data.PokedexViewModel
+import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.DisplayPokemon
-import dtu.group21.pokedex.MainActivity
+import dtu.group21.ui.frontpage.PokemonBox
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
+import dtu.group21.ui.frontpage.SearchIcon
 
 
 @Composable
 fun FavoritesPage(
+    onNavigate: (String) -> Unit,
     onNavigateBack: () -> Unit,
     onPokemonClicked: (String) -> Unit
 ) {
-    val pokemons = remember {
-        mutableStateOf(ArrayList<MutableState<DisplayPokemon>>())
-    }
+    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
     val systemUiController = rememberSystemUiController()
     SideEffect {
         systemUiController.setStatusBarColor(Color.White)
@@ -60,13 +62,11 @@ fun FavoritesPage(
 
     // Load the favorite pokemons
     LaunchedEffect(Unit) {
-        val database = MainActivity.database!!
-        val databaseViewModel = DatabaseViewModel()
-        databaseViewModel.getPokemons(pokemons, database)
+        val pokedexViewModel = PokedexViewModel()
+        pokedexViewModel.getFavoritePokemons(pokemons)
     }
-
     Column(modifier = Modifier
-        .fillMaxSize()){
+        .fillMaxSize()) {
         UpperMenu(
             modifier = Modifier
                 .fillMaxWidth()
@@ -84,26 +84,33 @@ fun FavoritesPage(
             )
             Text(
                 text = "Favorites",
-                modifier = Modifier.weight(0.01f).fillMaxWidth(),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
             )
             Spacer(Modifier.width(45.dp))
+
+            //Search icon
+            SearchIcon(size = 49.dp, onClicked = { onNavigate("searchFavourites") })
         }
-        Column(
+
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
         ) {
-            pokemons.value.forEach { pokemon ->
+            items(pokemons.value.size) { index ->
+                val pokemonResource = pokemons.value[index]
+                val boxModifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
                 FavoritePokemonBox(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    pokemon = pokemon.value
+                    modifier = boxModifier,
+                    pokemonResource = pokemonResource,
+                    onClicked = onPokemonClicked
                 )
-                {
-                    onPokemonClicked(pokemon.value.pokedexId.toString())
                 }
             }
         }
@@ -112,7 +119,11 @@ fun FavoritesPage(
 }
 
 @Composable
-fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, onClicked: () -> Unit) {
+fun FavoritePokemonBox(
+    modifier: Modifier = Modifier,
+    pokemon: DisplayPokemon,
+    onClicked: () -> Unit
+) {
     Box(
         modifier = modifier
             .clickable { onClicked() }
@@ -143,10 +154,12 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, o
                     modifier = Modifier.fillMaxSize(0.25f)
                 )
             }
-            Column( modifier = Modifier
-                .fillMaxHeight()
-                .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
                 Text(
                     text = formatPokemonId(pokemon.pokedexId),
                     color = pokemon.primaryType.primaryColor,
@@ -170,20 +183,12 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, o
                     fontSize = 17.sp,
                     color = Color.White,
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(vertical = 3.dp, horizontal = 16.dp) // Add padding as needed
+                    modifier = Modifier.padding(
+                        vertical = 3.dp,
+                        horizontal = 16.dp
+                    ) // Add padding as needed
                 )
             }
         }
     }
 }
-
-/*
-@Preview
-@Composable
-fun ShowFavoritePage(){
-    FavoritesPage(
-        listOfPokemons,
-        onPokemonClicked = {})
-
-}
-*/

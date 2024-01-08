@@ -13,9 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.room.Room
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import dtu.group21.models.database.AppDatabase
-import dtu.group21.models.database.DatabaseViewModel
-import dtu.group21.models.database.PokemonData
+import dtu.group21.data.database.AppDatabase
+import dtu.group21.data.database.DatabaseViewModel
+import dtu.group21.data.database.PokemonData
 import dtu.group21.ui.PokeNavHost
 
 import dtu.group21.ui.theme.PokedexTheme

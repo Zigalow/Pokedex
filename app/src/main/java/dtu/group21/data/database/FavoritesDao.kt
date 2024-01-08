@@ -1,4 +1,4 @@
-package dtu.group21.models.database
+package dtu.group21.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface PokemonDao {
+interface FavoritesDao {
     @Query("SELECT * FROM pokemons")
     fun getAll(): List<PokemonData>
 
