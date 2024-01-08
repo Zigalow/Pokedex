@@ -52,28 +52,18 @@ fun popBackStackCustom(navController: NavHostController): Boolean {
 fun PokeNavHost(startDestination: String = "home") {
     val navController = rememberNavController()
     val searchSettings = remember { SearchSettings() }
-    val viewModel = remember {
-        PokemonViewModel()
-    }
+
     val favouritePokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
-
-    val pokemons = remember {
-        mutableListOf<MutableState<DetailedPokemon>>()
-    }
-    val ids = intArrayOf(1,4,7,10,13,16,19,23,27,32,35,37,42,46,51,56,61,66,71,76,81,86,91, 92,96,101, 197, 373).toTypedArray()
     LaunchedEffect(Unit) {
-
         val pokedexViewModel = PokedexViewModel()
         pokedexViewModel.getFavoritePokemons(favouritePokemons)
-
     }
+
     val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
-
     LaunchedEffect(Unit) {
-
         val pokedexViewModel = PokedexViewModel()
+        val ids = intArrayOf(1,4,7,10,13,16,19,23,27,32,35,37,42,46,51,56,61,66,71,76,81,86,91, 92,96,101, 197, 373).toTypedArray()
         pokedexViewModel.getPokemons(ids.toList(),pokemons)
-
     }
 
     NavHost(
@@ -116,7 +106,6 @@ fun PokeNavHost(startDestination: String = "home") {
         composable("filter") {
             FilterScreen(
                 onNavigateBack = { popBackStackCustom(navController) },
-                onDoneFiltering = { navController.popBackStack() },
                 filterSettings = searchSettings.filterSettings,
                 modifier = Modifier.fillMaxSize(),
             )
