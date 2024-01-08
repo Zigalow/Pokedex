@@ -116,78 +116,93 @@ fun FavoritesPage(
         }
     }
 
-}
-
 @Composable
 fun FavoritePokemonBox(
     modifier: Modifier = Modifier,
-    pokemon: DisplayPokemon,
-    onClicked: () -> Unit
+    pokemonResource: Resource<DisplayPokemon>,
+    onClicked: (String) -> Unit
 ) {
-    Box(
-        modifier = modifier
-            .clickable { onClicked() }
-            .background(
-                color = pokemon.primaryType.secondaryColor,
-                shape = RoundedCornerShape(20.dp)
+    when (pokemonResource) {
+        is Resource.Failure -> {
+            // TODO: handle?
+        }
+
+        Resource.Loading -> {
+            CircularProgressIndicator(
+                modifier = modifier,
+                color = Color.Black
             )
-    ) {
-        PokemonImage(modifier = Modifier.align(Alignment.BottomEnd), pokemon = pokemon)
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(7.dp),
-                horizontalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                PokemonTypeBox(
-                    pokemonType = pokemon.primaryType,
-                    modifier = Modifier.fillMaxSize(0.2f)
-                )
-                PokemonTypeBox(
-                    pokemonType = pokemon.secondaryType,
-                    modifier = Modifier.fillMaxSize(0.25f)
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                Text(
-                    text = formatPokemonId(pokemon.pokedexId),
-                    color = pokemon.primaryType.primaryColor,
-                    fontSize = 30.sp,
-                    textAlign = TextAlign.Center,
-                )
-            }
+        }
 
-            Spacer(modifier = Modifier.padding(top = 100.dp))
+        is Resource.Success -> {
+            val pokemon = pokemonResource.data
+
             Box(
-                modifier = Modifier
+                modifier = modifier
+                    .clickable { onClicked("${pokemon.pokedexId}") }
                     .background(
-                        color = pokemon.primaryType.primaryColor,
-                        shape = RoundedCornerShape(30.dp)
-                    ),
-
-                contentAlignment = Alignment.BottomStart
+                        color = pokemon.primaryType.secondaryColor,
+                        shape = RoundedCornerShape(20.dp)
+                    )
             ) {
-                Text(
-                    text = capitalizeFirstLetter(pokemon.name),
-                    fontSize = 17.sp,
-                    color = Color.White,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(
-                        vertical = 3.dp,
-                        horizontal = 16.dp
-                    ) // Add padding as needed
-                )
+                PokemonImage(modifier = Modifier.align(Alignment.BottomEnd), pokemon = pokemon)
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(7.dp),
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        PokemonTypeBox(
+                            pokemonType = pokemon.primaryType,
+                            modifier = Modifier.fillMaxSize(0.2f)
+                        )
+                        PokemonTypeBox(
+                            pokemonType = pokemon.secondaryType,
+                            modifier = Modifier.fillMaxSize(0.25f)
+                        )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = formatPokemonId(pokemon.pokedexId),
+                            color = pokemon.primaryType.primaryColor,
+                            fontSize = 30.sp,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.padding(top = 100.dp))
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = pokemon.primaryType.primaryColor,
+                                shape = RoundedCornerShape(30.dp)
+                            ),
+
+                        contentAlignment = Alignment.BottomStart
+                    ) {
+                        Text(
+                            text = capitalizeFirstLetter(pokemon.name),
+                            fontSize = 17.sp,
+                            color = Color.White,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.padding(
+                                vertical = 3.dp,
+                                horizontal = 16.dp
+                            ) // Add padding as needed
+                        )
+                    }
+                }
             }
         }
     }

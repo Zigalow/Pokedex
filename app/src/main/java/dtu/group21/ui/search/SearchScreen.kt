@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
@@ -151,10 +150,8 @@ fun SearchScreen(
     SideEffect {
         systemUiController.setStatusBarColor(Color.White)
     }
-    val allCandidates = pokemonPool.value.filter { it is Resource.Success }.map { (it as Resource.Success).data }
-
-
-    val candidates: State<List<DisplayPokemon>> = liveLiteral("searchResults", allCandidates)
+    val allCandidates = pokemonPool.value
+    val candidates: State<List<Resource<DisplayPokemon>>> = liveLiteral("searchResults", allCandidates)
 
     updateCandidates(searchSettings, allCandidates)
     Column(
@@ -246,13 +243,14 @@ fun SearchScreen(
                 Spacer(Modifier.height(10.dp))
                 Text("No Pokémon matching criteria")
             } else {
-                candidates.value.forEach { pokemon ->
+                candidates.value.forEach { pokemonResource ->
                     FavoritePokemonBox(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
-                        pokemon = pokemon
-                    ) { onPokemonClicked(pokemon.pokedexId.toString()) }
+                        pokemonResource = pokemonResource,
+                        onClicked = onPokemonClicked
+                    )
                 }
             }
         }
@@ -263,11 +261,15 @@ fun SearchScreen(
 @OptIn(InternalComposeApi::class)
 fun updateCandidates(
     searchSettings: SearchSettings,
-    allCandidates: ArrayList<DisplayPokemon>
+    allCandidates: List<Resource<DisplayPokemon>>
 ) {
     updateLiveLiteralValue(
         "searchResults",
-        allCandidates.filter { pokemon ->
+        allCandidates.filter { pokemonResource ->
+            if (!(pokemonResource is Resource.Success)) {
+                return
+            }
+            val pokemon = pokemonResource.data
             // very complicated statement to check if the searchString is either
             // - empty
             // - a substring of the name of the pokemon

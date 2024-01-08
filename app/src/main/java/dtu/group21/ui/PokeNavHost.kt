@@ -62,7 +62,7 @@ fun PokeNavHost(startDestination: String = "home") {
     val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
     LaunchedEffect(Unit) {
         val pokedexViewModel = PokedexViewModel()
-        val ids = intArrayOf(1,4,7,10,13,16,19,23,27,32,35,37,42,46,51,56,61,66,71,76,81,86,91, 92,96,101, 197, 373).toTypedArray()
+        val ids = (1..151)
         pokedexViewModel.getPokemons(ids.toList(),pokemons)
     }
 
