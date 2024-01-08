@@ -17,7 +17,7 @@ class DatabaseViewModel(
 ) : ViewModel() {
     val requestViewModel = PokemonViewModel()
 
-    private fun complexPokemonToPokemonData(pokemon: ComplexPokemon): PokemonData {
+    fun complexPokemonToPokemonData(pokemon: ComplexPokemon): PokemonData {
         val abilitiesStringBuilder = StringBuilder()
         for (ability in pokemon.abilities) {
             abilitiesStringBuilder.append(ability.name)

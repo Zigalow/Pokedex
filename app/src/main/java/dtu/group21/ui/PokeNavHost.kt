@@ -13,7 +13,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dtu.group21.data.PokedexViewModel
-import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.ui.favorites.FavoritesPage
@@ -40,12 +39,10 @@ import dtu.group21.ui.settings.SettingsPage
 /**
  *  Prevents rendering issues when clicking too quickly on back button. Functions the same way navController.popBackStack()
  */
-fun popBackStackCustom(navController: NavHostController): Boolean {
-
-    return if (navController.previousBackStackEntry == null) {
-        false;
-    } else
-        navController.popBackStack();
+fun popBackStackCustom(navController: NavHostController) {
+    if (navController.previousBackStackEntry != null) {
+        navController.popBackStack()
+    }
 }
 
 @Composable
@@ -62,8 +59,8 @@ fun PokeNavHost(startDestination: String = "home") {
     val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
     LaunchedEffect(Unit) {
         val pokedexViewModel = PokedexViewModel()
-        val ids = intArrayOf(1,4,7,10,13,16,19,23,27,32,35,37,42,46,51,56,61,66,71,76,81,86,91, 92,96,101, 197, 373).toTypedArray()
-        pokedexViewModel.getPokemons(ids.toList(),pokemons)
+        val ids = (1..151)
+        pokedexViewModel.getPokemons(ids.toList(), pokemons)
     }
 
     NavHost(

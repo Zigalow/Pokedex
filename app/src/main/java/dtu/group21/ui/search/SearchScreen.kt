@@ -252,7 +252,7 @@ fun SearchScreen(
 @OptIn(InternalComposeApi::class)
 fun updateCandidates(
     searchSettings: SearchSettings,
-    allCandidates: ArrayList<DisplayPokemon>
+    allCandidates: List<DisplayPokemon>
 ) {
     updateLiveLiteralValue(
         "searchResults",
