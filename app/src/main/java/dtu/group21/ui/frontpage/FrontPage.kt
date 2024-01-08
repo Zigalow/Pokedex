@@ -157,9 +157,8 @@ fun PokemonColumn(
     onPokemonClicked: (String) -> Unit
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    val itemSpacing = 4.dp
     val chunks = if (screenWidth > 600.dp) 4 else 2
-    val itemWidth = (screenWidth - itemSpacing) / chunks
+    val itemWidth = (screenWidth / chunks)-6.dp //-6.dp to consider patting in between each box
 
 
     Column(
@@ -171,7 +170,6 @@ fun PokemonColumn(
         rows.forEach { innerRow ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(itemSpacing)
             ) {
                 innerRow.forEach { pokemonState ->
                     val pokemon = pokemonState.value
@@ -180,6 +178,7 @@ fun PokemonColumn(
                             .width(itemWidth)
                             .aspectRatio(1f)
                             .padding(2.dp)
+                            .weight(1f)
                     ) {
                         if (pokemon.pokedexId == 0) {
                             CircularProgressIndicator(
