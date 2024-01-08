@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.DisplayPokemon
@@ -53,16 +55,18 @@ fun FavoritesPage(
     onPokemonClicked: (String) -> Unit
 ) {
     val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(Color.White)
+    }
 
     // Load the favorite pokemons
     LaunchedEffect(Unit) {
         val pokedexViewModel = PokedexViewModel()
         pokedexViewModel.getFavoritePokemons(pokemons)
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    Column(modifier = Modifier
+        .fillMaxSize()) {
         UpperMenu(
             modifier = Modifier
                 .fillMaxWidth()
@@ -98,20 +102,20 @@ fun FavoritesPage(
                 .padding(16.dp)
         ) {
             items(pokemons.value.size) { index ->
+                val pokemonResource = pokemons.value[index]
                 val boxModifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
-
-                pokemons.value.forEach { pokemonResource ->
-                    PokemonBox(
-                        modifier = boxModifier,
-                        pokemonResource = pokemonResource,
-                        onClicked = onPokemonClicked
-                    )
+                FavoritePokemonBox(
+                    modifier = boxModifier,
+                    pokemonResource = pokemonResource,
+                    onClicked = onPokemonClicked
+                )
                 }
             }
         }
     }
+
 }
 
 @Composable

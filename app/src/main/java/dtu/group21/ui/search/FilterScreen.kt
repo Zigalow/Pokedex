@@ -61,8 +61,12 @@ fun FilterScreen(
                 modifier = Modifier
                     .size(35.dp)
                     .align(Alignment.CenterVertically)
-                    .clickable { onNavigateBack() },
+                    .clickable {
+                        onDoneFiltering()
+                        //onNavigateBack()
+                        },
                 alignment = Alignment.CenterStart,
+
             )
             Text(
                 text = "Filter",
@@ -163,14 +167,6 @@ fun FilterScreen(
                         }
                     }
                 }
-            }
-
-            if (hasTooManyTypesSelected.value) {
-                Spacer(Modifier.height(10.dp))
-                Text(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    text = "Warning: No Pokémons have more than two types"
-                )
             }
         }
 

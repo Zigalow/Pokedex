@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -24,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -38,35 +42,41 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pokedex.R
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
+import dtu.group21.ui.theme.Yellow60
 import java.util.Locale
 
 @Composable
 fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource<DisplayPokemon>>>) {
     var menuIsOpen by remember { mutableStateOf(false) }
-
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(Color.White)
+    }
     Box {
         Column {
             UpperMenu(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                MenuIcon(
-                    size = 49.dp,
-                    onClicked = { menuIsOpen = true })
+                Box(modifier = Modifier.weight(0.1f).fillMaxWidth()){
+                    MenuIcon(
+                        size = 49.dp,
+                        onClicked = { menuIsOpen = true })
+                }
+                Box(modifier = Modifier.weight(0.5f).fillMaxWidth(),contentAlignment = Alignment.Center) {
+                    PokemonLogo(size = 174.dp)
+                }
 
-                Spacer(
-                    modifier = Modifier.padding(horizontal = 14.dp)
-                )
-                PokemonLogo(size = 174.dp)
-                Spacer(
-                    modifier = Modifier.padding(horizontal = 14.dp)
-                )
-                SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
+                Box(modifier = Modifier.weight(0.1f).fillMaxWidth(),contentAlignment = Alignment.CenterEnd) {
+                    SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
+                }
+
             }
             Spacer(modifier = Modifier.padding(3.dp))
             PokemonColumn(
@@ -80,35 +90,38 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource
         }
         FavoritesIcon(
             modifier = Modifier
-                .offset(310.dp, 670.dp)
-                .size(90.dp),
-            onClicked = { onNavigate("favorites") }
+                .align(Alignment.BottomEnd)
+                .padding(end = 5.dp, bottom = 5.dp)
+                .size(70.dp),
+            onClicked = {
+                onNavigate("favorites")
+            }
         )
 
 
         if (menuIsOpen) {
             Column(
                 modifier = Modifier.width(80.dp),
-
                 ) {
-                Menu(
-                    modifier = Modifier
-                        .fillMaxHeight(),
-                ) {
-                    MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
-                    Image(
+                Box(modifier = Modifier
+                    .fillMaxHeight()) {
+                    Menu(
                         modifier = Modifier
-                            .padding(vertical = 16.dp, horizontal = 19.dp)
-                            .size(49.dp)
-                            .offset(y = 675.dp)
-                            .clickable { onNavigate("settings") },
-                        painter = painterResource(id = R.drawable.settings_icon), // Replace with your image resource
-                        contentDescription = "settings-icon", // Set to null if the image is decorative
-
-                    )
+                            .fillMaxHeight(),
+                    ) {
+                        MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
+                        SettingsIcon(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .size(60.dp),
+                            onClicked = { onNavigate("settings")
+                            }
+                        )
+                    }
                 }
 
             }
+
         }
     }
 }
@@ -118,7 +131,7 @@ fun Menu(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Box(
         modifier = modifier
             .background(
-                color = Color(0xFFFFCC00),
+                color = Yellow60,
             )
     ) {
         content()
@@ -132,8 +145,10 @@ fun PokemonColumn(
     pokemons: List<Resource<DisplayPokemon>>,
     onPokemonClicked: (String) -> Unit
 ) {
-    val alignedIndexes = pokemons.indices.filter { it % 2 == 0 }
-    val alignedPokemons = alignedIndexes.map { i -> if (pokemons.size > (i + 1)) listOf(pokemons[i], pokemons[i + 1]) else listOf(pokemons[i]) }
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val chunks = if (screenWidth > 600.dp) 4 else 2
+    val itemWidth = (screenWidth / chunks)-6.dp //-6.dp to consider patting in between each box
+    val alignedPokemons = pokemons.chunked(chunks)
 
     LazyColumn(modifier.fillMaxWidth()) {
         items(alignedPokemons.size) { index ->
@@ -144,8 +159,10 @@ fun PokemonColumn(
                 for (pokemonResource in alignedPokemons[index]) {
                     PokemonBox(
                         modifier = Modifier
-                            .size(180.dp)
-                            .padding(horizontal = 5.dp, vertical = 5.dp),
+                            .width(itemWidth)
+                            .aspectRatio(1f)
+                            .padding(2.dp)
+                            .weight(1f),
                         pokemonResource = pokemonResource,
                         onClicked = onPokemonClicked
                     )
@@ -155,44 +172,21 @@ fun PokemonColumn(
     }
 }
 
-
-/*    FlowRow(
-        modifier = modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.Center, 
-        maxItemsInEachRow = 2
-    ) {
-        val boxModifier = modifier
-            .size(180.dp)
-            .padding(horizontal = 4.dp, vertical = 5.dp)
-        for (pokemonResource in pokemons.value) {
-            when (pokemonResource) {
-                is Resource.Success -> {
-                    val pokemon = pokemonResource.data
-                    PokemonBox(
-                        modifier = boxModifier,
-                        pokemon = pokemon
-                    )
-                    {
-                        onPokemonClicked("${pokemon.pokedexId}")
-                    }
-                }
-                is Resource.Failure -> {
-                    // fail
-                    // TODO handle??
-                }
-                Resource.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = boxModifier,
-                        color = Color.Black
-                    )
-                }
-            }
-        }
+@Composable
+fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit){
+    Box(modifier = modifier
+        .clickable { onClicked() },
+        contentAlignment = Alignment.Center
+    )
+    {
+        Image(
+            painter = painterResource(id = R.drawable.settings_icon),
+            contentDescription = "settings-icon",
+            modifier = Modifier.fillMaxSize(0.56f)
+        )
     }
+}
 
- */
 @Composable
 fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
     Box(
@@ -205,7 +199,7 @@ fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.white_heart),
+            painter = painterResource(id = R.drawable.favorite_icon_active),
             contentDescription = "White heart",
             modifier = Modifier.fillMaxSize(0.56f)
         )
@@ -235,7 +229,7 @@ fun SearchIcon(modifier: Modifier = Modifier, size: Dp, onClicked: () -> Unit) {
         painter = painterResource(id = R.drawable.search_icon),
         contentDescription = "search icon",
         modifier = modifier
-            .padding(vertical = size / 3, horizontal = size / 2.5f)
+            .padding(vertical = size / 3)
             .size(size)
             .clickable { onClicked() }
 //                .padding(vertical = 16.dp, horizontal = 19.dp)
@@ -249,7 +243,7 @@ fun MenuIcon(modifier: Modifier = Modifier, size: Dp, onClicked: () -> Unit) {
         painter = painterResource(id = R.drawable.menu_icon), // Replace with your image resource
         contentDescription = "menu-icon", // Set to null if the image is decorative
         modifier = modifier
-            .padding(vertical = size / 3, horizontal = size / 2.5f)
+            .padding(vertical = size / 3)
             .size(size)
             .clickable { onClicked() }
 //                .padding(vertical = 16.dp, horizontal = 19.dp)

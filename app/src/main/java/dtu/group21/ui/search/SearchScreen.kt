@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.internal.liveLiteral
@@ -45,6 +46,8 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.pokedex.R
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
@@ -144,18 +147,19 @@ fun SearchScreen(
     pokemonPool: MutableState<List<Resource<DisplayPokemon>>>,
     modifier: Modifier = Modifier,
 ) {
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(Color.White)
+    }
     val allCandidates = pokemonPool.value.filter { it is Resource.Success }.map { (it as Resource.Success).data }
 
 
     val candidates: State<List<DisplayPokemon>> = liveLiteral("searchResults", allCandidates)
 
     updateCandidates(searchSettings, allCandidates)
-
     Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    ){
         UpperMenu(
             modifier = Modifier
                 .fillMaxWidth()
@@ -232,17 +236,24 @@ fun SearchScreen(
             }
         }
 
-        if (candidates.value.isEmpty()) {
-            Spacer(Modifier.height(10.dp))
-            Text("No Pokémon matching criteria")
-        } else {
-            candidates.value.forEach { pokemon ->
-                FavoritePokemonBox(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    pokemon = pokemon
-                ) { onPokemonClicked(pokemon.pokedexId.toString()) }
+        Column(
+            modifier = modifier
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,)
+        {
+
+            if (candidates.value.isEmpty()) {
+                Spacer(Modifier.height(10.dp))
+                Text("No Pokémon matching criteria")
+            } else {
+                candidates.value.forEach { pokemon ->
+                    FavoritePokemonBox(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        pokemon = pokemon
+                    ) { onPokemonClicked(pokemon.pokedexId.toString()) }
+                }
             }
         }
     }
