@@ -90,14 +90,14 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
 
             }
             Spacer(modifier = Modifier.padding(3.dp))
-            /*PokemonColumn(
+            PokemonColumn(
                 pokemons = pokemons,
                 onPokemonClicked = {
                     println("Navigating to 'pokemon/$it'")
                     onNavigate("pokemon/$it")
                 },
                 modifier = Modifier.padding(horizontal = 5.dp)
-            )*/
+            )
         }
         FavoritesIcon(
             modifier = Modifier

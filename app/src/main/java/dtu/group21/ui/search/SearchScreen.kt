@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.internal.liveLiteral
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.pokedex.R
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.ui.favorites.FavoritePokemonBox
@@ -147,7 +149,10 @@ fun SearchScreen(
     for (pokemon in pokemonPool) {
         allCandidates.add(pokemon.value)
     }
-
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(Color.White)
+    }
     val candidates: State<List<DisplayPokemon>> = liveLiteral("searchResults", allCandidates)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
