@@ -15,9 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,7 +62,6 @@ fun FavoritesPage(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
     ) {
         UpperMenu(
             modifier = Modifier
@@ -83,7 +81,7 @@ fun FavoritesPage(
             Text(
                 text = "Favorites",
                 modifier = Modifier
-                    .weight(0.01f)
+                    .weight(1f)
                     .fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
@@ -94,27 +92,21 @@ fun FavoritesPage(
             SearchIcon(size = 49.dp, onClicked = { onNavigate("searchFavourites") })
         }
 
-        val boxModifier = Modifier.fillMaxWidth().padding(16.dp)
-        pokemons.value.forEach { pokemonResource ->
-            when (pokemonResource) {
-                is Resource.Success -> {
-                    val pokemon = pokemonResource.data
-                    FavoritePokemonBox(
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            items(pokemons.value.size) { index ->
+                val boxModifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+
+                pokemons.value.forEach { pokemonResource ->
+                    PokemonBox(
                         modifier = boxModifier,
-                        pokemon = pokemon
-                    )
-                    {
-                        onPokemonClicked(pokemon.pokedexId.toString())
-                    }
-                }
-                is Resource.Failure -> {
-                    // fail
-                    // TODO handle??
-                }
-                Resource.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = boxModifier,
-                        color = Color.Black
+                        pokemonResource = pokemonResource,
+                        onClicked = onPokemonClicked
                     )
                 }
             }
@@ -123,7 +115,11 @@ fun FavoritesPage(
 }
 
 @Composable
-fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, onClicked: () -> Unit) {
+fun FavoritePokemonBox(
+    modifier: Modifier = Modifier,
+    pokemon: DisplayPokemon,
+    onClicked: () -> Unit
+) {
     Box(
         modifier = modifier
             .clickable { onClicked() }
@@ -154,10 +150,12 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, o
                     modifier = Modifier.fillMaxSize(0.25f)
                 )
             }
-            Column( modifier = Modifier
-                .fillMaxHeight()
-                .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
                 Text(
                     text = formatPokemonId(pokemon.pokedexId),
                     color = pokemon.primaryType.primaryColor,
@@ -181,20 +179,12 @@ fun FavoritePokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, o
                     fontSize = 17.sp,
                     color = Color.White,
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(vertical = 3.dp, horizontal = 16.dp) // Add padding as needed
+                    modifier = Modifier.padding(
+                        vertical = 3.dp,
+                        horizontal = 16.dp
+                    ) // Add padding as needed
                 )
             }
         }
     }
 }
-
-/*
-@Preview
-@Composable
-fun ShowFavoritePage(){
-    FavoritesPage(
-        listOfPokemons,
-        onPokemonClicked = {})
-
-}
-*/

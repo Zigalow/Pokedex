@@ -15,11 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,11 +28,9 @@ import androidx.compose.ui.unit.dp
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.BinaryChooser
-import dtu.group21.ui.shared.Title
 import dtu.group21.ui.shared.ToggleButton
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
-import dtu.group21.ui.shared.buttonColor
 import dtu.group21.ui.shared.mediumFontSize
 import dtu.group21.ui.shared.unselectedToggleColor
 
@@ -42,10 +38,13 @@ import dtu.group21.ui.shared.unselectedToggleColor
 @Composable
 fun FilterScreen(
     onNavigateBack: () -> Unit,
-    onDoneFiltering: () -> Unit,
     filterSettings: FilterSettings,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
+    val hasTooManyTypesSelected = remember {
+        mutableStateOf(shouldShowWarning(filterSettings))
+    }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -67,17 +66,27 @@ fun FilterScreen(
             )
             Text(
                 text = "Filter",
-                modifier = Modifier.weight(0.01f).fillMaxWidth(),
+                modifier = Modifier
+                    .weight(0.01f)
+                    .fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
             )
             Spacer(Modifier.width(45.dp))
         }
-        val options = remember { arrayOf(FilterSettings.FilterType.IncludableTypes, FilterSettings.FilterType.DualType) }
+        val options = remember {
+            arrayOf(
+                FilterSettings.FilterType.IncludableTypes,
+                FilterSettings.FilterType.ExactType
+            )
+        }
         BinaryChooser(
             option1 = "Includable Types",
-            option2 = "Dual Type",
-            onChange = { filterSettings.filterType = options[it] },
+            option2 = "Exact Types",
+            onChange = { 
+                filterSettings.filterType = options[it]
+                hasTooManyTypesSelected.value = shouldShowWarning(filterSettings) 
+                       },
             startsAt = options.indexOf(filterSettings.filterType),
         )
         Spacer(Modifier.height(5.dp))
@@ -89,7 +98,6 @@ fun FilterScreen(
         )
         Spacer(Modifier.height(5.dp))
          */
-
         Column(
             modifier = Modifier.fillMaxHeight(),
         ) {
@@ -99,7 +107,28 @@ fun FilterScreen(
                     .weight(1f, false)
             ) {
                 // all type buttons are below
-                val types = remember {arrayOf(PokemonType.NORMAL, PokemonType.FLYING, PokemonType.FIRE, PokemonType.PSYCHIC, PokemonType.WATER, PokemonType.BUG, PokemonType.GRASS, PokemonType.ROCK, PokemonType.ELECTRIC, PokemonType.GHOST, PokemonType.ICE, PokemonType.DRAGON, PokemonType.FIGHTING, PokemonType.DARK, PokemonType.POISON, PokemonType.STEEL, PokemonType.GROUND, PokemonType.FAIRY) }
+                val types = remember {
+                    arrayOf(
+                        PokemonType.NORMAL,
+                        PokemonType.FLYING,
+                        PokemonType.FIRE,
+                        PokemonType.PSYCHIC,
+                        PokemonType.WATER,
+                        PokemonType.BUG,
+                        PokemonType.GRASS,
+                        PokemonType.ROCK,
+                        PokemonType.ELECTRIC,
+                        PokemonType.GHOST,
+                        PokemonType.ICE,
+                        PokemonType.DRAGON,
+                        PokemonType.FIGHTING,
+                        PokemonType.DARK,
+                        PokemonType.POISON,
+                        PokemonType.STEEL,
+                        PokemonType.GROUND,
+                        PokemonType.FAIRY
+                    )
+                }
 
                 FlowRow(
                     modifier = Modifier
@@ -116,6 +145,7 @@ fun FilterScreen(
                         ToggleButton(
                             onClick = {
                                 filterSettings.types[i] = it
+                                hasTooManyTypesSelected.value = shouldShowWarning(filterSettings)
                             },
                             modifier = Modifier
                                 .padding(all = 5.dp)
@@ -132,39 +162,22 @@ fun FilterScreen(
                             )
                         }
                     }
-
-                    // If there is an uneven amount of buttons
-                    if (hasExtraButton) {
-                        ToggleButton(
-                            onClick = { /*TODO*/ },
-                            modifier = Modifier
-                                .padding(all = 5.dp)
-                                .fillMaxWidth(0.5f),
-                            offBackgroundColor = unselectedToggleColor,
-                            offForegroundColor = Color.Black,
-                            onBackgroundColor = types.last().primaryColor,
-                            onForegroundColor = Color.White,
-                        ) {
-                            Text(
-                                text = types.last().name,
-                                fontSize = mediumFontSize,
-                            )
-                        }
-                    }
                 }
             }
-            Button(
-                onClick = { onDoneFiltering() },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = buttonColor, contentColor = Color.Black)
-            ) {
+
+            if (hasTooManyTypesSelected.value) {
+                Spacer(Modifier.height(10.dp))
                 Text(
-                    text = "Apply",
-                    fontSize = bigFontSize,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    text = "Warning: No Pokémons have more than two types"
                 )
             }
-
         }
+
     }
+}
+
+
+fun shouldShowWarning(filterSettings: FilterSettings): Boolean {
+    return filterSettings.numberOfTypesChosen() > 2 && filterSettings.filterType == FilterSettings.FilterType.ExactType
 }

@@ -47,6 +47,7 @@ import androidx.core.text.isDigitsOnly
 import com.example.pokedex.R
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.DisplayPokemon
+import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.favorites.FavoritePokemonBox
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
@@ -148,6 +149,8 @@ fun SearchScreen(
 
     val candidates: State<List<DisplayPokemon>> = liveLiteral("searchResults", allCandidates)
 
+    updateCandidates(searchSettings, allCandidates)
+
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState()),
@@ -183,23 +186,7 @@ fun SearchScreen(
             onChange = {
                 println("Searched for '$it'")
                 searchSettings.searchString = it
-                updateLiveLiteralValue(
-                    "searchResults",
-                    allCandidates.filter { pokemon ->
-                        // very complicated statement to check if the searchString is either
-                        // - empty
-                        // - a substring of the name of the pokemon
-                        // - a substring of the number of the pokemon
-                        // if either is true, it is a candidate
-                        val isCandidate =
-                            if (searchSettings.searchString.isEmpty()) true
-                            else if (searchSettings.searchString.isDigitsOnly()) {
-                                val searchNumber = searchSettings.searchString.toInt()
-                                searchNumber.toString() in pokemon.pokedexId.toString()
-                            } else searchSettings.searchString.lowercase() in pokemon.name.lowercase()
-
-                        isCandidate
-                    })
+                updateCandidates(searchSettings, allCandidates)
             },
             height = 40.dp,
             modifier = Modifier
@@ -229,6 +216,7 @@ fun SearchScreen(
                     fontWeight = if (searchSettings.filterSettings.hasSettings()) FontWeight.Black else FontWeight.Normal,
                 )
             }
+
             Button(
                 onClick = { onNavigateToSort() },
                 modifier = Modifier
@@ -259,3 +247,56 @@ fun SearchScreen(
         }
     }
 }
+
+
+@OptIn(InternalComposeApi::class)
+fun updateCandidates(
+    searchSettings: SearchSettings,
+    allCandidates: ArrayList<DisplayPokemon>
+) {
+    updateLiveLiteralValue(
+        "searchResults",
+        allCandidates.filter { pokemon ->
+            // very complicated statement to check if the searchString is either
+            // - empty
+            // - a substring of the name of the pokemon
+            // - a substring of the number of the pokemon
+            // if either is true, it is a candidate
+            val searchCandidate =
+
+                if (searchSettings.searchString.isEmpty())
+                    true
+                else if (searchSettings.searchString.isDigitsOnly()) {
+                    val searchNumber = searchSettings.searchString.toInt()
+                    searchNumber.toString() in pokemon.pokedexId.toString()
+                } else searchSettings.searchString.lowercase() in pokemon.name.lowercase()
+
+
+            val filterCandidate =
+                if (!searchSettings.filterSettings.hasSettings()) {
+                    true
+                } else if (searchSettings.filterSettings.filterType == FilterSettings.FilterType.IncludableTypes) {
+                    if (searchSettings.filterSettings.types[pokemon.primaryType.ordinal]) true
+                    else searchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
+
+                } else if (searchSettings.filterSettings.filterType == FilterSettings.FilterType.ExactType) {
+                    if (searchSettings.filterSettings.numberOfTypesChosen() == 1) {
+                        if (searchSettings.filterSettings.types[pokemon.primaryType.ordinal] && pokemon.secondaryType == PokemonType.NONE) {
+                            true
+                        } else false
+                    } else if (searchSettings.filterSettings.numberOfTypesChosen() == 2) {
+                        if (searchSettings.filterSettings.types[pokemon.primaryType.ordinal] && searchSettings.filterSettings.types[pokemon.secondaryType.ordinal]) {
+                            true
+                        } else
+                            false
+                    } else {
+                        false
+                    }
+                } else false
+
+            searchCandidate && filterCandidate
+
+        })
+}
+
+
