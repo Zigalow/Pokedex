@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -46,6 +48,7 @@ import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
+import dtu.group21.ui.theme.Yellow60
 import java.util.Locale
 
 @Composable
@@ -87,14 +90,14 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
 
             }
             Spacer(modifier = Modifier.padding(3.dp))
-            PokemonColumn(
+            /*PokemonColumn(
                 pokemons = pokemons,
                 onPokemonClicked = {
                     println("Navigating to 'pokemon/$it'")
                     onNavigate("pokemon/$it")
                 },
                 modifier = Modifier.padding(horizontal = 5.dp)
-            )
+            )*/
         }
         FavoritesIcon(
             modifier = Modifier
@@ -110,28 +113,26 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
         if (menuIsOpen) {
             Column(
                 modifier = Modifier.width(80.dp),
-
                 ) {
-                Menu(
-                    modifier = Modifier
-                        .fillMaxHeight(),
-                ) {
-                    MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
-                }
-            }
-            Box(modifier = Modifier
-                .width(90.dp)
-                .fillMaxHeight()){
-                SettingsIcon(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 16.dp, bottom = 5.dp)
-                        .size(70.dp),
-                    onClicked = {
-                        onNavigate("settings")
+                Box(modifier = Modifier
+                    .fillMaxHeight()) {
+                    Menu(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                    ) {
+                        MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
+                        SettingsIcon(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .size(60.dp),
+                            onClicked = { onNavigate("settings")
+                            }
+                        )
                     }
-                )
+                }
+
             }
+
         }
     }
 }
@@ -141,7 +142,7 @@ fun Menu(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Box(
         modifier = modifier
             .background(
-                color = Color(0xFFFFCC00),
+                color = Yellow60,
             )
     ) {
         content()
