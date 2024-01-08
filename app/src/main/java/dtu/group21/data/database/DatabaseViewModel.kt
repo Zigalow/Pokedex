@@ -1,13 +1,11 @@
-package dtu.group21.models.database
+package dtu.group21.data.database
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.DetailedPokemon
-import dtu.group21.models.pokemon.DisplayPokemon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -74,6 +72,7 @@ class DatabaseViewModel(
         )
     }
 
+    /*
     fun getPokemons(pokemons: MutableState<ArrayList<MutableState<DisplayPokemon>>>, database: AppDatabase) {
         coroutineScope.launch {
             val pokemonList: ArrayList<MutableState<DisplayPokemon>> = ArrayList()
@@ -109,6 +108,7 @@ class DatabaseViewModel(
             }
         }
     }
+    */
 
     fun getPokemon(pokedexId: Int, pokemon: MutableState<DetailedPokemon>, database: AppDatabase) {
         coroutineScope.launch {
@@ -119,7 +119,7 @@ class DatabaseViewModel(
                         favoritePokemon.isFavorite.value = true
                         pokemon.value = favoritePokemon
                     }
-                    is Resource.Failure<*> -> {
+                    is Resource.Failure -> {
                         // Make the network request
                         requestViewModel.getComplexPokemon(pokedexId, pokemon)
                     }
@@ -133,33 +133,33 @@ class DatabaseViewModel(
 
     private suspend fun getPokemonInternal(pokedexId: Int, database: AppDatabase) = flow {
         if (pokedexId < 1 || pokedexId > 1010) {
-            emit(Resource.Failure<ComplexPokemon>("Number not valid"))
+            emit(Resource.Failure("Number not valid"))
             return@flow
         }
         emit(Resource.Loading)
 
-        val matchingPokemons = database.pokemonDao().getPokemonById(pokedexId)
+        val matchingPokemons = database.favoritesDao().getPokemonById(pokedexId)
         if (matchingPokemons.isNotEmpty()) {
             val pokemon = matchingPokemons[0].getPokemon()
             pokemon.isFavorite.value = true
             emit(Resource.Success(pokemon))
         }
         else {
-            emit(Resource.Failure<ComplexPokemon>("Not in the database"))
+            emit(Resource.Failure("Not in the database"))
         }
     }
 
     fun insertPokemon(pokemon: ComplexPokemon, database: AppDatabase) {
         coroutineScope.launch {
             val pokemonData = complexPokemonToPokemonData(pokemon)
-            database.pokemonDao().insertAll(pokemonData)
+            database.favoritesDao().insertAll(pokemonData)
         }
     }
 
     fun deletePokemon(pokemon: ComplexPokemon, database: AppDatabase) {
         coroutineScope.launch {
             val pokemonData = complexPokemonToPokemonData(pokemon)
-            database.pokemonDao().delete(pokemonData)
+            database.favoritesDao().delete(pokemonData)
         }
     }
 }

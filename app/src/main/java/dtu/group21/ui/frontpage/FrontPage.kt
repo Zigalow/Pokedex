@@ -3,11 +3,9 @@ package dtu.group21.ui.frontpage
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,13 +16,13 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pokedex.R
+import dtu.group21.data.PokedexViewModel
+import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
@@ -49,18 +49,15 @@ import java.util.Locale
 @Composable
 fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<DisplayPokemon>>) {
     var menuIsOpen by remember { mutableStateOf(false) }
-    /*val pokemons = remember {
-        mutableListOf<MutableState<ComplexPokemon>>()
-    }*/
 
-//    val viewModel = PokemonViewModel()
-    //val ids = (32..35).toList().toIntArray().toTypedArray()
-    /*val ids = intArrayOf(6, 32, 35, 82, 133, 150, 668, 669).toTypedArray()
+    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+
+    // Load the favorite pokemons
     LaunchedEffect(Unit) {
-        viewModel.getPokemons(ids, pokemons)
-    }*/
+        val pokedexViewModel = PokedexViewModel()
+        pokedexViewModel.getPokemons((1..151).toList(), pokemons)
+    }
 
-    //var favoritePokemon by remember { mutableStateOf(PokemonSamples.listOfPokemons.filter { it.isFavorit }) }
     Box {
         Column {
             UpperMenu(
@@ -81,7 +78,7 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
             }
             Spacer(modifier = Modifier.padding(3.dp))
             PokemonColumn(
-                pokemons = pokemons,
+                pokemons = pokemons.value,
                 onPokemonClicked = {
                     println("Navigating to 'pokemon/$it'")
                     onNavigate("pokemon/$it")
@@ -91,11 +88,9 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableList<MutableState<D
         }
         FavoritesIcon(
             modifier = Modifier
-                .align(Alignment.BottomEnd).padding(end = 20.dp, bottom = 20.dp)
-                .size(70.dp),
-            onClicked = {
-                onNavigate("favorites")
-            }
+                .offset(310.dp, 670.dp)
+                .size(90.dp),
+            onClicked = { onNavigate("favorites") }
         )
 
 
@@ -142,10 +137,34 @@ fun Menu(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
 @Composable
 fun PokemonColumn(
     modifier: Modifier = Modifier,
-    pokemons: MutableList<MutableState<DisplayPokemon>>,
+    pokemons: List<Resource<DisplayPokemon>>,
     onPokemonClicked: (String) -> Unit
 ) {
-    FlowRow(
+    val alignedIndexes = pokemons.indices.filter { it % 2 == 0 }
+    val alignedPokemons = alignedIndexes.map { i -> if (pokemons.size > (i + 1)) listOf(pokemons[i], pokemons[i + 1]) else listOf(pokemons[i]) }
+
+    LazyColumn(modifier.fillMaxWidth()) {
+        items(alignedPokemons.size) { index ->
+            Row(
+                modifier
+                    .fillMaxWidth()
+            ) {
+                for (pokemonResource in alignedPokemons[index]) {
+                    PokemonBox(
+                        modifier = Modifier
+                            .size(180.dp)
+                            .padding(horizontal = 5.dp, vertical = 5.dp),
+                        pokemonResource = pokemonResource,
+                        onClicked = onPokemonClicked
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+/*    FlowRow(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
@@ -155,29 +174,33 @@ fun PokemonColumn(
         val boxModifier = modifier
             .size(180.dp)
             .padding(horizontal = 4.dp, vertical = 5.dp)
-        for (i in pokemons.indices) {
-            val pokemon = pokemons[i].value
-            if (pokemon.pokedexId == 0) {
-                CircularProgressIndicator(
-                    modifier = boxModifier,
-                    color = Color.Black
-                )
-            } else if (pokemon.pokedexId == -1) {
-                // fail
-            } else {
-                PokemonBox(
-                    modifier = boxModifier,
-                    pokemon = pokemon
-                )
-                {
-                    onPokemonClicked("${pokemon.pokedexId}")
+        for (pokemonResource in pokemons.value) {
+            when (pokemonResource) {
+                is Resource.Success -> {
+                    val pokemon = pokemonResource.data
+                    PokemonBox(
+                        modifier = boxModifier,
+                        pokemon = pokemon
+                    )
+                    {
+                        onPokemonClicked("${pokemon.pokedexId}")
+                    }
+                }
+                is Resource.Failure -> {
+                    // fail
+                    // TODO handle??
+                }
+                Resource.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = boxModifier,
+                        color = Color.Black
+                    )
                 }
             }
         }
     }
-}
 
-
+ */
 @Composable
 fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
     Box(
@@ -303,73 +326,83 @@ fun formatPokemonId(unformattedNumber: Int): String {
 }
 
 @Composable
-fun PokemonBox(modifier: Modifier = Modifier, pokemon: DisplayPokemon, onClicked: () -> Unit) {
-    Box(
-        modifier = modifier
-            .clickable { onClicked() }
-            .background(
-                color = pokemon.primaryType.secondaryColor,
-                shape = RoundedCornerShape(20.dp)
-            )
+fun PokemonBox(modifier: Modifier = Modifier, pokemonResource: Resource<DisplayPokemon>, onClicked: (String) -> Unit) {
+    when (pokemonResource) {
+        is Resource.Failure -> {
+            // TODO: handle?
+        }
 
-    ) {
-        PokemonImage(modifier = Modifier.align(Alignment.BottomEnd), pokemon = pokemon)
-        Column {
-            Spacer(modifier = Modifier.height(7.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-            ) {
-                Spacer(modifier = Modifier.width(7.dp))
-                val pokemonTypeBoxModifier = Modifier.weight(1f)
-                PokemonTypeBox(
-                    pokemonType = pokemon.primaryType,
-                    modifier = pokemonTypeBoxModifier
-                )
-                Spacer(modifier = Modifier.padding(horizontal = 2.dp))
-                PokemonTypeBox(
-                    pokemonType = pokemon.secondaryType,
-                    modifier = pokemonTypeBoxModifier,
-                )
-                Spacer(modifier = Modifier.padding(horizontal = 2.dp))
-                // For displaying pokedex number
-                Text(
-                    text = formatPokemonId(pokemon.pokedexId),
-                    modifier = Modifier.weight(1f),
-                    color = pokemon.primaryType.primaryColor,
-                    textAlign = TextAlign.End,
-                    fontSize = 10.sp
-                )
-                Spacer(modifier = Modifier.width(7.dp))
-            }
-            Spacer(modifier = Modifier.fillMaxHeight(0.8f))
-            Row {
-                Spacer(modifier = Modifier.width(7.dp))
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = pokemon.primaryType.primaryColor,
-                            shape = RoundedCornerShape(30.dp)
-                        ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = capitalizeFirstLetter(pokemon.name),
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                        fontSize = 17.sp,
-                        color = Color.White,
+        Resource.Loading -> {
+            CircularProgressIndicator(
+                modifier = modifier,
+                color = Color.Black
+            )
+        }
+
+        is Resource.Success -> {
+            val pokemon = pokemonResource.data
+
+            Box(
+                modifier = modifier
+                    .clickable { onClicked("${pokemon.pokedexId}") }
+                    .background(
+                        color = pokemon.primaryType.secondaryColor,
+                        shape = RoundedCornerShape(20.dp)
                     )
+
+            ) {
+                PokemonImage(modifier = Modifier.align(Alignment.BottomEnd), pokemon = pokemon)
+                Column {
+                    Spacer(modifier = Modifier.height(7.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    ) {
+                        Spacer(modifier = Modifier.width(7.dp))
+                        val pokemonTypeBoxModifier = Modifier.weight(1f)
+                        PokemonTypeBox(
+                            pokemonType = pokemon.primaryType,
+                            modifier = pokemonTypeBoxModifier
+                        )
+                        Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                        PokemonTypeBox(
+                            pokemonType = pokemon.secondaryType,
+                            modifier = pokemonTypeBoxModifier,
+                        )
+                        Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                        // For displaying pokedex number
+                        Text(
+                            text = formatPokemonId(pokemon.pokedexId),
+                            modifier = Modifier.weight(1f),
+                            color = pokemon.primaryType.primaryColor,
+                            textAlign = TextAlign.End,
+                            fontSize = 10.sp
+                        )
+                        Spacer(modifier = Modifier.width(7.dp))
+                    }
+                    Spacer(modifier = Modifier.fillMaxHeight(0.8f))
+                    Row {
+                        Spacer(modifier = Modifier.width(7.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = pokemon.primaryType.primaryColor,
+                                    shape = RoundedCornerShape(30.dp)
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = capitalizeFirstLetter(pokemon.name),
+                                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                                fontSize = 17.sp,
+                                color = Color.White,
+                            )
+                        }
+                    }
                 }
-                /*PokemonNameBox(
-                    modifier = Modifier
-                        .weight(1f),
-                    pokemon = pokemon,
-                    size = size / 7.5f
-                )*/
             }
         }
     }
 }
-
 
 //endregion

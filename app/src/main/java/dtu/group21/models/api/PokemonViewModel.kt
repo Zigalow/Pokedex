@@ -26,7 +26,7 @@ class PokemonViewModel(
         coroutineScope.launch {
             getComplexPokemonInternal(pokedexId).collect {
                 val returnedPokemon = when (it) {
-                    is Resource.Failure<*> -> ComplexPokemon(
+                    is Resource.Failure -> ComplexPokemon(
                         -1,
                         PokemonType.NONE,
                         PokemonType.NONE,
@@ -65,7 +65,7 @@ class PokemonViewModel(
 
     private suspend fun getComplexPokemonInternal(pokedexId: Int) = flow {
         if (pokedexId < 1 || pokedexId > 1010) {
-            emit(Resource.Failure<ComplexPokemon>("Number not valid"))
+            emit(Resource.Failure("Number not valid"))
             return@flow
         }
         emit(Resource.Loading)
@@ -100,7 +100,7 @@ class PokemonViewModel(
             val evolutionChain = ArrayList<List<EvolutionChainPokemon>>()
             getEvolutionChainInternal(pokedexId).collect {
                 when (it) {
-                    is Resource.Failure<*> -> {
+                    is Resource.Failure -> {
                         return@collect
                     }
                     is Resource.Success -> {
@@ -119,7 +119,7 @@ class PokemonViewModel(
 
     private suspend fun getEvolutionChainInternal(pokedexId: Int) = flow {
         if (pokedexId < 1 || pokedexId > 1010) {
-            emit(Resource.Failure<List<EvolutionChainPokemon>>("Number not valid"))
+            emit(Resource.Failure("Number not valid"))
             return@flow
         }
         emit(Resource.Loading)

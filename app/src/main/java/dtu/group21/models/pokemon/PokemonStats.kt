@@ -9,4 +9,6 @@ data class PokemonStats(
     val speed: Int
 ) {
     val total = hp + attack + defense + specialAttack + specialDefense + speed
+
+    constructor(stats: List<Int>) : this(stats[0], stats[1], stats[2], stats[3], stats[4], stats[5])
 }
