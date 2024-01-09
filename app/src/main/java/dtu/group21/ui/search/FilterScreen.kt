@@ -63,10 +63,10 @@ fun FilterScreen(
                     .align(Alignment.CenterVertically)
                     .clickable {
                         onNavigateBack()
-                        },
+                    },
                 alignment = Alignment.CenterStart,
 
-            )
+                )
             Text(
                 text = "Filter",
                 modifier = Modifier
@@ -86,10 +86,10 @@ fun FilterScreen(
         BinaryChooser(
             option1 = "Includable Types",
             option2 = "Exact Types",
-            onChange = { 
+            onChange = {
                 filterSettings.filterType = options[it]
-                hasTooManyTypesSelected.value = shouldShowWarning(filterSettings) 
-                       },
+                hasTooManyTypesSelected.value = shouldShowWarning(filterSettings)
+            },
             startsAt = options.indexOf(filterSettings.filterType),
         )
         Spacer(Modifier.height(5.dp))
@@ -166,6 +166,13 @@ fun FilterScreen(
                         }
                     }
                 }
+            }
+            if (hasTooManyTypesSelected.value) {
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    text = "Warning: No Pokémons have more than two types"
+                )
             }
         }
 
