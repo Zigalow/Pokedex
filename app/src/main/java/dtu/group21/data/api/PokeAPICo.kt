@@ -1,6 +1,7 @@
 package dtu.group21.data.api
 
 import androidx.compose.runtime.mutableStateOf
+import dtu.group21.helpers.PokemonHelper
 import dtu.group21.models.api.JsonRequestMaker
 import dtu.group21.models.pokemon.DetailedPokemon
 import dtu.group21.models.pokemon.DisplayPokemon
@@ -27,14 +28,12 @@ class PokeAPICo : PokemonAPI {
 
         // TODO should probably have an actual class instead of this anonymous class
         val pokemon = object : DisplayPokemon {
-            override val name: String = idName
+            override val name: String = PokemonHelper.getEnglishName(pokedexId, idName)
             override val pokedexId: Int = pokedexId
             override val primaryType: PokemonType = PokemonType.getFromName(primaryTypeName)
             override val secondaryType: PokemonType = PokemonType.getFromName(secondaryTypeName)
             override val spriteId: String =
-                "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${
-                    pokedexId.toString().padStart(3, '0')
-                }.png"
+                "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${PokemonHelper.getPokedexIdString(pokedexId)}.png"
             override val hasTwoTypes: Boolean = secondaryTypeName != "none"
         }
 
