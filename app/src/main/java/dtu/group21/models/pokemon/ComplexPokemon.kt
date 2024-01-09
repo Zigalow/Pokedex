@@ -2,6 +2,8 @@ package dtu.group21.models.pokemon
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import dtu.group21.data.pokemon.DetailedPokemon
+import dtu.group21.data.pokemon.GenderedPokemon
 
 //@Entity(tableName = "favorites")
 class ComplexPokemon(

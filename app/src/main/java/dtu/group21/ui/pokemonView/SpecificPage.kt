@@ -52,7 +52,7 @@ import dtu.group21.data.PokedexViewModel
 import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.data.database.DatabaseViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.models.pokemon.DetailedPokemon
+import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonMove
@@ -63,7 +63,6 @@ import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
-import dtu.group21.ui.theme.EggWhite
 import dtu.group21.ui.theme.LightWhite
 
 

@@ -7,8 +7,8 @@ import dtu.group21.data.api.PokemonAPI
 import dtu.group21.data.caches.PokemonCache
 import dtu.group21.data.database.AppDatabase
 import dtu.group21.models.api.Resource
-import dtu.group21.models.pokemon.DetailedPokemon
-import dtu.group21.models.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.DetailedPokemon
+import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.pokedex.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

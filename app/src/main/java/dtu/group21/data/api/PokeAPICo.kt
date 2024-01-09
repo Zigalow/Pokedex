@@ -3,8 +3,8 @@ package dtu.group21.data.api
 import androidx.compose.runtime.mutableStateOf
 import dtu.group21.helpers.PokemonHelper
 import dtu.group21.models.api.JsonRequestMaker
-import dtu.group21.models.pokemon.DetailedPokemon
-import dtu.group21.models.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.DetailedPokemon
+import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.MoveDamageClass
 import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonMove
