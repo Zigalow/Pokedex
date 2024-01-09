@@ -466,7 +466,11 @@ fun StatsSection(
         StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString())
         StatsBar(first = "Sp.Def", second = stats.specialDefense.toString())
         StatsBar(first = "Speed", second = stats.speed.toString())
-        Divider(Modifier.width(150.dp))
+        Row {
+            Spacer(modifier = Modifier.weight(0.0001f))
+            Divider(Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(0.01f))
+        }
         Spacer(Modifier.height(5.dp))
         Table(first = "Total", second = stats.total.toString())
     }
