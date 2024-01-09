@@ -113,7 +113,6 @@ fun PokeNavHost(startDestination: String = "home") {
         composable("sort") {
             SortScreen(
                 onNavigateBack = { popBackStackCustom(navController) },
-                onDoneSorting = { navController.popBackStack() },
                 sortSettings = searchSettings.sortSettings,
                 modifier = Modifier.fillMaxSize(),
             )
