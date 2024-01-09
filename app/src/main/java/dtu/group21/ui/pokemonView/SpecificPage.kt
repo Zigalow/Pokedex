@@ -355,8 +355,9 @@ fun Table(first: String, second: String) {
 }
 
 @Composable
-fun StatsBar(first: String, second: String) {
+fun StatsBar(first: String, second: String, max: Int) {
     val percentage = (second.toFloat() / 100).coerceIn(0f, 1f)
+
     val boxColor = if (second.toFloat() < 50) Color(0xFFFF0000)  else if(second.toFloat() >=50 && second.toFloat() < 80) Color(0xFFFFB800) else Color(0xFF42FF00)
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -370,7 +371,6 @@ fun StatsBar(first: String, second: String) {
             text = second,
             modifier = Modifier.weight(0.05f)
         )
-
         Box(
             modifier = Modifier
                 .weight(0.50f)
@@ -378,7 +378,6 @@ fun StatsBar(first: String, second: String) {
                 .background(shape = RoundedCornerShape(15.dp), color = Color(0xFFD9D9D9))
                 .align(Alignment.CenterVertically)
         ){
-
             Box(modifier = Modifier
                 .fillMaxWidth(percentage)
                 .height(5.dp)
@@ -460,12 +459,12 @@ fun StatsSection(
     modifier: Modifier
 ) {
     Column {
-        StatsBar(first = "HP", second = stats.hp.toString())
-        StatsBar(first = "Attack", second = stats.attack.toString())
-        StatsBar(first = "Defense", second = stats.defense.toString())
-        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString())
-        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString())
-        StatsBar(first = "Speed", second = stats.speed.toString())
+        StatsBar(first = "HP", second = stats.hp.toString(),496)
+        StatsBar(first = "Attack", second = stats.attack.toString(),190)
+        StatsBar(first = "Defense", second = stats.defense.toString(),250)
+        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(),194)
+        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(),230)
+        StatsBar(first = "Speed", second = stats.speed.toString(),200)
         Row {
             Spacer(modifier = Modifier.weight(0.0001f))
             Divider(Modifier.weight(0.5f))
