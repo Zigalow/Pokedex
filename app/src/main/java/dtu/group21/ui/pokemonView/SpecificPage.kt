@@ -80,7 +80,7 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
                 0,
                 0,
                 PokemonStats(0, 0, 0, 0, 0, 0),
-                PokemonSpecies("Loading", 0, false, false, false, false),
+                PokemonSpecies("loading", 0, false, false, false, false),
                 emptyArray()
             ) as DetailedPokemon
         )
@@ -90,7 +90,9 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
         val viewModel = PokedexViewModel()
         viewModel.getDetails(pokedexId, pokemon)
     }
-    Mid(modifier = Modifier, pokemon.value)
+    if(pokemon.value.name!="loading") {
+        Mid(modifier = Modifier, pokemon.value)
+    }
     Inspect(pokemon = pokemon.value, onNavigateBack = onNavigateBack)
 }
 
