@@ -356,9 +356,9 @@ fun Table(first: String, second: String) {
 
 @Composable
 fun StatsBar(first: String, second: String, max: Int) {
-    val percentage = (second.toFloat() / 100).coerceIn(0f, 1f)
+    val percentage = (second.toFloat() / max)
 
-    val boxColor = if (second.toFloat() < 50) Color(0xFFFF0000)  else if(second.toFloat() >=50 && second.toFloat() < 80) Color(0xFFFFB800) else Color(0xFF42FF00)
+    val boxColor = if (second.toFloat() < max * 0.2) Color(0xFFFF0000)  else if(second.toFloat() >= max * 0.2 && second.toFloat() < max * 0.6) Color(0xFFFFB800) else Color(0xFF42FF00)
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -369,7 +369,7 @@ fun StatsBar(first: String, second: String, max: Int) {
         )
         Text(
             text = second,
-            modifier = Modifier.weight(0.05f)
+            modifier = Modifier.weight(0.1f)
         )
         Box(
             modifier = Modifier
@@ -385,6 +385,10 @@ fun StatsBar(first: String, second: String, max: Int) {
             )
         }
         Spacer(modifier = Modifier.weight(0.02f))
+        /*Text(
+            text = max.toString(),
+            modifier = Modifier.weight(0.1f).align(Alignment.Bottom)
+        )*/
     }
     Spacer(modifier = Modifier.height(10.dp))
 }
@@ -459,10 +463,10 @@ fun StatsSection(
     modifier: Modifier
 ) {
     Column {
-        StatsBar(first = "HP", second = stats.hp.toString(),496)
-        StatsBar(first = "Attack", second = stats.attack.toString(),190)
-        StatsBar(first = "Defense", second = stats.defense.toString(),250)
-        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(),194)
+        StatsBar(first = "HP", second = stats.hp.toString(),255)
+        StatsBar(first = "Attack", second = stats.attack.toString(),181)
+        StatsBar(first = "Defense", second = stats.defense.toString(),230)
+        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(),173)
         StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(),230)
         StatsBar(first = "Speed", second = stats.speed.toString(),200)
         Row {
@@ -471,7 +475,7 @@ fun StatsSection(
             Spacer(modifier = Modifier.weight(0.01f))
         }
         Spacer(Modifier.height(5.dp))
-        Table(first = "Total", second = stats.total.toString())
+        StatsBar(first = "Total", second = stats.total.toString(),720)
     }
     Spacer(modifier.fillMaxHeight())
 }
