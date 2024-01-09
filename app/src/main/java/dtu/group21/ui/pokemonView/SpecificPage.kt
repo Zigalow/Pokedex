@@ -63,7 +63,6 @@ import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
-import dtu.group21.ui.theme.EggWhite
 import dtu.group21.ui.theme.LightWhite
 
 
@@ -354,6 +353,42 @@ fun Table(first: String, second: String) {
 }
 
 @Composable
+fun StatsBar(first: String, second: String) {
+    val percentage = (second.toFloat() / 100).coerceIn(0f, 1f)
+    val boxColor = if (second.toFloat() < 50) Color(0xFFFF0000)  else if(second.toFloat() >=50 && second.toFloat() < 80) Color(0xFFFFB800) else Color(0xFF42FF00)
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            color = Color.Black.copy(alpha = 0.4f),
+            text = first,
+            modifier = Modifier.weight(0.15f)
+        )
+        Text(
+            text = second,
+            modifier = Modifier.weight(0.05f)
+        )
+
+        Box(
+            modifier = Modifier
+                .weight(0.50f)
+                .height(5.dp)
+                .background(shape = RoundedCornerShape(15.dp), color = Color(0xFFD9D9D9))
+                .align(Alignment.CenterVertically)
+        ){
+
+            Box(modifier = Modifier
+                .fillMaxWidth(percentage)
+                .height(5.dp)
+                .background(shape = RoundedCornerShape(15.dp), color = boxColor)
+            )
+        }
+        Spacer(modifier = Modifier.weight(0.02f))
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+}
+
+@Composable
 fun Sections(modifier: Modifier, selectedCategory: String, pokemon: DetailedPokemon) {
     when (selectedCategory) {
         "About" -> AboutSection(pokemon, modifier)
@@ -423,12 +458,12 @@ fun StatsSection(
     modifier: Modifier
 ) {
     Column {
-        Table(first = "HP", second = stats.hp.toString())
-        Table(first = "Attack", second = stats.attack.toString())
-        Table(first = "Defense", second = stats.defense.toString())
-        Table(first = "Sp.Atk", second = stats.specialAttack.toString())
-        Table(first = "Sp.Def", second = stats.specialDefense.toString())
-        Table(first = "Speed", second = stats.speed.toString())
+        StatsBar(first = "HP", second = stats.hp.toString())
+        StatsBar(first = "Attack", second = stats.attack.toString())
+        StatsBar(first = "Defense", second = stats.defense.toString())
+        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString())
+        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString())
+        StatsBar(first = "Speed", second = stats.speed.toString())
         Divider(Modifier.width(150.dp))
         Spacer(Modifier.height(5.dp))
         Table(first = "Total", second = stats.total.toString())
