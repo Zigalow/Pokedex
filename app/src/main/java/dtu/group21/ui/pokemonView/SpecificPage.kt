@@ -145,36 +145,36 @@ fun Top(
             modifier = Modifier
                 .weight(1f)
         ) {
-        backIcon(
-            modifier
-                .padding(vertical = 16.dp, horizontal = 19.dp)
-                .size(49.dp)
-                .clickable { onClickBack() }
-        )
+            backIcon(
+                modifier
+                    .padding(vertical = 16.dp, horizontal = 19.dp)
+                    .size(49.dp)
+                    .clickable { onClickBack() }
+            )
         }
         //Spacer(modifier.width(230.dp))
         Box(
             modifier = Modifier
                 .weight(0.1f)
         ) {
-        FavoritesIcon(
-            active = pokemon.isFavorite.value,
-            color = pokemon.primaryType.secondaryColor,
-            onClicked = {
-                pokemon.isFavorite.value = !pokemon.isFavorite.value
-                val database = MainActivity.database!!
-                val databaseViewModel = DatabaseViewModel()
-                val saveablePokemon = (pokemon as ComplexPokemon) // TODO
-                if (pokemon.isFavorite.value) {
-                    println("Saving pokemon")
-                    databaseViewModel.insertPokemon(saveablePokemon, database)
-                } else {
-                    println("Deleting pokemon")
-                    databaseViewModel.deletePokemon(saveablePokemon, database)
+            FavoritesIcon(
+                active = pokemon.isFavorite.value,
+                color = pokemon.primaryType.secondaryColor,
+                onClicked = {
+                    pokemon.isFavorite.value = !pokemon.isFavorite.value
+                    val database = MainActivity.database!!
+                    val databaseViewModel = DatabaseViewModel()
+                    val saveablePokemon = (pokemon as ComplexPokemon) // TODO
+                    if (pokemon.isFavorite.value) {
+                        println("Saving pokemon")
+                        databaseViewModel.insertPokemon(saveablePokemon, database)
+                    } else {
+                        println("Deleting pokemon")
+                        databaseViewModel.deletePokemon(saveablePokemon, database)
+                    }
                 }
-            }
 
-        )
+            )
         }
         Spacer(modifier.width(11.dp))
     }
@@ -261,10 +261,12 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 .width(13.dp)
                 .height(25.dp)
         )
-        Box( modifier = Modifier
-            //.padding(horizontal = 5.dp)
-            .fillMaxWidth()
-            .wrapContentHeight()) {
+        Box(
+            modifier = Modifier
+                //.padding(horizontal = 5.dp)
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
             CategoryList(
                 categories = categories,
                 onCategorySelected = { selectedCategory = it },
@@ -282,7 +284,8 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
             Sections(selectedCategory = selectedCategory, pokemon = pokemon, modifier = modifier)
             Spacer(
                 modifier = Modifier
-                    .weight(1f))
+                    .weight(1f)
+            )
         }
     }
 }
@@ -403,6 +406,7 @@ fun StatsBar(first: String, second: String, max: Int, animDuration: Int = 1000, 
                 Color(0xFF00E1FF)
             }
     }
+    
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -426,6 +430,7 @@ fun StatsBar(first: String, second: String, max: Int, animDuration: Int = 1000, 
                 .fillMaxWidth(currentPercent.value)
                 .height(5.dp)
                 .background(shape = RoundedCornerShape(15.dp), color = boxColor)
+
             )
         }
         Spacer(modifier = Modifier.weight(0.02f))
@@ -473,6 +478,19 @@ fun AboutSection(
             else -> "${heightInCm / 100000} km"
         }
 
+    val pokemonGeneration =
+        when (pokemon.pokedexId) {
+            in 1..151 -> "Generation 1"
+            in 152..251 -> "Generation 2"
+            in 252..386 -> "Generation 3"
+            in 387..493 -> "Generation 4"
+            in 494..649 -> "Generation 5"
+            in 650..721 -> "Generation 6"
+            in 722..809 -> "Generation 7"
+            in 810..905 -> "Generation 8"
+            else -> "Generation 9"
+        }
+
     Column {
         Table(first = "Category", second = pokemon.category)
         Table(first = "Abilities", second = pokemon.abilities.joinToString {
@@ -484,7 +502,8 @@ fun AboutSection(
         })
         Table(first = "Weight", second = pokemonWeight)
         Table(first = "Height", second = pokemonHeight)
-        //Table(first = "Gender", second = "")
+        Table(first = "Introduced", second = pokemonGeneration)
+
         Spacer(modifier.height(30.dp))
     }
     Column {
@@ -834,6 +853,7 @@ fun moveBox(move: PokemonMove) {
         }
     }
 }
+
 @Composable
 fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
     Box(
