@@ -157,8 +157,7 @@ fun PokemonColumn(
                         modifier = Modifier
                             .width(itemWidth)
                             .aspectRatio(1f)
-                            .padding(2.dp)
-                            .weight(1f),
+                            .padding(2.dp),
                         pokemonResource = pokemonResource,
                         onClicked = onPokemonClicked
                     )
