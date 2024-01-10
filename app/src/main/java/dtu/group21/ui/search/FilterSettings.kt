@@ -6,6 +6,11 @@ class FilterSettings {
         ExactType,
     }
 
+    enum class FilterOptions {
+        TYPEs,
+        GENERATIONS
+    }
+
     var filterType = FilterType.IncludableTypes
     val types: ArrayList<Boolean> = arrayListOf(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
 
