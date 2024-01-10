@@ -48,7 +48,7 @@ import androidx.core.text.isDigitsOnly
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.models.api.Resource
-import dtu.group21.models.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.favorites.FavoritePokemonBox
 import dtu.group21.ui.shared.UpperMenu
