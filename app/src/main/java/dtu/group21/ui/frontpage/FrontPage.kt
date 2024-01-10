@@ -374,7 +374,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemonResource: Resource<DisplayP
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = capitalizeFirstLetter(pokemon.name),
+                                text = pokemon.name,
                                 modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                                 fontSize = 17.sp,
                                 color = Color.White,
