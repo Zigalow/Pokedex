@@ -62,7 +62,7 @@ fun PokeNavHost(startDestination: String = "home") {
     val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
     LaunchedEffect(Unit) {
         val pokedexViewModel = PokedexViewModel()
-        val ids = (1..151)
+        val ids = (1..20)
         pokedexViewModel.getPokemons(ids.toList(),pokemons)
     }
 

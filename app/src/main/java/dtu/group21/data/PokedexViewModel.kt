@@ -4,7 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import dtu.group21.data.api.PokeAPICo
 import dtu.group21.data.api.PokemonAPI
-import dtu.group21.data.caches.PokemonCache
+import dtu.group21.data.caches.PokedexCache
 import dtu.group21.data.database.AppDatabase
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.DetailedPokemon
@@ -78,8 +78,9 @@ class PokedexViewModel(
     }
 
     fun getPokemon(pokedexId: Int, destination: MutableState<DisplayPokemon>, cacheResult: Boolean = true) {
-        if (pokedexId in PokemonCache) {
-            destination.value = PokemonCache[pokedexId]!!
+        val cached = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
+        if (cached != null) {
+            destination.value = cached
         }
         else {
             coroutineScope.launch {
@@ -109,8 +110,9 @@ class PokedexViewModel(
 
         var retrievedPokemon: DisplayPokemon? = null
 
-        if (pokedexId in PokemonCache) {
-            retrievedPokemon = PokemonCache[pokedexId]
+        val cached = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
+        if (cached != null) {
+            retrievedPokemon = cached
         }
         else {
             // Database look-up
@@ -124,7 +126,7 @@ class PokedexViewModel(
             }
 
             if (cacheResult) {
-                PokemonCache.add(retrievedPokemon)
+                PokedexCache.addPokemon(retrievedPokemon)
             }
         }
 
@@ -136,9 +138,9 @@ class PokedexViewModel(
         }
     }
 
-    fun getDetails(pokedexId: Int, destination: MutableState<DetailedPokemon>) {
+    fun getDetails(pokedexId: Int, destination: MutableState<DetailedPokemon>, cacheResult: Boolean = true) {
         coroutineScope.launch {
-            getDetailsInternal(pokedexId).collect {
+            getDetailsInternal(pokedexId, cacheResult).collect {
                 when (it) {
                     is Resource.Success -> {
                         destination.value = it.data
@@ -154,7 +156,7 @@ class PokedexViewModel(
         }
     }
 
-    private suspend fun getDetailsInternal(pokedexId: Int): Flow<Resource<DetailedPokemon>> = flow {
+    private suspend fun getDetailsInternal(pokedexId: Int, cacheResult: Boolean): Flow<Resource<DetailedPokemon>> = flow {
         if (pokedexId < 1 || pokedexId > 1010) {
             emit(Resource.Failure("Number not valid"))
             return@flow
@@ -163,9 +165,9 @@ class PokedexViewModel(
 
         var retrievedPokemon: DetailedPokemon? = null
 
-        // TODO: make a cache for the details as well
-        if (pokedexId in PokemonCache && false) {
-            // retrievedPokemon = PokemonCache[pokedexId]
+        val cached = PokedexCache.details.firstOrNull { it.pokedexId == pokedexId }
+        if (cached != null) {
+            retrievedPokemon = cached
         }
         else {
             // Database look-up
@@ -176,6 +178,10 @@ class PokedexViewModel(
             // Fetching online
             else {
                 retrievedPokemon = api.getDetailedPokemon(pokedexId)
+            }
+
+            if (cacheResult) {
+                PokedexCache.addDetails(retrievedPokemon)
             }
         }
 
