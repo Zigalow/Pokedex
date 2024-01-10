@@ -1,5 +1,7 @@
 package dtu.group21.ui.pokemonView
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -80,7 +82,7 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
                 0,
                 0,
                 PokemonStats(0, 0, 0, 0, 0, 0),
-                PokemonSpecies("Loading", 0, false, false, false, false),
+                PokemonSpecies("loading...", 0, false, false, false, false),
                 emptyArray()
             ) as DetailedPokemon
         )
@@ -90,7 +92,9 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
         val viewModel = PokedexViewModel()
         viewModel.getDetails(pokedexId, pokemon)
     }
-    Mid(modifier = Modifier, pokemon.value)
+    if(pokemon.value.name!="loading...") {
+        Mid(modifier = Modifier, pokemon.value)
+    }
     Inspect(pokemon = pokemon.value, onNavigateBack = onNavigateBack)
 }
 
@@ -356,12 +360,53 @@ fun Table(first: String, second: String) {
 }
 
 @Composable
-fun StatsBar(first: String, second: String) {
-    val percentage = (second.toFloat() / 100).coerceIn(0f, 1f)
-    val boxColor =
-        if (second.toFloat() < 50) Color(0xFFFF0000) else if (second.toFloat() >= 50 && second.toFloat() < 80) Color(
-            0xFFFFB800
-        ) else Color(0xFF42FF00)
+fun StatsBar(first: String, second: String, max: Int, animDuration: Int = 1000, animDelay: Int = 0 ) {
+    val percentage = (second.toFloat() / max)
+    var animationPlayed by remember {
+        mutableStateOf(false)
+    }
+    val currentPercent = animateFloatAsState(
+        targetValue = if (animationPlayed) {
+            percentage
+        }else 0f,
+        animationSpec = tween(
+            animDuration,
+            animDelay
+        )
+    )
+    LaunchedEffect(key1 = true){
+        animationPlayed = true
+    }
+    var boxColor = Color.Gray
+
+    if(first.equals("Total")){
+        boxColor =
+            if (second.toInt() < max * 0.2) {
+                Color(0xFFFF0000)
+            } else if(second.toInt() >= max * 0.2 && second.toInt() < max * 0.4){
+                Color(0xFFFFB800)
+            } else if (second.toInt() >= max * 0.4 && second.toInt() < max * 0.6) {
+                Color(0xFFA0E515)
+            } else if (second.toInt() >= max * 0.6 && second.toInt() < max * 0.8) {
+                Color(0xFF23CD5E)
+            } else {
+                Color(0xFF00E1FF)
+            }
+    } else {
+        boxColor =
+            if (second.toInt() in 0 until 50) {
+                Color(0xFFFF0000)
+            } else if (second.toInt() in 50 until 90) {
+                Color(0xFFFF9800)
+            } else if (second.toInt() in 90 until 120) {
+                Color(0xFFA0E515)
+            } else if (second.toInt() in 120 until 150) {
+                Color(0xFF23CD5E)
+            } else {
+                Color(0xFF00E1FF)
+            }
+    }
+    
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -372,25 +417,27 @@ fun StatsBar(first: String, second: String) {
         )
         Text(
             text = second,
-            modifier = Modifier.weight(0.05f)
+            modifier = Modifier.weight(0.1f)
         )
-
         Box(
             modifier = Modifier
                 .weight(0.50f)
                 .height(5.dp)
                 .background(shape = RoundedCornerShape(15.dp), color = Color(0xFFD9D9D9))
                 .align(Alignment.CenterVertically)
-        ) {
+        ){
+            Box(modifier = Modifier
+                .fillMaxWidth(currentPercent.value)
+                .height(5.dp)
+                .background(shape = RoundedCornerShape(15.dp), color = boxColor)
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(percentage)
-                    .height(5.dp)
-                    .background(shape = RoundedCornerShape(15.dp), color = boxColor)
             )
         }
         Spacer(modifier = Modifier.weight(0.02f))
+        /*Text(
+            text = max.toString(),
+            modifier = Modifier.weight(0.1f).align(Alignment.Bottom)
+        )*/
     }
     Spacer(modifier = Modifier.height(10.dp))
 }
@@ -479,15 +526,19 @@ fun StatsSection(
     modifier: Modifier
 ) {
     Column {
-        StatsBar(first = "HP", second = stats.hp.toString())
-        StatsBar(first = "Attack", second = stats.attack.toString())
-        StatsBar(first = "Defense", second = stats.defense.toString())
-        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString())
-        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString())
-        StatsBar(first = "Speed", second = stats.speed.toString())
-        Divider(Modifier.width(150.dp))
+        StatsBar(first = "HP", second = stats.hp.toString(),255)
+        StatsBar(first = "Attack", second = stats.attack.toString(),255,1000,100)
+        StatsBar(first = "Defense", second = stats.defense.toString(),255,1000,200)
+        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(),255,1000,300)
+        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(),255,1000,400)
+        StatsBar(first = "Speed", second = stats.speed.toString(),255,1000,500)
+        Row {
+            Spacer(modifier = Modifier.weight(0.0001f))
+            Divider(Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(0.01f))
+        }
         Spacer(Modifier.height(5.dp))
-        Table(first = "Total", second = stats.total.toString())
+        StatsBar(first = "Total", second = stats.total.toString(),720,1000,600)
     }
     Spacer(modifier.fillMaxHeight())
 }
@@ -516,7 +567,6 @@ fun EvolutionSection(
             viewModel.getEvolutionChain(pokemon.pokedexId, evolutionChain)
         }
     }
-
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.Center
