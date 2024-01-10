@@ -1,5 +1,7 @@
 package dtu.group21.ui.pokemonView
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -355,8 +357,23 @@ fun Table(first: String, second: String) {
 }
 
 @Composable
-fun StatsBar(first: String, second: String, max: Int) {
+fun StatsBar(first: String, second: String, max: Int, animDuration: Int = 1000, animDelay: Int = 0 ) {
     val percentage = (second.toFloat() / max)
+    var animationPlayed by remember {
+        mutableStateOf(false)
+    }
+    val currentPercent = animateFloatAsState(
+        targetValue = if (animationPlayed) {
+            percentage
+        }else 0f,
+        animationSpec = tween(
+            animDuration,
+            animDelay
+        )
+    )
+    LaunchedEffect(key1 = true){
+        animationPlayed = true
+    }
 
     val boxColor = if (second.toFloat() < max * 0.2) Color(0xFFFF0000)  else if(second.toFloat() >= max * 0.2 && second.toFloat() < max * 0.6) Color(0xFFFFB800) else Color(0xFF42FF00)
     Row(
@@ -379,7 +396,7 @@ fun StatsBar(first: String, second: String, max: Int) {
                 .align(Alignment.CenterVertically)
         ){
             Box(modifier = Modifier
-                .fillMaxWidth(percentage)
+                .fillMaxWidth(currentPercent.value)
                 .height(5.dp)
                 .background(shape = RoundedCornerShape(15.dp), color = boxColor)
             )
@@ -464,18 +481,18 @@ fun StatsSection(
 ) {
     Column {
         StatsBar(first = "HP", second = stats.hp.toString(),255)
-        StatsBar(first = "Attack", second = stats.attack.toString(),181)
-        StatsBar(first = "Defense", second = stats.defense.toString(),230)
-        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(),173)
-        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(),230)
-        StatsBar(first = "Speed", second = stats.speed.toString(),200)
+        StatsBar(first = "Attack", second = stats.attack.toString(),181,1000,100)
+        StatsBar(first = "Defense", second = stats.defense.toString(),230,1000,200)
+        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(),173,1000,300)
+        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(),230,1000,400)
+        StatsBar(first = "Speed", second = stats.speed.toString(),200,1000,500)
         Row {
             Spacer(modifier = Modifier.weight(0.0001f))
             Divider(Modifier.weight(0.5f))
             Spacer(modifier = Modifier.weight(0.01f))
         }
         Spacer(Modifier.height(5.dp))
-        StatsBar(first = "Total", second = stats.total.toString(),720)
+        StatsBar(first = "Total", second = stats.total.toString(),720,1000,600)
     }
     Spacer(modifier.fillMaxHeight())
 }
