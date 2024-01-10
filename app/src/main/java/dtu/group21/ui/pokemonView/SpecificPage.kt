@@ -82,7 +82,7 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
                 0,
                 0,
                 PokemonStats(0, 0, 0, 0, 0, 0),
-                PokemonSpecies("loading", 0, false, false, false, false),
+                PokemonSpecies("loading...", 0, false, false, false, false),
                 emptyArray()
             ) as DetailedPokemon
         )
@@ -92,7 +92,7 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
         val viewModel = PokedexViewModel()
         viewModel.getDetails(pokedexId, pokemon)
     }
-    if(pokemon.value.name!="loading") {
+    if(pokemon.value.name!="loading...") {
         Mid(modifier = Modifier, pokemon.value)
     }
     Inspect(pokemon = pokemon.value, onNavigateBack = onNavigateBack)
@@ -374,8 +374,35 @@ fun StatsBar(first: String, second: String, max: Int, animDuration: Int = 1000, 
     LaunchedEffect(key1 = true){
         animationPlayed = true
     }
+    var boxColor = Color.Gray
 
-    val boxColor = if (second.toFloat() < max * 0.2) Color(0xFFFF0000)  else if(second.toFloat() >= max * 0.2 && second.toFloat() < max * 0.6) Color(0xFFFFB800) else Color(0xFF42FF00)
+    if(first.equals("Total")){
+        boxColor =
+            if (second.toInt() < max * 0.2) {
+                Color(0xFFFF0000)
+            } else if(second.toInt() >= max * 0.2 && second.toInt() < max * 0.4){
+                Color(0xFFFFB800)
+            } else if (second.toInt() >= max * 0.4 && second.toInt() < max * 0.6) {
+                Color(0xFFA0E515)
+            } else if (second.toInt() >= max * 0.6 && second.toInt() < max * 0.8) {
+                Color(0xFF23CD5E)
+            } else {
+                Color(0xFF00E1FF)
+            }
+    } else {
+        boxColor =
+            if (second.toInt() in 0 until 50) {
+                Color(0xFFFF0000)
+            } else if (second.toInt() in 50 until 90) {
+                Color(0xFFFF9800)
+            } else if (second.toInt() in 90 until 120) {
+                Color(0xFFA0E515)
+            } else if (second.toInt() in 120 until 150) {
+                Color(0xFF23CD5E)
+            } else {
+                Color(0xFF00E1FF)
+            }
+    }
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -481,11 +508,11 @@ fun StatsSection(
 ) {
     Column {
         StatsBar(first = "HP", second = stats.hp.toString(),255)
-        StatsBar(first = "Attack", second = stats.attack.toString(),181,1000,100)
-        StatsBar(first = "Defense", second = stats.defense.toString(),230,1000,200)
-        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(),173,1000,300)
-        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(),230,1000,400)
-        StatsBar(first = "Speed", second = stats.speed.toString(),200,1000,500)
+        StatsBar(first = "Attack", second = stats.attack.toString(),255,1000,100)
+        StatsBar(first = "Defense", second = stats.defense.toString(),255,1000,200)
+        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(),255,1000,300)
+        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(),255,1000,400)
+        StatsBar(first = "Speed", second = stats.speed.toString(),255,1000,500)
         Row {
             Spacer(modifier = Modifier.weight(0.0001f))
             Divider(Modifier.weight(0.5f))
@@ -521,7 +548,6 @@ fun EvolutionSection(
             viewModel.getEvolutionChain(pokemon.pokedexId, evolutionChain)
         }
     }
-
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.Center
