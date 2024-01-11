@@ -69,6 +69,9 @@ import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.sqrt
 
 
@@ -186,7 +189,7 @@ fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
     ) {
         Row(
             modifier
-                .height(35.dp)
+                .height(35.dp).weight(1f)
         ) {
             Spacer(modifier.width(13.dp))
             Text(
@@ -265,12 +268,11 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 .draggable(
                     orientation = Orientation.Vertical,
                     state = rememberDraggableState { changeY ->
-                        if (offsetY == 0f && changeY < 0) {
+                        if (changeY < 0) {
                             offsetY = sqrt(changeY*changeY)
                         }else offsetY = 0f
                     }
-                )
-                .animateContentSize(),
+                ),
             verticalArrangement = Arrangement.Bottom
         ) {
             val categories = listOf("About", "Stats", "Moves", "Evolution")
