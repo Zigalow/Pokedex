@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,26 +25,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.BinaryChooser
+import dtu.group21.ui.shared.DropDownMenu
 import dtu.group21.ui.shared.ToggleButton
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
 import dtu.group21.ui.shared.mediumFontSize
 import dtu.group21.ui.shared.unselectedToggleColor
 
-@OptIn(ExperimentalLayoutApi::class)
+
 @Composable
 fun FilterScreen(
     onNavigateBack: () -> Unit,
     filterSettings: FilterSettings,
     modifier: Modifier = Modifier,
 ) {
-    val hasTooManyTypesSelected = remember {
-        mutableStateOf(shouldShowWarning(filterSettings))
-    }
+
 
     Column(
         modifier = modifier,
@@ -77,109 +78,228 @@ fun FilterScreen(
             )
             Spacer(Modifier.width(45.dp))
         }
-        val options = remember {
-            arrayOf(
-                FilterSettings.FilterType.IncludableTypes,
-                FilterSettings.FilterType.ExactType
-            )
-        }
-        BinaryChooser(
-            option1 = "Includable Types",
-            option2 = "Exact Types",
-            onChange = {
-                filterSettings.filterType = options[it]
-                hasTooManyTypesSelected.value = shouldShowWarning(filterSettings)
-            },
-            startsAt = options.indexOf(filterSettings.filterType),
-        )
-        Spacer(Modifier.height(5.dp))
-        /*
-        Text(
-            text = "Types",
-            textAlign = TextAlign.Center,
-            fontSize = smallFontSize,
-        )
-        Spacer(Modifier.height(5.dp))
-         */
-        Column(
-            modifier = Modifier.fillMaxHeight(),
-        ) {
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .weight(1f, false)
-            ) {
-                // all type buttons are below
-                val types = remember {
-                    arrayOf(
-                        PokemonType.NORMAL,
-                        PokemonType.FLYING,
-                        PokemonType.FIRE,
-                        PokemonType.PSYCHIC,
-                        PokemonType.WATER,
-                        PokemonType.BUG,
-                        PokemonType.GRASS,
-                        PokemonType.ROCK,
-                        PokemonType.ELECTRIC,
-                        PokemonType.GHOST,
-                        PokemonType.ICE,
-                        PokemonType.DRAGON,
-                        PokemonType.FIGHTING,
-                        PokemonType.DARK,
-                        PokemonType.POISON,
-                        PokemonType.STEEL,
-                        PokemonType.GROUND,
-                        PokemonType.FAIRY
-                    )
-                }
 
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    maxItemsInEachRow = 2,
-                ) {
-                    val buttonCount = types.size
-                    val hasExtraButton = (buttonCount % 2 == 1)
-                    val columnsButtonCount = buttonCount - if (hasExtraButton) 1 else 0
+        FilterOptionsBox(filterSettings)
+        UpdateFilterOptionScreen(filterSettings = filterSettings)
+    }
 
-                    for (i in 0 until columnsButtonCount) {
-                        ToggleButton(
-                            onClick = {
-                                filterSettings.types[i] = it
-                                hasTooManyTypesSelected.value = shouldShowWarning(filterSettings)
-                            },
-                            modifier = Modifier
-                                .padding(all = 5.dp)
-                                .weight(0.5f, true),
-                            offBackgroundColor = unselectedToggleColor,
-                            offForegroundColor = Color.Black,
-                            onBackgroundColor = types[i].primaryColor,
-                            onForegroundColor = Color.White,
-                            isClickedInitially = filterSettings.types[i],
-                        ) {
-                            Text(
-                                text = types[i].name,
-                                fontSize = mediumFontSize,
-                            )
-                        }
-                    }
-                }
-            }
-            if (hasTooManyTypesSelected.value) {
-                Spacer(Modifier.height(10.dp))
-                Text(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    text = "Warning: No Pokémons have more than two types"
-                )
-            }
-        }
 
+}
+
+@Composable
+fun UpdateFilterOptionScreen(filterSettings: FilterSettings) {
+    when (filterSettings.filterOption) {
+        FilterSettings.FilterOption.TYPES -> TypeFilterScreen(filterSettings = filterSettings)
+        FilterSettings.FilterOption.GENERATIONS -> GenerationFilterScreen(filterSettings = filterSettings)
     }
 }
 
 
+@Composable
+fun FilterOptionsBox(
+    filterSettings: FilterSettings,
+) {
+    println("First")
+
+    val filterOptions = remember {
+        FilterSettings.FilterOption.entries.map { item -> item.name.uppercase() }
+    }
+    val lastIndexOfFilterOption =
+        FilterSettings.FilterOption.entries.indexOf(filterSettings.filterOption)
+    println("Second")
+    DropDownMenu(
+        options = filterOptions,
+        filterSettings = filterSettings,
+        indexOfLastItem = lastIndexOfFilterOption
+    )
+    println("Third")
+
+    Spacer(modifier = Modifier.height(35.dp))
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun TypeFilterScreen(filterSettings: FilterSettings) {
+    val hasTooManyTypesSelected = remember {
+        mutableStateOf(shouldShowWarning(filterSettings))
+    }
+
+
+    val options = remember {
+        arrayOf(
+            FilterSettings.FilterType.IncludableTypes,
+            FilterSettings.FilterType.ExactTypes
+        )
+    }
+    BinaryChooser(
+        option1 = "Includable Types",
+        option2 = "Exact Types",
+        onChange = {
+            filterSettings.filterType = options[it]
+            hasTooManyTypesSelected.value = shouldShowWarning(filterSettings)
+        },
+        startsAt = options.indexOf(filterSettings.filterType),
+    )
+    Spacer(Modifier.height(5.dp))
+    /*
+    Text(
+        text = "Types",
+        textAlign = TextAlign.Center,
+        fontSize = smallFontSize,
+    )
+    Spacer(Modifier.height(5.dp))
+     */
+    Column(
+        modifier = Modifier.fillMaxHeight(),
+    ) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .weight(1f, false)
+        ) {
+            // all type buttons are below
+            val types = remember {
+                arrayOf(
+                    PokemonType.NORMAL,
+                    PokemonType.FLYING,
+                    PokemonType.FIRE,
+                    PokemonType.PSYCHIC,
+                    PokemonType.WATER,
+                    PokemonType.BUG,
+                    PokemonType.GRASS,
+                    PokemonType.ROCK,
+                    PokemonType.ELECTRIC,
+                    PokemonType.GHOST,
+                    PokemonType.ICE,
+                    PokemonType.DRAGON,
+                    PokemonType.FIGHTING,
+                    PokemonType.DARK,
+                    PokemonType.POISON,
+                    PokemonType.STEEL,
+                    PokemonType.GROUND,
+                    PokemonType.FAIRY
+                )
+            }
+
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.Center,
+                maxItemsInEachRow = 2,
+            ) {
+                val buttonCount = types.size
+                val hasExtraButton = (buttonCount % 2 == 1)
+                val columnsButtonCount = buttonCount - if (hasExtraButton) 1 else 0
+
+                for (i in 0 until columnsButtonCount) {
+                    ToggleButton(
+                        onClick = {
+                            filterSettings.types[i] = it
+                            hasTooManyTypesSelected.value = shouldShowWarning(filterSettings)
+                        },
+                        modifier = Modifier
+                            .padding(all = 5.dp)
+                            .weight(0.5f, true),
+                        offBackgroundColor = unselectedToggleColor,
+                        offForegroundColor = Color.Black,
+                        onBackgroundColor = types[i].primaryColor,
+                        onForegroundColor = Color.White,
+                        isClickedInitially = filterSettings.types[i],
+                    ) {
+                        Text(
+                            text = types[i].name,
+                            fontSize = mediumFontSize,
+                        )
+                    }
+                }
+            }
+        }
+        if (hasTooManyTypesSelected.value) {
+            Spacer(Modifier.height(10.dp))
+            Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = "Warning: No Pokémons have more than two types"
+            )
+        }
+    }
+
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun GenerationFilterScreen(filterSettings: FilterSettings) {
+    Column(
+        modifier = Modifier.fillMaxHeight(),
+    ) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .weight(1f, false)
+        ) {
+            // all generations buttons are below
+            val generations = remember {
+                intArrayOf(
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                )
+            }
+
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth(0.9F)
+                    .padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.Center,
+                maxItemsInEachRow = 1,
+            ) {
+                val buttonCount = generations.size
+//                val hasExtraButton = (buttonCount % 2 == 1)
+                val columnsButtonCount = buttonCount /*- if (hasExtraButton) 1 else 0*/
+
+                for (i in 0 until columnsButtonCount) {
+                    ToggleButton(
+                        onClick = {
+                            filterSettings.generations[i] = it
+                        },
+                        modifier = Modifier
+                            .padding(all = 5.dp)
+                            .weight(0.5f, true),
+                        offBackgroundColor = unselectedToggleColor,
+                        offForegroundColor = Color.Black,
+                        onBackgroundColor = Color(0xFFFFCC00),
+                        onForegroundColor = Color.White,
+                        isClickedInitially = filterSettings.types[i],
+                    ) {
+                        Text(
+                            text = generations[i].toString(),
+                            fontSize = mediumFontSize,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 fun shouldShowWarning(filterSettings: FilterSettings): Boolean {
-    return filterSettings.numberOfTypesChosen() > 2 && filterSettings.filterType == FilterSettings.FilterType.ExactType
+    return filterSettings.numberOfTypesChosen() > 2 && filterSettings.filterType == FilterSettings.FilterType.ExactTypes
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FilterScreenPreview() {
+
+    val searchSettings = remember { SearchSettings() }
+    FilterScreen(
+        onNavigateBack = { },
+        filterSettings = searchSettings.filterSettings,
+        modifier = Modifier.fillMaxSize(),
+    )
 }
