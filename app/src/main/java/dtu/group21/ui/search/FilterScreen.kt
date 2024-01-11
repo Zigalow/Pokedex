@@ -79,18 +79,21 @@ fun FilterScreen(
             Spacer(Modifier.width(45.dp))
         }
 
-        FilterOptionsBox(filterSettings)
-        UpdateFilterOptionScreen(filterSettings = filterSettings)
-    }
+        val currentOption = remember {
+            mutableStateOf(filterSettings.filterOption)
+        }
+        FilterOptionsBox(filterSettings, onChange = { index, value ->
+            currentOption.value = when (index) {
+                0 -> FilterSettings.FilterOption.TYPES
+                1 -> FilterSettings.FilterOption.GENERATIONS
+                else -> FilterSettings.FilterOption.TYPES
+            }
+        })
 
-
-}
-
-@Composable
-fun UpdateFilterOptionScreen(filterSettings: FilterSettings) {
-    when (filterSettings.filterOption) {
-        FilterSettings.FilterOption.TYPES -> TypeFilterScreen(filterSettings = filterSettings)
-        FilterSettings.FilterOption.GENERATIONS -> GenerationFilterScreen(filterSettings = filterSettings)
+        when (currentOption.value) {
+            FilterSettings.FilterOption.TYPES -> TypeFilterScreen(filterSettings = filterSettings)
+            FilterSettings.FilterOption.GENERATIONS -> GenerationFilterScreen(filterSettings = filterSettings)
+        }
     }
 }
 
@@ -98,21 +101,17 @@ fun UpdateFilterOptionScreen(filterSettings: FilterSettings) {
 @Composable
 fun FilterOptionsBox(
     filterSettings: FilterSettings,
+    onChange: (Int, String) -> Unit
 ) {
-    println("First")
-
     val filterOptions = remember {
         FilterSettings.FilterOption.entries.map { item -> item.name.uppercase() }
     }
-    val lastIndexOfFilterOption =
-        FilterSettings.FilterOption.entries.indexOf(filterSettings.filterOption)
-    println("Second")
+
     DropDownMenu(
         options = filterOptions,
         filterSettings = filterSettings,
-        indexOfLastItem = lastIndexOfFilterOption
+        onChange = onChange
     )
-    println("Third")
 
     Spacer(modifier = Modifier.height(35.dp))
 }

@@ -71,14 +71,14 @@ fun RoundedButton(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropDownMenu(filterSettings: FilterSettings, options: List<String>, indexOfLastItem: Int) {
+fun DropDownMenu(filterSettings: FilterSettings, options: List<String>, onChange: (Int, String) -> Unit) {
     val selectedItem = remember {
         mutableStateOf(filterSettings.filterOption.name)
     }
-
     val expanded = remember {
         mutableStateOf(false)
     }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,13 +112,20 @@ fun DropDownMenu(filterSettings: FilterSettings, options: List<String>, indexOfL
             onDismissRequest = { expanded.value = false },
 //            modifier = Modifier.background(Color.Gray)
         ) {
-            options.forEach { item ->
+            options.forEachIndexed { index, item ->
                 DropdownMenuItem(
                     text = { Text(text = item) },
                     onClick = {
+                        expanded.value = false
+
+                        // If no change occured
+                        if (selectedItem.value == item)
+                            return@DropdownMenuItem
+
                         selectedItem.value = item
                         filterSettings.filterOption = FilterSettings.FilterOption.valueOf(item)
-                        expanded.value = false
+
+                        onChange(index, item)
                     })
             }
         }
