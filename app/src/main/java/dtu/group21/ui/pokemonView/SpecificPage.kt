@@ -3,6 +3,7 @@ package dtu.group21.ui.pokemonView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -497,7 +498,7 @@ fun EvolutionSection(
     }
 
     Row(
-        modifier = modifier,
+        modifier = modifier.horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.Center
     ) {
         if (evolutionChain.value.isEmpty()) {
@@ -510,11 +511,8 @@ fun EvolutionSection(
         println("Loaded ${evolutionChain.value.size} pokemons")
 
         for ((index, evolutions) in evolutionChain.value.iterator().withIndex()) {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState())
-            ) {
                 for (evolution in evolutions) {
-                    Row {
+                    Row{
                         if (index > 0) {
                             arrow(
                                 modifier = Modifier
@@ -538,7 +536,6 @@ fun EvolutionSection(
                         }
                     }
                 }
-            }
         }
     }
     Spacer(modifier.fillMaxHeight())
