@@ -82,6 +82,9 @@ fun FilterScreen(
         val currentOption = remember {
             mutableStateOf(filterSettings.filterOption)
         }
+        
+      
+                
         FilterOptionsBox(filterSettings, onChange = { index, value ->
             currentOption.value = when (index) {
                 0 -> FilterSettings.FilterOption.TYPES
@@ -103,7 +106,8 @@ fun FilterOptionsBox(
     filterSettings: FilterSettings,
     onChange: (Int, String) -> Unit
 ) {
-    val filterOptions = remember {
+    Spacer(modifier = Modifier.height(35.dp))
+    val filterOptions = remember {q
         FilterSettings.FilterOption.entries.map { item -> item.name.uppercase() }
     }
 
@@ -113,7 +117,7 @@ fun FilterOptionsBox(
         onChange = onChange
     )
 
-    Spacer(modifier = Modifier.height(35.dp))
+    Spacer(modifier = Modifier.height(30.dp))
 }
 
 @OptIn(ExperimentalLayoutApi::class)
