@@ -12,7 +12,7 @@ class FilterSettings {
         GENERATIONS
     }
 
-    var filterOption = FilterOption.GENERATIONS
+    var filterOption = FilterOption.TYPES
     var filterType = FilterType.IncludableTypes
     val types: ArrayList<Boolean> = arrayListOf(
         false,
