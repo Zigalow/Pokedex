@@ -107,7 +107,7 @@ fun FilterOptionsBox(
     onChange: (Int, String) -> Unit
 ) {
     Spacer(modifier = Modifier.height(35.dp))
-    val filterOptions = remember {q
+    val filterOptions = remember {
         FilterSettings.FilterOption.entries.map { item -> item.name.uppercase() }
     }
 
