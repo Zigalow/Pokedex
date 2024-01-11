@@ -1,5 +1,6 @@
 package dtu.group21.ui.pokemonView
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -68,7 +69,7 @@ import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
-import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 
 @Composable
@@ -243,7 +244,10 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
         PokemonImage(
             pokemon = pokemon, modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .fillMaxHeight(0.4f-offsetY)
+                .fillMaxHeight(
+                    if (offsetY > 0) 0f
+                    else 0.4f
+                )
         )
         Column(
             modifier
@@ -261,10 +265,12 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 .draggable(
                     orientation = Orientation.Vertical,
                     state = rememberDraggableState { changeY ->
-                        offsetY = changeY
-
+                        if (offsetY == 0f && changeY < 0) {
+                            offsetY = sqrt(changeY*changeY)
+                        }else offsetY = 0f
                     }
-                ),
+                )
+                .animateContentSize(),
             verticalArrangement = Arrangement.Bottom
         ) {
             val categories = listOf("About", "Stats", "Moves", "Evolution")
@@ -294,7 +300,11 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                     .padding(start = 13.dp)
             ) {
                 //based on which category is the coresponding section function will be used
-                Sections(selectedCategory = selectedCategory, pokemon = pokemon, modifier = modifier)
+                Sections(
+                    selectedCategory = selectedCategory,
+                    pokemon = pokemon,
+                    modifier = modifier
+                )
                 Spacer(
                     modifier = Modifier
                         .weight(1f)
@@ -840,19 +850,4 @@ fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType
             fontSize = 17.sp, color = Color.White
         )
     }
-}
-@Composable
-private fun DraggableText() {
-    var offsetX by remember { mutableStateOf(0f) }
-    Text(
-        modifier = Modifier
-            .offset { IntOffset(offsetX.roundToInt(), 0) }
-            .draggable(
-                orientation = Orientation.Horizontal,
-                state = rememberDraggableState { delta ->
-                    offsetX += delta
-                }
-            ),
-        text = "Drag me!"
-    )
 }
