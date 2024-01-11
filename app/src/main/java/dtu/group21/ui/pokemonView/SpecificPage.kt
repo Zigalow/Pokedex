@@ -1,5 +1,9 @@
 package dtu.group21.ui.pokemonView
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -486,58 +491,63 @@ fun EvolutionSection(
     modifier: Modifier,
     pokemon: DetailedPokemon
 ) {
-    val evolutionChain = remember {
-        mutableStateOf(ArrayList<List<EvolutionChainPokemon>>())
-    }
-
-    val viewModel = PokemonViewModel()
-    LaunchedEffect(Unit) {
-        if (evolutionChain.value.isEmpty()) {
-            viewModel.getEvolutionChain(pokemon.pokedexId, evolutionChain)
-        }
-    }
-
-    Row(
-        modifier = modifier.horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        if (evolutionChain.value.isEmpty()) {
-            println("Loading evolutions")
-            CircularProgressIndicator(
-                color = Color.Black,
-            )
-            return
-        }
-        println("Loaded ${evolutionChain.value.size} pokemons")
-
-        for ((index, evolutions) in evolutionChain.value.iterator().withIndex()) {
-                for (evolution in evolutions) {
-                    Row{
-                        if (index > 0) {
-                            arrow(
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .align(Alignment.CenterVertically)
-                            )
-                        }
-                        Column {
-                            EvolutionPokemonImage(
-                                pokemon = evolution,
-                                modifier = Modifier
-                                    .size(100.dp)
-                                    .align(Alignment.CenterHorizontally)
-                                    .padding(horizontal = 10.dp)
-                            )
-                            Text(
-                                text = evolution.name.replaceFirstChar { it.uppercase() },
-                                modifier = Modifier.align(Alignment.CenterHorizontally),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
+    if(isOnline(LocalContext.current)){
+            val evolutionChain = remember {
+                mutableStateOf(ArrayList<List<EvolutionChainPokemon>>())
+            }
+        
+            val viewModel = PokemonViewModel()
+            LaunchedEffect(Unit) {
+                if (evolutionChain.value.isEmpty()) {
+                    viewModel.getEvolutionChain(pokemon.pokedexId, evolutionChain)
                 }
-        }
+            }
+        
+            Row(
+                modifier = modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                if (evolutionChain.value.isEmpty()) {
+                    println("Loading evolutions")
+                    CircularProgressIndicator(
+                        color = Color.Black,
+                    )
+                    return
+                }
+                println("Loaded ${evolutionChain.value.size} pokemons")
+        
+                for ((index, evolutions) in evolutionChain.value.iterator().withIndex()) {
+                        for (evolution in evolutions) {
+                            Row{
+                                if (index > 0) {
+                                    arrow(
+                                        modifier = Modifier
+                                            .size(30.dp)
+                                            .align(Alignment.CenterVertically)
+                                    )
+                                }
+                                Column {
+                                    EvolutionPokemonImage(
+                                        pokemon = evolution,
+                                        modifier = Modifier
+                                            .size(100.dp)
+                                            .align(Alignment.CenterHorizontally)
+                                            .padding(horizontal = 10.dp)
+                                    )
+                                    Text(
+                                        text = evolution.name.replaceFirstChar { it.uppercase() },
+                                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                }
+        
+            }
+
     }
+    else Text(text = "No internet connection")
     Spacer(modifier.fillMaxHeight())
 }
 
@@ -795,4 +805,30 @@ fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType
             fontSize = 17.sp, color = Color.White
         )
     }
+}
+
+/*
+Special  thanks to Jorgesys for his answer on this post:
+https://stackoverflow.com/questions/51141970/check-internet-connectivity-android-in-kotlin
+ */
+fun isOnline(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    if (connectivityManager != null) {
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        if (capabilities != null) {
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                return true
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                return true
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                return true
+            }
+        }
+    }
+    return false
 }
