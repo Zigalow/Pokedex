@@ -1,7 +1,7 @@
 package dtu.group21.ui.search
 
 class FilterSettings {
-    
+
     enum class FilterType {
         IncludableTypes,
         ExactTypes,
@@ -14,18 +14,40 @@ class FilterSettings {
 
     var filterOption = FilterOption.GENERATIONS
     var filterType = FilterType.IncludableTypes
-    val types: ArrayList<Boolean> = arrayListOf(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-    val generations: ArrayList<Boolean> = arrayListOf(false, false, false, false, false, false, false, false, false)
+    val types: ArrayList<Boolean> = arrayListOf(
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+    )
+    val generations: ArrayList<Boolean> =
+        arrayListOf(false, false, false, false, false, false, false, false, false)
+
     fun numberOfTypesChosen(): Int {
         var counter = 0
         for (i in types) {
             if (i) {
                 counter++
-            } 
+            }
         }
         return counter
     }
-    
+
     fun reset() {
         filterType = FilterType.IncludableTypes
         for (i in 0 until types.size) {
@@ -33,5 +55,6 @@ class FilterSettings {
         }
     }
 
-    fun hasSettings() = (types.contains(true))
+    fun hasFilterTypeSettings() = (types.contains(true))
+    fun hasFilterGenerationsSettings() = (generations.contains(true))
 }
