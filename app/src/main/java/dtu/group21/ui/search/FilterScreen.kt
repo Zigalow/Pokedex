@@ -274,7 +274,7 @@ fun GenerationFilterScreen(filterSettings: FilterSettings) {
                         offForegroundColor = Color.Black,
                         onBackgroundColor = Color(0xFFFFCC00),
                         onForegroundColor = Color.White,
-                        isClickedInitially = filterSettings.types[i],
+                        isClickedInitially = filterSettings.generations[i],
                     ) {
                         Text(
                             text = generations[i].toString(),

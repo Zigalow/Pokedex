@@ -1,12 +1,9 @@
 package dtu.group21.ui.shared
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
@@ -17,8 +14,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuBoxScope
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.RadioButton
@@ -27,7 +22,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,7 +65,11 @@ fun RoundedButton(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropDownMenu(filterSettings: FilterSettings, options: List<String>, onChange: (Int, String) -> Unit) {
+fun DropDownMenu(
+    filterSettings: FilterSettings,
+    options: List<String>,
+    onChange: (Int, String) -> Unit
+) {
     val selectedItem = remember {
         mutableStateOf(filterSettings.filterOption.name)
     }
@@ -79,20 +77,12 @@ fun DropDownMenu(filterSettings: FilterSettings, options: List<String>, onChange
         mutableStateOf(false)
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(32.dp)
-    )
-
 
     ExposedDropdownMenuBox(
         expanded = expanded.value,
         onExpandedChange = { expanded.value = !expanded.value },
-        ) {
-
+    ) {
         TextField(
-
             value = selectedItem.value,
             onValueChange = {},
             readOnly = true,
@@ -105,7 +95,6 @@ fun DropDownMenu(filterSettings: FilterSettings, options: List<String>, onChange
                 textAlign = TextAlign.Center,
                 fontSize = mediumFontSize
             )
-
         )
         ExposedDropdownMenu(
             expanded = expanded.value,
@@ -117,7 +106,6 @@ fun DropDownMenu(filterSettings: FilterSettings, options: List<String>, onChange
                     text = { Text(text = item) },
                     onClick = {
                         expanded.value = false
-
                         // If no change occured
                         if (selectedItem.value == item)
                             return@DropdownMenuItem
@@ -130,10 +118,7 @@ fun DropDownMenu(filterSettings: FilterSettings, options: List<String>, onChange
             }
         }
     }
-
-
 }
-
 
 @Composable
 fun ToggleButton(
