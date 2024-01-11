@@ -1,20 +1,21 @@
 package dtu.group21.ui.search
 
 class FilterSettings {
+    
     enum class FilterType {
         IncludableTypes,
-        ExactType,
+        ExactTypes,
     }
 
-    enum class FilterOptions {
-        TYPEs,
+    enum class FilterOption {
+        TYPES,
         GENERATIONS
     }
 
+    var filterOption = FilterOption.GENERATIONS
     var filterType = FilterType.IncludableTypes
     val types: ArrayList<Boolean> = arrayListOf(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-
-
+    val generations: ArrayList<Boolean> = arrayListOf(false, false, false, false, false, false, false, false, false)
     fun numberOfTypesChosen(): Int {
         var counter = 0
         for (i in types) {
