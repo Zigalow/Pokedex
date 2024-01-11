@@ -126,7 +126,7 @@ class PokedexViewModel(
             }
 
             if (cacheResult) {
-                PokedexCache.addPokemon(retrievedPokemon)
+                PokedexCache.addDisplayPokemon(retrievedPokemon)
             }
         }
 
@@ -181,7 +181,7 @@ class PokedexViewModel(
             }
 
             if (cacheResult) {
-                PokedexCache.addDetails(retrievedPokemon)
+                PokedexCache.addDetailedPokemon(retrievedPokemon)
             }
         }
 
