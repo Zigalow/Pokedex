@@ -292,7 +292,7 @@ fun updateCandidates(
                     if (searchSettings.filterSettings.types[pokemon.primaryType.ordinal]) true
                     else searchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
 
-                } else if (searchSettings.filterSettings.filterType == FilterSettings.FilterType.ExactType) {
+                } else if (searchSettings.filterSettings.filterType == FilterSettings.FilterType.ExactTypes) {
                     if (searchSettings.filterSettings.numberOfTypesChosen() == 1) {
                         if (searchSettings.filterSettings.types[pokemon.primaryType.ordinal] && pokemon.secondaryType == PokemonType.NONE) {
                             true
