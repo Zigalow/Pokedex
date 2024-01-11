@@ -3,6 +3,9 @@ package dtu.group21.ui.pokemonView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +46,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -64,6 +68,7 @@ import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
+import kotlin.math.roundToInt
 
 
 @Composable
@@ -116,11 +121,6 @@ fun Inspect(pokemon: DetailedPokemon, onNavigateBack: () -> Unit) {
                 .fillMaxSize()
                 .background(color = pokemon.primaryType.secondaryColor)
         ) {
-            PokemonImage(
-                pokemon = pokemon, modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .fillMaxHeight(0.4f)
-            )
             Bottom(pokemon = pokemon)
         }
     }
@@ -236,54 +236,74 @@ fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
 
 @Composable
 fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
-    Column(
-        modifier
-            .fillMaxSize()
-            .background(
-                Color.White,
-                shape = RoundedCornerShape(
-                    topStart = 32.dp,
-                    topEnd = 32.dp,
-                    bottomStart = 0.dp,
-                    bottomEnd = 0.dp
-                )
-            ),
-        verticalArrangement = Arrangement.Bottom
-    ) {
-        val categories = listOf("About", "Stats", "Moves", "Evolution")
-        var selectedCategory by remember { mutableStateOf("About") }
-        Spacer(
-            modifier
-                .width(13.dp)
-                .height(25.dp)
+    var offsetY by remember {
+        mutableStateOf(0f)
+    }
+    Column {
+        PokemonImage(
+            pokemon = pokemon, modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .fillMaxHeight(0.4f-offsetY)
         )
-        Box(
-            modifier = Modifier
-                //.padding(horizontal = 5.dp)
-                .fillMaxWidth()
-                .wrapContentHeight()
-        ) {
-            CategoryList(
-                categories = categories,
-                onCategorySelected = { selectedCategory = it },
-                initiallyChosen = selectedCategory,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-
-        Spacer(modifier.height(13.dp))
         Column(
             modifier
-                .padding(start = 13.dp)
+                .fillMaxSize()
+                .background(
+                    Color.White,
+                    shape = RoundedCornerShape(
+                        topStart = 32.dp,
+                        topEnd = 32.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp
+                    )
+                )
+                .offset { IntOffset(0, offsetY.toInt()) }
+                .draggable(
+                    orientation = Orientation.Vertical,
+                    state = rememberDraggableState { changeY ->
+                        offsetY = changeY
+
+                    }
+                ),
+            verticalArrangement = Arrangement.Bottom
         ) {
-            //based on which category is the coresponding section function will be used
-            Sections(selectedCategory = selectedCategory, pokemon = pokemon, modifier = modifier)
+            val categories = listOf("About", "Stats", "Moves", "Evolution")
+            var selectedCategory by remember { mutableStateOf("About") }
             Spacer(
-                modifier = Modifier
-                    .weight(1f)
+                modifier
+                    .width(13.dp)
+                    .height(25.dp)
             )
+            Box(
+                modifier = Modifier
+                    //.padding(horizontal = 5.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            ) {
+                CategoryList(
+                    categories = categories,
+                    onCategorySelected = { selectedCategory = it },
+                    initiallyChosen = selectedCategory,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            Spacer(modifier.height(13.dp))
+            Column(
+                modifier
+                    .padding(start = 13.dp)
+            ) {
+                //based on which category is the coresponding section function will be used
+                Sections(selectedCategory = selectedCategory, pokemon = pokemon, modifier = modifier)
+                Spacer(
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
         }
+
     }
+
 }
 
 @Composable
@@ -820,4 +840,19 @@ fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType
             fontSize = 17.sp, color = Color.White
         )
     }
+}
+@Composable
+private fun DraggableText() {
+    var offsetX by remember { mutableStateOf(0f) }
+    Text(
+        modifier = Modifier
+            .offset { IntOffset(offsetX.roundToInt(), 0) }
+            .draggable(
+                orientation = Orientation.Horizontal,
+                state = rememberDraggableState { delta ->
+                    offsetX += delta
+                }
+            ),
+        text = "Drag me!"
+    )
 }
