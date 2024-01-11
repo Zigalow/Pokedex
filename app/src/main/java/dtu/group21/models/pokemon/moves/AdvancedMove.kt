@@ -4,7 +4,7 @@ import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.MoveDamageClass
 import dtu.group21.models.pokemon.PokemonType
 
-data class AdvancedPokemon(
+data class AdvancedMove(
     override val damageClass: MoveDamageClass,
     override val pp: Int,
     override val description: String,
