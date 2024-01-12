@@ -36,7 +36,7 @@ class PokedexViewModel(
 
     fun getPokemons(pokedexIds: List<Int>, destination: MutableState<List<Resource<DisplayPokemon>>>, cacheResults: Boolean = true) {
         coroutineScope.launch {
-            getPokemonsInternal(pokedexIds, cacheResults).collect {
+            getPokemonsInternal(pokedexIds).collect {
                 when (it) {
                     is Resource.Success -> {
                         destination.value = it.data
@@ -52,18 +52,32 @@ class PokedexViewModel(
         }
     }
 
-    private suspend fun getPokemonsInternal(pokedexIds: List<Int>, cacheResults: Boolean): Flow<Resource<List<Resource<DisplayPokemon>>>> = flow {
-        val pokemons = mutableListOf<Resource<DisplayPokemon>>()
-        pokedexIds.forEach { pokemons.add(Resource.Loading) }
-        emit(Resource.Success(pokemons.toList()))
+    private suspend fun getPokemonsInternal(pokedexIds: List<Int>): Flow<Resource<List<Resource<DisplayPokemon>>>> = flow {
+        val pokemons = mutableMapOf<Int, Resource<DisplayPokemon>>()
+        pokedexIds.forEach { pokemons[it] = Resource.Loading }
 
-        pokedexIds.forEachIndexed { i, id ->
-            getPokemonInternal(id, cacheResults).collect {
+        // TODO: probably make this better
+        fun getPokemonList(map: Map<Int, Resource<DisplayPokemon>>, order: List<Int>): List<Resource<DisplayPokemon>> {
+            return order.map { map[it]!! }
+        }
+
+        val leftToLoad = pokedexIds.toMutableList()
+        // Check for cache hits
+        PokedexCache.pokemons.forEach { cached ->
+            if (cached.pokedexId in pokedexIds) {
+                pokemons[cached.pokedexId] = Resource.Success(cached)
+                leftToLoad.remove(cached.pokedexId)
+            }
+        }
+        emit(Resource.Success(getPokemonList(pokemons, pokedexIds)))
+
+        leftToLoad.forEachIndexed { i, id ->
+            getPokemonInternal(id, true).collect {
                 when (it) {
                     is Resource.Success -> {
-                        pokemons.removeAt(i)
-                        pokemons.add(i, Resource.Success(it.data))
-                        emit(Resource.Success(pokemons.toList()))
+                        val pokemon = it.data
+                        pokemons[pokemon.pokedexId] = Resource.Success(pokemon)
+                        emit(Resource.Success(getPokemonList(pokemons, pokedexIds)))
                     }
                     is Resource.Failure -> {
                         // TODO handle?
@@ -108,13 +122,9 @@ class PokedexViewModel(
         }
         emit(Resource.Loading)
 
-        var retrievedPokemon: DisplayPokemon? = null
-
-        val cached = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
-        if (cached != null) {
-            retrievedPokemon = cached
-        }
-        else {
+        var retrievedPokemon: DisplayPokemon? = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
+        if (retrievedPokemon == null) {
+            println("Cache miss on pokemon '$pokedexId'")
             // Database look-up
             val databaseMatches = database.favoritesDao().getPokemonById(pokedexId)
             if (databaseMatches.isNotEmpty()) {
@@ -163,13 +173,8 @@ class PokedexViewModel(
         }
         emit(Resource.Loading)
 
-        var retrievedPokemon: DetailedPokemon? = null
-
-        val cached = PokedexCache.details.firstOrNull { it.pokedexId == pokedexId }
-        if (cached != null) {
-            retrievedPokemon = cached
-        }
-        else {
+        var retrievedPokemon: DetailedPokemon? = PokedexCache.details.firstOrNull { it.pokedexId == pokedexId }
+        if (retrievedPokemon == null) {
             // Database look-up
             val databaseMatches = database.favoritesDao().getPokemonById(pokedexId)
             if (databaseMatches.isNotEmpty()) {
