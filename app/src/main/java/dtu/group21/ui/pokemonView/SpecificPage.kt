@@ -24,8 +24,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -491,34 +493,65 @@ fun EvolutionSection(
     modifier: Modifier,
     pokemon: DetailedPokemon
 ) {
-    if(isOnline(LocalContext.current)){
-            val evolutionChain = remember {
-                mutableStateOf(ArrayList<List<EvolutionChainPokemon>>())
+    if (isOnline(LocalContext.current)) {
+        val evolutionChain = remember {
+            mutableStateOf(ArrayList<List<EvolutionChainPokemon>>())
+        }
+
+        val viewModel = PokemonViewModel()
+        LaunchedEffect(Unit) {
+            if (evolutionChain.value.isEmpty()) {
+                viewModel.getEvolutionChain(pokemon.pokedexId, evolutionChain)
             }
-        
-            val viewModel = PokemonViewModel()
-            LaunchedEffect(Unit) {
-                if (evolutionChain.value.isEmpty()) {
-                    viewModel.getEvolutionChain(pokemon.pokedexId, evolutionChain)
-                }
+        }
+
+        Row(
+            modifier = modifier.horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (evolutionChain.value.isEmpty()) {
+                println("Loading evolutions")
+                CircularProgressIndicator(
+                    color = Color.Black,
+                )
+                return
             }
-        
-            Row(
-                modifier = modifier.horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                if (evolutionChain.value.isEmpty()) {
-                    println("Loading evolutions")
-                    CircularProgressIndicator(
-                        color = Color.Black,
-                    )
-                    return
-                }
-                println("Loaded ${evolutionChain.value.size} pokemons")
-        
+            println("Loaded ${evolutionChain.value.size} pokemons")
+            if (pokemon.pokedexId != 133 && pokemon.pokedexId != 236 && pokemon.pokedexId != 265) {
                 for ((index, evolutions) in evolutionChain.value.iterator().withIndex()) {
+                    for (evolution in evolutions) {
+                        Row {
+                            if (index > 0) {
+                                arrow(
+                                    modifier = Modifier
+                                        .size(30.dp)
+                                        .align(Alignment.CenterVertically)
+                                )
+                            }
+                            Column {
+                                EvolutionPokemonImage(
+                                    pokemon = evolution,
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .align(Alignment.CenterHorizontally)
+                                        .padding(horizontal = 10.dp)
+                                )
+                                Text(
+                                    text = evolution.name.replaceFirstChar { it.uppercase() },
+                                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                }
+            } else{
+                for ((index, evolutions) in evolutionChain.value.iterator().withIndex()) {
+                    Column(
+                        modifier = Modifier.verticalScroll(rememberScrollState())
+                    ) {
                         for (evolution in evolutions) {
-                            Row{
+                            Row {
                                 if (index > 0) {
                                     arrow(
                                         modifier = Modifier
@@ -542,13 +575,14 @@ fun EvolutionSection(
                                 }
                             }
                         }
+                    }
+
                 }
-        
             }
 
-    }
-    else Text(text = "No internet connection")
-    Spacer(modifier.fillMaxHeight())
+        }
+        } else Text(text = "No internet connection")
+        Spacer(modifier.fillMaxHeight())
 }
 
 @Composable
@@ -559,6 +593,31 @@ fun EvolutionPokemonImage(modifier: Modifier = Modifier, pokemon: EvolutionChain
         modifier = modifier,
     )
 }
+@Composable
+fun handleVariationLayout(pokemon: DetailedPokemon) {
+    when (pokemon.pokedexId) {
+        133 -> {
+
+            // Layout for Pokémon with pokedexId 133
+            // ...
+        }
+        236 -> {
+            // Layout for Pokémon with pokedexId 236
+            // ...
+        }
+        265 -> {
+            // Layout for Pokémon with pokedexId 265
+            // ...
+        }
+        else -> {
+            Text(text = "No internet connection")
+        }
+    }
+}
+@Composable
+fun layoutForEevee(evolutionOptions: List<EvolutionChainPokemon>) {
+
+        }
 
 
 //region main components
