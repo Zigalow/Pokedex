@@ -262,51 +262,66 @@ fun updateCandidates(
     searchSettings: SearchSettings,
     allCandidates: List<Resource<DisplayPokemon>>
 ) {
+    val loadedCandidates = allCandidates.filter { it is Resource.Success }.map { (it as Resource.Success).data }
+    val unloadedCandidates = Array(allCandidates.size - loadedCandidates.size) { Resource.Loading }
+
+    val nameCandidates = loadedCandidates.filter { pokemon ->
+        // very complicated statement to check if the searchString is either
+        // - empty
+        // - a substring of the name of the pokemon
+        // - a substring of the number of the pokemon
+        // if either is true, it is a candidate
+        val candidate =
+            if (searchSettings.searchString.isEmpty())
+                true
+            else if (searchSettings.searchString.isDigitsOnly()) {
+                val searchNumber = searchSettings.searchString.toInt()
+                searchNumber.toString() in pokemon.pokedexId.toString()
+            } else searchSettings.searchString.lowercase() in pokemon.name.lowercase()
+
+        candidate
+    }
+
+    val typeCandidates = nameCandidates.filter { pokemon ->
+        val candidate =
+            if (!searchSettings.filterSettings.hasFilterTypeSettings()) {
+                true
+            } else if (searchSettings.filterSettings.filterType == FilterSettings.FilterType.IncludableTypes) {
+                if (searchSettings.filterSettings.types[pokemon.primaryType.ordinal]) true
+                else searchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
+            } else if (searchSettings.filterSettings.filterType == FilterSettings.FilterType.ExactTypes) {
+                if (searchSettings.filterSettings.numberOfTypesChosen() == 1) {
+                    searchSettings.filterSettings.types[pokemon.primaryType.ordinal] && pokemon.secondaryType == PokemonType.NONE
+                } else if (searchSettings.filterSettings.numberOfTypesChosen() == 2) {
+                    searchSettings.filterSettings.types[pokemon.primaryType.ordinal] && searchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
+                } else {
+                    false
+                }
+            } else false
+
+        candidate
+    }
+
+    val generationCandidates = typeCandidates.filter { pokemon ->
+        val candidate =
+            if (!searchSettings.filterSettings.hasFilterGenerationsSettings()) {
+                true
+            } else searchSettings.filterSettings.generations[getGeneration(pokemon.pokedexId) - 1]
+
+        candidate
+    }
+
+    val sortedCandidates = generationCandidates.sortedBy { pokemon ->
+        pokemon.pokedexId
+    }
+
+    val orderedCandidates = if (searchSettings.sortSettings.sortType == SortSettings.SortType.Descending) sortedCandidates.reversed() else sortedCandidates
+
+    // TODO: decide whether unloaded pokemons should also be shown here
+    val results = orderedCandidates.map { Resource.Success(it) } + unloadedCandidates
+
     updateLiveLiteralValue(
         "searchResults",
-        allCandidates.filter { pokemonResource ->
-            if (!(pokemonResource is Resource.Success)) {
-                return
-            }
-            val pokemon = pokemonResource.data
-            // very complicated statement to check if the searchString is either
-            // - empty
-            // - a substring of the name of the pokemon
-            // - a substring of the number of the pokemon
-            // if either is true, it is a candidate
-            val searchCandidate =
-                if (searchSettings.searchString.isEmpty())
-                    true
-                else if (searchSettings.searchString.isDigitsOnly()) {
-                    val searchNumber = searchSettings.searchString.toInt()
-                    searchNumber.toString() in pokemon.pokedexId.toString()
-                } else searchSettings.searchString.lowercase() in pokemon.name.lowercase()
-
-            val filterTypeCandidate =
-                if (!searchSettings.filterSettings.hasFilterTypeSettings()) {
-                    true
-                } else if (searchSettings.filterSettings.filterType == FilterSettings.FilterType.IncludableTypes) {
-                    if (searchSettings.filterSettings.types[pokemon.primaryType.ordinal]) true
-                    else searchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
-                } else if (searchSettings.filterSettings.filterType == FilterSettings.FilterType.ExactTypes) {
-                    if (searchSettings.filterSettings.numberOfTypesChosen() == 1) {
-                        searchSettings.filterSettings.types[pokemon.primaryType.ordinal] && pokemon.secondaryType == PokemonType.NONE
-                    } else if (searchSettings.filterSettings.numberOfTypesChosen() == 2) {
-                        searchSettings.filterSettings.types[pokemon.primaryType.ordinal] && searchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
-                    } else {
-                        false
-                    }
-                } else false
-
-            val filterGenerationsCandidate =
-
-                if (!searchSettings.filterSettings.hasFilterGenerationsSettings()) {
-                    true
-                } else searchSettings.filterSettings.generations[getGeneration(pokemon.pokedexId) - 1]
-            
-
-            searchCandidate && filterTypeCandidate && filterGenerationsCandidate
-        })
+        results
+    )
 }
-
-
