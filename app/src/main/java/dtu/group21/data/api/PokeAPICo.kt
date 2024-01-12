@@ -8,10 +8,15 @@ import dtu.group21.models.api.JsonRequestMaker
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.MoveDamageClass
+import dtu.group21.models.pokemon.MoveLearnMethod
 import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonStats
 import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.models.pokemon.moves.BasicMove
+import dtu.group21.models.pokemon.moves.DisplayMove
+import dtu.group21.models.pokemon.moves.LevelMoveData
+import dtu.group21.models.pokemon.moves.MachineMoveData
 import org.json.JSONArray
 
 class PokeAPICo : PokemonAPI {
@@ -88,6 +93,74 @@ class PokeAPICo : PokemonAPI {
             damageClass,
         )
     }
+    private suspend fun getBasicMove(moveName: String, templatePokemon: DisplayPokemon): DisplayMove {
+        val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
+
+        val namesArray = moveObject.getJSONArray("names")
+        val name = getLanguageString(namesArray, "name")
+        val descriptionsArray = moveObject.getJSONArray("flavor_text_entries")
+        val description = getLanguageString(descriptionsArray, "flavor_text")
+
+        val power = moveObject.get("power") as? Int
+        val accuracy = moveObject.get("accuracy") as? Int
+        val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
+
+
+        // IF machine
+        if(true) {
+            val machines = moveObject.getJSONArray("machines")
+
+            val machineURL =
+                machines.getJSONObject(0).getJSONObject("machine").getString("url").split("/")
+                    .dropLast(1)
+                    .last().toInt()
+            val machineObject = jsonRequestMaker.makeRequest("move/$machineURL")
+
+            val machineID = machineObject.getString("id")
+
+            return MachineMoveData(name, power, accuracy, type, machineID)
+        } else if (false) {
+            val pokedexId = templatePokemon.pokedexId
+            val LearnObject = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
+
+            val move = LearnObject.getJSONObject("moves").getJSONObject("move")
+
+            val moveName = move.get("name")
+
+            var level = 0
+            if (moveName == name ) {
+                val learnMoveMethods = moveObject.getJSONArray("version_group_details")
+                for(i in 0 until learnMoveMethods.length()) {
+                    level = learnMoveMethods.getJSONObject(i).getInt("level_learned_at")
+                }
+            }
+            return LevelMoveData(name, power, accuracy, type, level)
+
+        }else {
+            return BasicMove(name, power, accuracy, type)
+        }
+    }
+
+    /*private suspend fun getAdvancedMove(moveName: String): DetailedMove {
+        val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
+
+        val namesArray = moveObject.getJSONArray("names")
+        val name = getLanguageString(namesArray, "name")
+        val descriptionsArray = moveObject.getJSONArray("flavor_text_entries")
+        val description = getLanguageString(descriptionsArray, "flavor_text")
+
+        val power = moveObject.get("power") as? Int
+        val accuracy = moveObject.get("accuracy") as? Int
+        val pp = moveObject.getInt("pp")
+        val priority = moveObject.getInt("priority")
+
+        val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
+        val damageClass = MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
+
+
+        return AdvancedMove(damageClass,  pp, description, BasisMove)
+        }
+    }*/
 
     private suspend fun getAbility(abilityName: String, isHidden: Boolean): PokemonAbility {
         val abilityObject = jsonRequestMaker.makeRequest("ability/$abilityName")
@@ -151,7 +224,7 @@ class PokeAPICo : PokemonAPI {
         )
     }
 
-    override suspend fun getMove(moveId: Int): PokemonMove {
+    override suspend fun getMove(moveId: Int): BasicMove {
         TODO("Not yet implemented")
     }
 }
