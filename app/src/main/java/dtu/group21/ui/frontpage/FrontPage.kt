@@ -50,6 +50,13 @@ import java.util.Locale
 
 @Composable
 fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource<DisplayPokemon>>>) {
+    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+    LaunchedEffect(Unit) {
+        val pokedexViewModel = PokedexViewModel()
+        val ids = (1..50)
+        pokedexViewModel.getPokemons(ids.toList(),pokemons)
+    }
+
     var menuIsOpen by remember { mutableStateOf(false) }
     val systemUiController = rememberSystemUiController()
     SideEffect {
