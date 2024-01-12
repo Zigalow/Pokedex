@@ -98,13 +98,10 @@ class PokeAPICo : PokemonAPI {
 
         val namesArray = moveObject.getJSONArray("names")
         val name = getLanguageString(namesArray, "name")
-        val descriptionsArray = moveObject.getJSONArray("flavor_text_entries")
-        val description = getLanguageString(descriptionsArray, "flavor_text")
 
         val power = moveObject.get("power") as? Int
         val accuracy = moveObject.get("accuracy") as? Int
         val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
-
 
         // IF machine
         if(true) {
@@ -121,14 +118,14 @@ class PokeAPICo : PokemonAPI {
             return MachineMoveData(name, power, accuracy, type, machineID)
         } else if (false) {
             val pokedexId = templatePokemon.pokedexId
-            val LearnObject = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
+            val pokemonResponse = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
 
-            val move = LearnObject.getJSONObject("moves").getJSONObject("move")
+            val move = pokemonResponse.getJSONObject("moves").getJSONObject("move")
 
-            val moveName = move.get("name")
+            val learnMoveName = move.get("name")
 
             var level = 0
-            if (moveName == name ) {
+            if (learnMoveName == name) {
                 val learnMoveMethods = moveObject.getJSONArray("version_group_details")
                 for(i in 0 until learnMoveMethods.length()) {
                     level = learnMoveMethods.getJSONObject(i).getInt("level_learned_at")
