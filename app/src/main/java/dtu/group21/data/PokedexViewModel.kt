@@ -127,7 +127,6 @@ class PokedexViewModel(
 
         var retrievedPokemon: DisplayPokemon? = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
         if (retrievedPokemon == null) {
-            println("Cache miss on pokemon '$pokedexId'")
             // Database look-up
             val databaseMatches = database.favoritesDao().getPokemonById(pokedexId)
             if (databaseMatches.isNotEmpty()) {

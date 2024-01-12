@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,6 +28,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,17 +47,25 @@ import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.ui.shared.PaginatedColumn
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.theme.Yellow60
 import java.util.Locale
 
 @Composable
-fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource<DisplayPokemon>>>) {
+fun FrontPage(
+    onNavigate: (String) -> Unit,
+    pokemons: MutableState<List<Resource<DisplayPokemon>>>
+) {
+    val pokemonIds = remember {
+        mutableStateOf(1..20)
+    }
+
     val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
     LaunchedEffect(Unit) {
+        println("Loading pokemons")
         val pokedexViewModel = PokedexViewModel()
-        val ids = (1..50)
-        pokedexViewModel.getPokemons(ids.toList(),pokemons)
+        pokedexViewModel.getPokemons(pokemonIds.value.toList(), pokemons)
     }
 
     var menuIsOpen by remember { mutableStateOf(false) }
@@ -69,16 +78,28 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource
             UpperMenu(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Box(modifier = Modifier.weight(0.1f).fillMaxWidth()){
+                Box(
+                    modifier = Modifier
+                        .weight(0.1f)
+                        .fillMaxWidth()
+                ) {
                     MenuIcon(
                         size = 49.dp,
                         onClicked = { menuIsOpen = true })
                 }
-                Box(modifier = Modifier.weight(0.5f).fillMaxWidth(),contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .fillMaxWidth(), contentAlignment = Alignment.Center
+                ) {
                     PokemonLogo(size = 174.dp)
                 }
 
-                Box(modifier = Modifier.weight(0.1f).fillMaxWidth(),contentAlignment = Alignment.CenterEnd) {
+                Box(
+                    modifier = Modifier
+                        .weight(0.1f)
+                        .fillMaxWidth(), contentAlignment = Alignment.CenterEnd
+                ) {
                     SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
                 }
 
@@ -90,7 +111,20 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource
                     println("Navigating to 'pokemon/$it'")
                     onNavigate("pokemon/$it")
                 },
-                modifier = Modifier.padding(horizontal = 5.dp)
+                modifier = Modifier
+                    .padding(horizontal = 5.dp)
+                    .fillMaxWidth(),
+                loadFollowing = {
+                    println("Front Page wants to load following")
+                    val current = pokemonIds.value
+                    pokemonIds.value = current.first..(current.last + 20)
+
+                    LaunchedEffect(Unit) {
+                        println("Loading pokemons")
+                        val pokedexViewModel = PokedexViewModel()
+                        pokedexViewModel.getPokemons(pokemonIds.value.toList(), pokemons)
+                    }
+                }
             )
         }
         FavoritesIcon(
@@ -107,9 +141,11 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource
         if (menuIsOpen) {
             Column(
                 modifier = Modifier.width(80.dp),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
                 ) {
-                Box(modifier = Modifier
-                    .fillMaxHeight()) {
                     Menu(
                         modifier = Modifier
                             .fillMaxHeight(),
@@ -119,7 +155,8 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .size(60.dp),
-                            onClicked = { onNavigate("settings")
+                            onClicked = {
+                                onNavigate("settings")
                             }
                         )
                     }
@@ -148,18 +185,27 @@ fun Menu(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
 fun PokemonColumn(
     modifier: Modifier = Modifier,
     pokemons: List<Resource<DisplayPokemon>>,
-    onPokemonClicked: (String) -> Unit
+    onPokemonClicked: (String) -> Unit,
+    loadFollowing: @Composable () -> Unit,
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val chunks = if (screenWidth > 600.dp) 4 else 2
-    val itemWidth = (screenWidth / chunks)-6.dp //-6.dp to consider patting in between each box
+    val itemWidth = (screenWidth / chunks) - 6.dp //-6.dp to consider patting in between each box
     val alignedPokemons = pokemons.chunked(chunks)
 
-    LazyColumn(modifier.fillMaxWidth()) {
+    PaginatedColumn(
+        loadPrevious = {
+            println("Pagination wants to load previous")
+        },
+        loadFollowing = {
+            println("Pagination wants to load following")
+            loadFollowing()
+        },
+        modifier = modifier
+    ) {
         items(alignedPokemons.size) { index ->
             Row(
-                modifier
-                    .fillMaxWidth()
+                Modifier.fillMaxWidth()
             ) {
                 for (pokemonResource in alignedPokemons[index]) {
                     PokemonBox(
@@ -177,9 +223,10 @@ fun PokemonColumn(
 }
 
 @Composable
-fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit){
-    Box(modifier = modifier
-        .clickable { onClicked() },
+fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
+    Box(
+        modifier = modifier
+            .clickable { onClicked() },
         contentAlignment = Alignment.Center
     )
     {
@@ -316,7 +363,11 @@ fun formatPokemonId(unformattedNumber: Int): String {
 }
 
 @Composable
-fun PokemonBox(modifier: Modifier = Modifier, pokemonResource: Resource<DisplayPokemon>, onClicked: (String) -> Unit) {
+fun PokemonBox(
+    modifier: Modifier = Modifier,
+    pokemonResource: Resource<DisplayPokemon>,
+    onClicked: (String) -> Unit
+) {
     when (pokemonResource) {
         is Resource.Failure -> {
             // TODO: handle?
