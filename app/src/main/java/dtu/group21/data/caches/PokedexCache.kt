@@ -1,7 +1,7 @@
 package dtu.group21.data.caches
 
-import dtu.group21.models.pokemon.DetailedPokemon
-import dtu.group21.models.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.DetailedPokemon
+import dtu.group21.data.pokemon.DisplayPokemon
 
 object PokedexCache {
     val displayCache = PokemonCache<DisplayPokemon>()
