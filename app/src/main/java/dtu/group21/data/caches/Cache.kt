@@ -1,7 +1,9 @@
 package dtu.group21.data.caches
 
-class Cache<T> {
-    private val _elements = mutableListOf<T>()
+import java.util.function.Predicate
+
+open class Cache<T> {
+    protected val _elements = mutableListOf<T>()
     val elements get() = _elements.toList()
 
     /**
@@ -30,15 +32,37 @@ class Cache<T> {
         _elements.removeAt(0)
     }
 
-    fun add(element: T) {
-        // Remove the old entry (if there is one), as it will now be put last in queue to be purged
+    /**
+     * Refresh this element in the cache, making it last in queue to be purged.
+     * If the element is not in the cache, this method does nothing.
+     */
+    fun refresh(element: T) {
+        // Don't refresh if it's not even in the cache
+        if (element !in this)
+            return
+
         _elements.remove(element)
         _elements.add(element)
+    }
 
-        // If the cache is full, purge the next element before adding this one
+    /**
+     * Add an element to this cache, if the element is already in the cache, acts like refresh(element).
+     * This method could potentially purge elements from the cache, to make room for this element.
+     */
+    fun add(element: T) {
+        if (element in this) {
+            refresh(element)
+            return
+        }
+
+        _elements.add(element)
         if (_elements.size > this.size) {
             purgeNext()
         }
+    }
+
+    fun removeIf(filter: Predicate<T>) {
+        _elements.removeIf(filter)
     }
 
     // Access operators
