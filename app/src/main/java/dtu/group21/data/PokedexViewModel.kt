@@ -62,6 +62,9 @@ class PokedexViewModel(
         }
 
         val leftToLoad = pokedexIds.toMutableList()
+
+        println("Looking for matches in the cache in $pokedexIds")
+        println("Cache content: ${PokedexCache.pokemons.map { it.pokedexId }}")
         // Check for cache hits
         PokedexCache.pokemons.forEach { cached ->
             if (cached.pokedexId in pokedexIds) {
