@@ -105,6 +105,13 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource
                         modifier = Modifier
                             .fillMaxHeight(),
                     ) {
+                        WhosIcon(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(top = 60.dp) // Increase bottom padding to raise the icon
+                                .size(60.dp),
+                            onClicked = { onNavigate("WhosThatPokemon") }
+                        )
                         MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
                         SettingsIcon(
                             modifier = Modifier
@@ -177,6 +184,21 @@ fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit){
         Image(
             painter = painterResource(id = R.drawable.settings_icon),
             contentDescription = "settings-icon",
+            modifier = Modifier.fillMaxSize(0.56f)
+        )
+    }
+}
+
+@Composable
+fun WhosIcon(modifier: Modifier = Modifier, onClicked: () -> Unit){
+    Box(modifier = modifier
+        .clickable { onClicked() },
+        contentAlignment = Alignment.Center
+    )
+    {
+        Image(
+            painter = painterResource(id = R.drawable.pokemon_icon_512x512_ivi5uex5),
+            contentDescription = "Whos That Pokemon Icon",
             modifier = Modifier.fillMaxSize(0.56f)
         )
     }
