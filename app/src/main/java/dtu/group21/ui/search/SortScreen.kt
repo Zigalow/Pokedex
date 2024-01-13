@@ -64,7 +64,7 @@ fun SortScreen(
             onChange = { sortSettings.sortType = options[it] },
             startsAt = options.indexOf(sortSettings.sortType),
         )
-        val sortOptions = remember { arrayOf("ID", "Name", "Total", "HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed") }
+        val sortOptions = remember { arrayOf("ID", "Name", "HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed", "Total") }
         RadioOptions(
             options = sortOptions,
             onSelectionChanged = { sortSettings.sortMethod = SortSettings.SortMethod.entries[it]},

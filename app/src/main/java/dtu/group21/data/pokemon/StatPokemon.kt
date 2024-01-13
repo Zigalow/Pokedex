@@ -1,14 +1,11 @@
 package dtu.group21.data.pokemon
 
+import dtu.group21.models.pokemon.PokemonStats
+
 interface StatPokemon : DisplayPokemon {
 
-    val hp: Int
-    val attack: Int
-    val defense: Int
-    val specialAttack: Int
-    val specialDefense: Int
-    val speed: Int
+    val stats: PokemonStats
     val total: Int
-        get() = hp + attack + defense + specialAttack + specialDefense + speed
-    
+        get() = stats.hp + stats.attack + stats.defense + stats.specialAttack + stats.specialDefense + stats.speed
+
 }

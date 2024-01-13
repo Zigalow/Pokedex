@@ -316,12 +316,12 @@ fun updateCandidates(
         val candidate =
             when (searchSettings.sortSettings.sortMethod) {
                 SortSettings.SortMethod.ID -> pokemon.pokedexId
-                SortSettings.SortMethod.HP -> pokemon.hp
-                SortSettings.SortMethod.ATTACK -> pokemon.attack
-                SortSettings.SortMethod.DEFENSE -> pokemon.defense
-                SortSettings.SortMethod.SPECIAL_ATTACK -> pokemon.specialAttack
-                SortSettings.SortMethod.SPECIAL_DEFENSE -> pokemon.specialDefense
-                SortSettings.SortMethod.SPEED -> pokemon.speed
+                SortSettings.SortMethod.HP -> pokemon.stats.hp
+                SortSettings.SortMethod.ATTACK -> pokemon.stats.attack
+                SortSettings.SortMethod.DEFENSE -> pokemon.stats.defense
+                SortSettings.SortMethod.SPECIAL_ATTACK -> pokemon.stats.specialAttack
+                SortSettings.SortMethod.SPECIAL_DEFENSE -> pokemon.stats.specialDefense
+                SortSettings.SortMethod.SPEED -> pokemon.stats.speed
                 SortSettings.SortMethod.TOTAL -> pokemon.total
                 else -> pokemon.pokedexId
             }
