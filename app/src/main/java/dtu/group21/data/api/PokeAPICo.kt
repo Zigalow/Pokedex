@@ -93,48 +93,59 @@ class PokeAPICo : PokemonAPI {
             damageClass,
         )
     }
+
     private suspend fun getBasicMove(moveName: String, templatePokemon: DisplayPokemon): DisplayMove {
         val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
 
+        // Pokemon's ID
+        val pokedexId = templatePokemon.pokedexId
+        val pokemonResponse = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
+
+        // move's name
         val namesArray = moveObject.getJSONArray("names")
         val name = getLanguageString(namesArray, "name")
 
+        // Other data
         val power = moveObject.get("power") as? Int
         val accuracy = moveObject.get("accuracy") as? Int
         val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
 
-        // IF machine
-        if(true) {
-            val machines = moveObject.getJSONArray("machines")
+        // Move categories name
+        val learnMoveMethods = moveObject.getJSONArray("version_group_details")
+        val moveMethodName = learnMoveMethods.getJSONObject(0).getJSONObject("move_learn_method").getString("name")
 
-            val machineURL =
-                machines.getJSONObject(0).getJSONObject("machine").getString("url").split("/")
-                    .dropLast(1)
-                    .last().toInt()
-            val machineObject = jsonRequestMaker.makeRequest("move/$machineURL")
 
-            val machineID = machineObject.getString("id")
+        when (moveMethodName) {
+            "machine" -> {
+                val machines = moveObject.getJSONArray("machines")
 
-            return MachineMoveData(name, power, accuracy, type, machineID)
-        } else if (false) {
-            val pokedexId = templatePokemon.pokedexId
-            val pokemonResponse = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
+                val machineURL =
+                    machines.getJSONObject(0).getJSONObject("machine").getString("url").split("/")
+                        .dropLast(1)
+                        .last()
+                        .toInt()
 
-            val move = pokemonResponse.getJSONObject("moves").getJSONObject("move")
+                val machineObject = jsonRequestMaker.makeRequest("move/$machineURL")
+                val machineID = machineObject.getString("id")
 
-            val learnMoveName = move.get("name")
-
-            var level = 0
-            if (learnMoveName == name) {
-                val learnMoveMethods = moveObject.getJSONArray("version_group_details")
-                for(i in 0 until learnMoveMethods.length()) {
-                    level = learnMoveMethods.getJSONObject(i).getInt("level_learned_at")
-                }
+                return MachineMoveData(name, power, accuracy, type, machineID)
             }
-            return LevelMoveData(name, power, accuracy, type, level)
+            "learn" -> {
+                val move = pokemonResponse.getJSONObject("moves").getJSONObject("move")
+                val learnMoveName = move.get("name")
 
-        }else {
-            return BasicMove(name, power, accuracy, type)
+                var level = 0
+                if (learnMoveName == name) {
+                    for(i in 0 until learnMoveMethods.length()) {
+                        level = learnMoveMethods.getJSONObject(i).getInt("level_learned_at")
+                    }
+                }
+                return LevelMoveData(name, power, accuracy, type, level)
+
+            }
+            else -> {
+                return BasicMove(name, power, accuracy, type)
+            }
         }
     }
 
@@ -155,7 +166,7 @@ class PokeAPICo : PokemonAPI {
         val damageClass = MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
 
 
-        return AdvancedMove(damageClass,  pp, description, BasisMove)
+        return AdvancedMove(damageClass, pp, description, )
         }
     }*/
 
