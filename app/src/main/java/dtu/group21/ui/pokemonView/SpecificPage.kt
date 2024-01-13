@@ -271,7 +271,7 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 .draggable(
                     orientation = Orientation.Vertical,
                     state = rememberDraggableState { changeY ->
-                        if (changeY < -10) {
+                        if (changeY < -5) {
                             offsetY = sqrt(changeY * changeY)
                             visible = false
                         } else{
@@ -279,6 +279,9 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                             visible = true
                         }
                     },
+                    onDragStopped = {
+                        //TODO implement snap when drag was inside limit
+                    }
                 ), verticalArrangement = Arrangement.Bottom
         ) {
                     val categories = listOf("About", "Stats", "Moves", "Evolution")
