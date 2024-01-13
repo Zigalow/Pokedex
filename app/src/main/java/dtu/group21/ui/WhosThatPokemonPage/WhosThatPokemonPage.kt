@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.example.pokedex.R
 import dtu.group21.ui.search.SearchBar
 import dtu.group21.ui.shared.UpperMenu
@@ -41,8 +42,12 @@ import dtu.group21.ui.shared.buttonColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhosThatPokemonPage(
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    //viewModel: WhosThatPokemonViewModel = viewModel()
 ) {
+    var guess by remember { mutableStateOf("") }
+    //val pokemonImage = viewModel.currentPokemonSilhouette
+
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp)
@@ -74,6 +79,53 @@ fun WhosThatPokemonPage(
             )
             Spacer(Modifier.width(45.dp))
         }
+        /* Display the Pokémon silhouette
+        Image(
+            //painter = painterResource(id = pokemonImage),
+            contentDescription = "Pokemon Silhouette",
+            modifier = Modifier
+                .size(200.dp)
+                .padding(top = 20.dp)
+        )
+        */
 
+        // Input field for the guess
+        TextField(
+            value = guess,
+            onValueChange = { guess = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            label = { Text("Your Guess") }
+        )
+
+        // Button to submit the guess
+        Button(
+            onClick = { viewModel.checkGuess(guess) },
+            colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor),
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth()
+        ) {
+            Text("Guess", fontSize = 18.sp)
+        }
     }
 }
+
+class WhosThatPokemonViewModel : ViewModel() {
+
+    //Eksempler for billeder
+
+    //var currentPokemonSilhouette: Int = R.drawable.pokemon_silhouette // Placeholder
+    //private var currentPokemonName: String = "pikachu" // Placeholder
+
+
+    fun checkGuess(guess: String) {
+        if (guess.equals(currentPokemonName, ignoreCase = true)) {
+                //If correct, input some text saying it's correct
+        } else {
+            //If wrong, input some text saying it's wrong.
+        }
+    }
+}
+//Mangler: to add logic to update currentPokemonSilhouette and currentPokemonName
