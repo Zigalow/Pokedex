@@ -13,7 +13,9 @@ import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonStats
 import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.models.pokemon.moves.AdvancedMove
 import dtu.group21.models.pokemon.moves.BasicMove
+import dtu.group21.models.pokemon.moves.DetailedMove
 import dtu.group21.models.pokemon.moves.DisplayMove
 import dtu.group21.models.pokemon.moves.LevelMoveData
 import dtu.group21.models.pokemon.moves.MachineMoveData
@@ -160,14 +162,27 @@ class PokeAPICo : PokemonAPI {
         val power = moveObject.get("power") as? Int
         val accuracy = moveObject.get("accuracy") as? Int
         val pp = moveObject.getInt("pp")
-        val priority = moveObject.getInt("priority")
+        val priority = moveObject.get("priority") as? Int
 
         val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
         val damageClass = MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
 
+        val learnedByPokemonAPI = moveObject.getJSONArray("learned_by_pokemon")
+        val learnedByPokemon = mutableListOf<DisplayPokemon>()
+        var generation = 0
+        for(i in 0 until learnedByPokemonAPI.length()){
+            //val pokemonName = learnedByPokemonAPI.getJSONObject(i).getString("name")
+            val pokemonId = learnedByPokemonAPI.getJSONObject(i).getString("url")
+                .split("/")
+                .dropLast(1)
+                .last()
+                .toInt()
 
-        return AdvancedMove(damageClass, pp, description, )
+            generation = PokemonHelper.getGeneration(pokemonId)
+
+            learnedByPokemon.add(getDisplayPokemon(pokemonId))
         }
+        return AdvancedMove(damageClass, pp, description,/*pokemonTarget*/,priority,/*makeContact*/, generation, learnedByPokemon, /*tms*/ ,name, power,accuracy , type)
     }*/
 
     private suspend fun getAbility(abilityName: String, isHidden: Boolean): PokemonAbility {
