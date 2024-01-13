@@ -213,7 +213,7 @@ fun SearchScreen(
                 Text(
                     text = "Filter",
                     fontSize = mediumFontSize,
-                    fontWeight = if (SearchSettings.filterSettings.hasFilterTypeSettings()) FontWeight.Black else FontWeight.Normal,
+                    fontWeight = if (SearchSettings.filterSettings.hasFilterTypeSettings() || SearchSettings.filterSettings.hasFilterGenerationsSettings()) FontWeight.Black else FontWeight.Normal,
                 )
             }
 
