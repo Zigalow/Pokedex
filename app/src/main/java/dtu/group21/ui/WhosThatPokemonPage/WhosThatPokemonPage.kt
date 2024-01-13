@@ -67,91 +67,13 @@ fun WhosThatPokemonPage(
                 alignment = Alignment.CenterStart,
             )
             Text(
-                text = "Who's That Pokemon!",
+                text = "Who's That Pokemon",
                 modifier = Modifier.weight(0.01f).fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
             )
             Spacer(Modifier.width(45.dp))
         }
-        Spacer(Modifier.height(5.dp))
-        SearchBar(
-            onChange = { /*TODO*/ },
-            height = 40.dp
-        )
 
-        /*
-        TextField(
-            value = searchText,
-            onValueChange = { searchText = it },
-            label = { Text("Search") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-         */
-
-        Button(
-            onClick = {/* Do something */ },
-            modifier = Modifier
-                .padding(top = 8.dp),
-//                .fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(buttonColor, Color.Black)
-
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.night_mode),
-                contentDescription = null
-            )
-            Text(
-                text = "Dark mode",
-                modifier = Modifier
-                    .padding(start = 1.dp)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Start
-
-            )
-
-
-        }
-        Button(
-            onClick = {/* Do something */ },
-            modifier = Modifier
-                .padding(top = 8.dp),
-            colors = ButtonDefaults.buttonColors(buttonColor, Color.Black)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.guide),
-                contentDescription = null,
-                alignment = Alignment.Center,
-                modifier = Modifier
-                    .padding(all = 2.dp),
-            )
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = "Guide",
-                color = Color.Black
-            )
-        }
-        Button(
-            onClick = {/* Do something */ },
-            modifier = Modifier
-                .padding(top = 8.dp),
-            colors = ButtonDefaults.buttonColors(buttonColor, Color.Black)
-
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.about_us), contentDescription = null
-            )
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = "About us",
-                color = Color.Black,
-                textAlign = TextAlign.Start
-
-            )
-        }
     }
 }
