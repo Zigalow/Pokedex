@@ -25,8 +25,8 @@ import dtu.group21.ui.shared.bigFontSize
 
 @Composable
 fun SortScreen(
-    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -44,29 +44,46 @@ fun SortScreen(
                 modifier = Modifier
                     .size(35.dp)
                     .align(Alignment.CenterVertically)
-                    .clickable { onNavigateBack()
-                               },
+                    .clickable {
+                        onNavigateBack()
+                    },
                 alignment = Alignment.CenterStart,
             )
             Text(
                 text = "Sort",
-                modifier = Modifier.weight(0.01f).fillMaxWidth(),
+                modifier = Modifier
+                    .weight(0.01f)
+                    .fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
             )
             Spacer(Modifier.width(45.dp))
         }
-        val options = remember { arrayOf(SortSettings.SortType.Ascending, SortSettings.SortType.Descending) }
+        val options =
+            remember { arrayOf(SortSettings.SortType.Ascending, SortSettings.SortType.Descending) }
         BinaryChooser(
             option1 = "Ascending",
             option2 = "Descending",
             onChange = { SortSettings.sortType = options[it] },
             startsAt = options.indexOf(SortSettings.sortType),
         )
-        val sortOptions = remember { arrayOf("ID", "Name", "HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed", "Total") }
+        Spacer(modifier = Modifier.height(15.dp))
+        val sortOptions = remember {
+            arrayOf(
+                "ID",
+                "Name",
+                "HP",
+                "Attack",
+                "Defense",
+                "Special Attack",
+                "Special Defense",
+                "Speed",
+                "Total"
+            )
+        }
         RadioOptions(
             options = sortOptions,
-            onSelectionChanged = { SortSettings.sortMethod = SortSettings.SortMethod.entries[it]},
+            onSelectionChanged = { SortSettings.sortMethod = SortSettings.SortMethod.entries[it] },
             modifier = Modifier.padding(horizontal = 5.dp),
             selectedInitially = SortSettings.sortMethod.ordinal,
         )
