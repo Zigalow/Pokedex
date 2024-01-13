@@ -38,8 +38,8 @@ import dtu.group21.ui.shared.unselectedToggleColor
 
 @Composable
 fun FilterScreen(
-    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -104,7 +104,6 @@ fun FilterOptionsBox(
 
     DropDownMenu(
         options = filterOptions,
-        filterSettings = filterSettings,
         onChange = onChange
     )
 

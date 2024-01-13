@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dtu.group21.ui.search.FilterSettings
+import dtu.group21.ui.search.SearchSettings.filterSettings
 
 val buttonColor = Color(0xFFFFCC00)
 val unselectedToggleColor = Color.hsv(0f, 0f, 0.85f)
@@ -66,7 +67,7 @@ fun RoundedButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropDownMenu(
-    filterSettings: FilterSettings,
+    modifier: Modifier = Modifier,
     options: List<String>,
     onChange: (Int, String) -> Unit
 ) {
