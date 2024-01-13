@@ -10,7 +10,6 @@ data class AdvancedMove(
     override val description: String,
     override val pokemonTarget: Int?,
     override val priority: Int,
-    override val makesContact: Boolean,
     override val generation: Int,
     override val learntByPokemon: List<DisplayPokemon>,
     override val tms: List<String>,

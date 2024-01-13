@@ -13,7 +13,6 @@ interface DetailedMove : DisplayMove {
     val description: String
     val pokemonTarget: Int? // todo make enums
     val priority: Int
-    val makesContact: Boolean
     val generation: Int
     val learntByPokemon: List<DisplayPokemon>
     val tms: List<String> // todo make generations into enums
