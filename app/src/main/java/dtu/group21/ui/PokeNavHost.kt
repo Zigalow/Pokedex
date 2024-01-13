@@ -20,7 +20,6 @@ import dtu.group21.ui.frontpage.FrontPage
 import dtu.group21.ui.pokemonView.SpecificPage
 import dtu.group21.ui.search.FilterScreen
 import dtu.group21.ui.search.SearchScreen
-import dtu.group21.ui.search.SearchSettings
 import dtu.group21.ui.search.SortScreen
 import dtu.group21.ui.settings.SettingsPage
 
@@ -50,7 +49,7 @@ fun popBackStackCustom(navController: NavHostController): Boolean {
 @Composable
 fun PokeNavHost(startDestination: String = "home") {
     val navController = rememberNavController()
-    val searchSettings = remember { SearchSettings() }
+//    val searchSettings = remember { SearchSettings() }
 
     val favouritePokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
     LaunchedEffect(Unit) {
@@ -83,7 +82,7 @@ fun PokeNavHost(startDestination: String = "home") {
                 onNavigateToFilter = { navController.navigate("filter") },
                 onNavigateToSort = { navController.navigate("sort") },
                 onPokemonClicked = { navController.navigate("pokemon/$it") },
-                searchSettings = searchSettings,
+//                searchSettings = searchSettings,
                 pokemonPool = pokemons,
                 modifier = Modifier.fillMaxSize()
             )
@@ -97,7 +96,7 @@ fun PokeNavHost(startDestination: String = "home") {
                 onNavigateToSort = { navController.navigate("sort") },
 
                 onPokemonClicked = { navController.navigate("pokemon/$it") },
-                searchSettings = searchSettings,
+//                searchSettings = searchSettings,
                 pokemonPool = favouritePokemons,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -105,14 +104,13 @@ fun PokeNavHost(startDestination: String = "home") {
         composable("filter") {
             FilterScreen(
                 onNavigateBack = { popBackStackCustom(navController) },
-                filterSettings = searchSettings.filterSettings,
+//                filterSettings = searchSettings.filterSettings,
                 modifier = Modifier.fillMaxSize(),
             )
         }
         composable("sort") {
             SortScreen(
                 onNavigateBack = { popBackStackCustom(navController) },
-                sortSettings = searchSettings.sortSettings,
                 modifier = Modifier.fillMaxSize(),
             )
         }

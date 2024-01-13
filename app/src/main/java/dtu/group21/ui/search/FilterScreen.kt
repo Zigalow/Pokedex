@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,10 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.pokedex.R
 import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.ui.search.SearchSettings.filterSettings
 import dtu.group21.ui.shared.BinaryChooser
 import dtu.group21.ui.shared.DropDownMenu
 import dtu.group21.ui.shared.ToggleButton
@@ -37,15 +36,11 @@ import dtu.group21.ui.shared.bigFontSize
 import dtu.group21.ui.shared.mediumFontSize
 import dtu.group21.ui.shared.unselectedToggleColor
 
-
 @Composable
 fun FilterScreen(
     onNavigateBack: () -> Unit,
-    filterSettings: FilterSettings,
     modifier: Modifier = Modifier,
 ) {
-
-
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -83,9 +78,7 @@ fun FilterScreen(
             mutableStateOf(filterSettings.filterOption)
         }
         
-      
-                
-        FilterOptionsBox(filterSettings, onChange = { index, value ->
+        FilterOptionsBox(onChange = { index, value ->
             currentOption.value = when (index) {
                 0 -> FilterSettings.FilterOption.TYPES
                 1 -> FilterSettings.FilterOption.GENERATIONS
@@ -94,16 +87,14 @@ fun FilterScreen(
         })
 
         when (currentOption.value) {
-            FilterSettings.FilterOption.TYPES -> TypeFilterScreen(filterSettings = filterSettings)
-            FilterSettings.FilterOption.GENERATIONS -> GenerationFilterScreen(filterSettings = filterSettings)
+            FilterSettings.FilterOption.TYPES -> TypeFilterScreen()
+            FilterSettings.FilterOption.GENERATIONS -> GenerationFilterScreen()
         }
     }
 }
 
-
 @Composable
 fun FilterOptionsBox(
-    filterSettings: FilterSettings,
     onChange: (Int, String) -> Unit
 ) {
     Spacer(modifier = Modifier.height(35.dp))
@@ -122,11 +113,10 @@ fun FilterOptionsBox(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TypeFilterScreen(filterSettings: FilterSettings) {
+fun TypeFilterScreen() {
     val hasTooManyTypesSelected = remember {
-        mutableStateOf(shouldShowWarning(filterSettings))
+        mutableStateOf(shouldShowWarning())
     }
-
 
     val options = remember {
         arrayOf(
@@ -139,7 +129,7 @@ fun TypeFilterScreen(filterSettings: FilterSettings) {
         option2 = "Exact Types",
         onChange = {
             filterSettings.filterType = options[it]
-            hasTooManyTypesSelected.value = shouldShowWarning(filterSettings)
+            hasTooManyTypesSelected.value = shouldShowWarning()
         },
         startsAt = options.indexOf(filterSettings.filterType),
     )
@@ -199,7 +189,7 @@ fun TypeFilterScreen(filterSettings: FilterSettings) {
                     ToggleButton(
                         onClick = {
                             filterSettings.types[i] = it
-                            hasTooManyTypesSelected.value = shouldShowWarning(filterSettings)
+                            hasTooManyTypesSelected.value = shouldShowWarning()
                         },
                         modifier = Modifier
                             .padding(all = 5.dp)
@@ -231,7 +221,7 @@ fun TypeFilterScreen(filterSettings: FilterSettings) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun GenerationFilterScreen(filterSettings: FilterSettings) {
+fun GenerationFilterScreen() {
     Column(
         modifier = Modifier.fillMaxHeight(),
     ) {
@@ -291,18 +281,6 @@ fun GenerationFilterScreen(filterSettings: FilterSettings) {
     }
 }
 
-fun shouldShowWarning(filterSettings: FilterSettings): Boolean {
+fun shouldShowWarning(): Boolean {
     return filterSettings.numberOfTypesChosen() > 2 && filterSettings.filterType == FilterSettings.FilterType.ExactTypes
-}
-
-@Preview(showBackground = true)
-@Composable
-fun FilterScreenPreview() {
-
-    val searchSettings = remember { SearchSettings() }
-    FilterScreen(
-        onNavigateBack = { },
-        filterSettings = searchSettings.filterSettings,
-        modifier = Modifier.fillMaxSize(),
-    )
 }

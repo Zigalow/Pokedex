@@ -141,7 +141,6 @@ fun SearchScreen(
     onNavigateToFilter: () -> Unit,
     onNavigateToSort: () -> Unit,
     onPokemonClicked: (String) -> Unit,
-    searchSettings: SearchSettings,
     pokemonPool: MutableState<List<Resource<StatPokemon>>>,
     modifier: Modifier = Modifier,
 ) {
@@ -153,7 +152,7 @@ fun SearchScreen(
     val candidates: State<List<Resource<StatPokemon>>> =
         liveLiteral("searchResults", allCandidates)
 
-    updateCandidates(searchSettings, allCandidates)
+    updateCandidates(allCandidates)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -186,14 +185,14 @@ fun SearchScreen(
         SearchBar(
             onChange = {
                 println("Searched for '$it'")
-                searchSettings.searchString = it
-                updateCandidates(searchSettings, allCandidates)
+                SearchSettings.searchString = it
+                updateCandidates(allCandidates)
             },
             height = 40.dp,
             modifier = Modifier
                 .padding(horizontal = 5.dp)
                 .fillMaxWidth(0.9f),
-            initialText = searchSettings.searchString,
+            initialText = SearchSettings.searchString,
         )
         Spacer(Modifier.height(10.dp))
         Row {
@@ -214,7 +213,7 @@ fun SearchScreen(
                 Text(
                     text = "Filter",
                     fontSize = mediumFontSize,
-                    fontWeight = if (searchSettings.filterSettings.hasFilterTypeSettings()) FontWeight.Black else FontWeight.Normal,
+                    fontWeight = if (SearchSettings.filterSettings.hasFilterTypeSettings()) FontWeight.Black else FontWeight.Normal,
                 )
             }
 
@@ -228,7 +227,7 @@ fun SearchScreen(
                 Text(
                     text = "Sort",
                     fontSize = mediumFontSize,
-                    fontWeight = if (searchSettings.sortSettings.hasSettings()) FontWeight.Black else FontWeight.Normal,
+                    fontWeight = if (SearchSettings.sortSettings.hasSettings()) FontWeight.Black else FontWeight.Normal,
                 )
             }
         }
@@ -259,7 +258,6 @@ fun SearchScreen(
 
 @OptIn(InternalComposeApi::class)
 fun updateCandidates(
-    searchSettings: SearchSettings,
     allCandidates: List<Resource<StatPokemon>>
 ) {
     val loadedCandidates =
@@ -273,28 +271,28 @@ fun updateCandidates(
         // - a substring of the number of the pokemon
         // if either is true, it is a candidate
         val candidate =
-            if (searchSettings.searchString.isEmpty())
+            if (SearchSettings.searchString.isEmpty())
                 true
-            else if (searchSettings.searchString.isDigitsOnly()) {
-                val searchNumber = searchSettings.searchString.toInt()
+            else if (SearchSettings.searchString.isDigitsOnly()) {
+                val searchNumber = SearchSettings.searchString.toInt()
                 searchNumber.toString() in pokemon.pokedexId.toString()
-            } else searchSettings.searchString.lowercase() in pokemon.name.lowercase()
+            } else SearchSettings.searchString.lowercase() in pokemon.name.lowercase()
 
         candidate
     }
 
     val typeCandidates = nameCandidates.filter { pokemon ->
         val candidate =
-            if (!searchSettings.filterSettings.hasFilterTypeSettings()) {
+            if (!SearchSettings.filterSettings.hasFilterTypeSettings()) {
                 true
-            } else if (searchSettings.filterSettings.filterType == FilterSettings.FilterType.IncludableTypes) {
-                if (searchSettings.filterSettings.types[pokemon.primaryType.ordinal]) true
-                else searchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
-            } else if (searchSettings.filterSettings.filterType == FilterSettings.FilterType.ExactTypes) {
-                if (searchSettings.filterSettings.numberOfTypesChosen() == 1) {
-                    searchSettings.filterSettings.types[pokemon.primaryType.ordinal] && pokemon.secondaryType == PokemonType.NONE
-                } else if (searchSettings.filterSettings.numberOfTypesChosen() == 2) {
-                    searchSettings.filterSettings.types[pokemon.primaryType.ordinal] && searchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
+            } else if (SearchSettings.filterSettings.filterType == FilterSettings.FilterType.IncludableTypes) {
+                if (SearchSettings.filterSettings.types[pokemon.primaryType.ordinal]) true
+                else SearchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
+            } else if (SearchSettings.filterSettings.filterType == FilterSettings.FilterType.ExactTypes) {
+                if (SearchSettings.filterSettings.numberOfTypesChosen() == 1) {
+                    SearchSettings.filterSettings.types[pokemon.primaryType.ordinal] && pokemon.secondaryType == PokemonType.NONE
+                } else if (SearchSettings.filterSettings.numberOfTypesChosen() == 2) {
+                    SearchSettings.filterSettings.types[pokemon.primaryType.ordinal] && SearchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
                 } else {
                     false
                 }
@@ -305,16 +303,16 @@ fun updateCandidates(
 
     val generationCandidates = typeCandidates.filter { pokemon ->
         val candidate =
-            if (!searchSettings.filterSettings.hasFilterGenerationsSettings()) {
+            if (!SearchSettings.filterSettings.hasFilterGenerationsSettings()) {
                 true
-            } else searchSettings.filterSettings.generations[getGeneration(pokemon.pokedexId) - 1]
+            } else SearchSettings.filterSettings.generations[getGeneration(pokemon.pokedexId) - 1]
 
         candidate
     }
 
     val sortedStatCandidates = generationCandidates.sortedBy { pokemon ->
         val candidate =
-            when (searchSettings.sortSettings.sortMethod) {
+            when (SearchSettings.sortSettings.sortMethod) {
                 SortSettings.SortMethod.ID -> pokemon.pokedexId
                 SortSettings.SortMethod.HP -> pokemon.stats.hp
                 SortSettings.SortMethod.ATTACK -> pokemon.stats.attack
@@ -335,12 +333,12 @@ fun updateCandidates(
 
     val orderedCandidates =
 
-        if (searchSettings.sortSettings.sortType == SortSettings.SortType.Descending) {
-            if (searchSettings.sortSettings.sortMethod == SortSettings.SortMethod.NAME) {
+        if (SearchSettings.sortSettings.sortType == SortSettings.SortType.Descending) {
+            if (SearchSettings.sortSettings.sortMethod == SortSettings.SortMethod.NAME) {
                 sortedNameCandidates.reversed()
             } else sortedStatCandidates.reversed()
         } else {
-            if (searchSettings.sortSettings.sortMethod == SortSettings.SortMethod.NAME) {
+            if (SearchSettings.sortSettings.sortMethod == SortSettings.SortMethod.NAME) {
                 sortedNameCandidates
             } else sortedStatCandidates
         }

@@ -26,7 +26,6 @@ import dtu.group21.ui.shared.bigFontSize
 @Composable
 fun SortScreen(
     onNavigateBack: () -> Unit,
-    sortSettings: SortSettings,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -61,15 +60,15 @@ fun SortScreen(
         BinaryChooser(
             option1 = "Ascending",
             option2 = "Descending",
-            onChange = { sortSettings.sortType = options[it] },
-            startsAt = options.indexOf(sortSettings.sortType),
+            onChange = { SortSettings.sortType = options[it] },
+            startsAt = options.indexOf(SortSettings.sortType),
         )
         val sortOptions = remember { arrayOf("ID", "Name", "HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed", "Total") }
         RadioOptions(
             options = sortOptions,
-            onSelectionChanged = { sortSettings.sortMethod = SortSettings.SortMethod.entries[it]},
+            onSelectionChanged = { SortSettings.sortMethod = SortSettings.SortMethod.entries[it]},
             modifier = Modifier.padding(horizontal = 5.dp),
-            selectedInitially = sortSettings.sortMethod.ordinal,
+            selectedInitially = SortSettings.sortMethod.ordinal,
         )
         //REMOVE Apply Button
         /*Button(
