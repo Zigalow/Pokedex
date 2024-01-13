@@ -238,7 +238,7 @@ class PokeAPICo : PokemonAPI {
         val weightInGrams = pokemonResponse.getInt("weight") * 100
 
         val moveIdNames = getIdNames(pokemonResponse.getJSONArray("moves"), "move")
-        val moves = moveIdNames.map { getBasicMove(it,pokedexId) }
+        val moves = moveIdNames.map { getAdvancedMove(it) }
 
         val abilityIdNames = getIdNames(pokemonResponse.getJSONArray("abilities"), "ability")
         val abilities = abilityIdNames.map { getAbility(it, false) } // TODO: actually figure out if it's hidden
