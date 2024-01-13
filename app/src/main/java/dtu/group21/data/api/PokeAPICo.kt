@@ -8,7 +8,6 @@ import dtu.group21.models.api.JsonRequestMaker
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.MoveDamageClass
-import dtu.group21.models.pokemon.MoveLearnMethod
 import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonStats
@@ -96,11 +95,11 @@ class PokeAPICo : PokemonAPI {
         )
     }
 
-    private suspend fun getBasicMove(moveName: String, templatePokemon: DisplayPokemon): DisplayMove {
+    private suspend fun getBasicMove(moveName: String, pokedexId: Int): DisplayMove {
         val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
 
         // Pokemon's ID
-        val pokedexId = templatePokemon.pokedexId
+        //val pokedexId = templatePokemon.pokedexId
         val pokemonResponse = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
 
         // move's name
@@ -151,7 +150,7 @@ class PokeAPICo : PokemonAPI {
         }
     }
 
-    /*private suspend fun getAdvancedMove(moveName: String): DetailedMove {
+    private suspend fun getAdvancedMove(moveName: String): DetailedMove {
         val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
 
         val namesArray = moveObject.getJSONArray("names")
@@ -162,7 +161,7 @@ class PokeAPICo : PokemonAPI {
         val power = moveObject.get("power") as? Int
         val accuracy = moveObject.get("accuracy") as? Int
         val pp = moveObject.getInt("pp")
-        val priority = moveObject.get("priority") as? Int
+        val priority = moveObject.getInt("priority")
 
         val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
         val damageClass = MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
@@ -182,8 +181,33 @@ class PokeAPICo : PokemonAPI {
 
             learnedByPokemon.add(getDisplayPokemon(pokemonId))
         }
-        return AdvancedMove(damageClass, pp, description,/*pokemonTarget*/,priority,/*makeContact*/, generation, learnedByPokemon, /*tms*/ ,name, power,accuracy , type)
-    }*/
+
+        val pokemonTarget = moveObject.getJSONObject("target").getString("url").split("/")
+                .dropLast(1)
+                .last()
+                .toInt()
+
+        val machines = moveObject.getJSONArray("machines")
+
+        val tms = mutableListOf<String>()
+
+        if (machines.length() > 0) {
+            for (i in 0 until machines.length()) {
+                val machineId =
+                    machines.getJSONObject(i).getJSONObject("machine").getString("url").split("/")
+                        .dropLast(1)
+                        .last()
+                        .toInt()
+                val machineURL = jsonRequestMaker.makeRequest("machine/$machineId")
+
+                tms.add(machineURL.getJSONObject("item").getString("name"))
+            }
+        } else {
+
+        }
+
+        return AdvancedMove(damageClass, pp, description, pokemonTarget, priority, generation, learnedByPokemon, tms , name, power, accuracy , type)
+    }
 
     private suspend fun getAbility(abilityName: String, isHidden: Boolean): PokemonAbility {
         val abilityObject = jsonRequestMaker.makeRequest("ability/$abilityName")
@@ -214,7 +238,7 @@ class PokeAPICo : PokemonAPI {
         val weightInGrams = pokemonResponse.getInt("weight") * 100
 
         val moveIdNames = getIdNames(pokemonResponse.getJSONArray("moves"), "move")
-        val moves = moveIdNames.map { getMove(it) }
+        val moves = moveIdNames.map { getBasicMove(it,pokedexId) }
 
         val abilityIdNames = getIdNames(pokemonResponse.getJSONArray("abilities"), "ability")
         val abilities = abilityIdNames.map { getAbility(it, false) } // TODO: actually figure out if it's hidden
