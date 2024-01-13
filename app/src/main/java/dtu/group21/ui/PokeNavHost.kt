@@ -23,6 +23,7 @@ import dtu.group21.ui.search.SearchScreen
 import dtu.group21.ui.search.SearchSettings
 import dtu.group21.ui.search.SortScreen
 import dtu.group21.ui.settings.SettingsPage
+import dtu.group21.ui.settings.WhosThatPokemonPage
 
 // Step1: get nav controller
 
@@ -129,6 +130,11 @@ fun PokeNavHost(startDestination: String = "home") {
         }
         composable("settings") {
             SettingsPage(
+                onNavigateBack = { popBackStackCustom(navController) }
+            )
+        }
+        composable("WhosThatPokemon") {
+            WhosThatPokemonPage(
                 onNavigateBack = { popBackStackCustom(navController) }
             )
         }
