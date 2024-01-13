@@ -1,6 +1,7 @@
 package dtu.group21.ui.pokemonView
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -69,9 +70,6 @@ import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.math.sqrt
 
 
@@ -189,7 +187,8 @@ fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
     ) {
         Row(
             modifier
-                .height(35.dp).weight(1f)
+                .height(35.dp)
+                .weight(1f)
         ) {
             Spacer(modifier.width(13.dp))
             Text(
@@ -238,23 +237,27 @@ fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
     var offsetY by remember {
         mutableStateOf(0f)
     }
+    var visible by remember {
+        mutableStateOf(true)
+    }
     Column {
-        PokemonImage(
-            pokemon = pokemon, modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .fillMaxHeight(
-                    if (offsetY > 0) 0f
-                    else 0.4f
-                )
-        )
+        AnimatedVisibility(
+            visible,
+            modifier.align(Alignment.CenterHorizontally)) {
+            PokemonImage(
+                pokemon = pokemon, modifier = Modifier
+                    .fillMaxHeight(0.4f)
+            )
+        }
+
         Column(
             modifier
-                .fillMaxSize()
                 .background(
                     Color.White,
                     shape = RoundedCornerShape(
@@ -268,51 +271,54 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 .draggable(
                     orientation = Orientation.Vertical,
                     state = rememberDraggableState { changeY ->
-                        if (changeY < 0) {
-                            offsetY = sqrt(changeY*changeY)
-                        }else offsetY = 0f
-                    }
-                ),
-            verticalArrangement = Arrangement.Bottom
+                        if (changeY < -10) {
+                            offsetY = sqrt(changeY * changeY)
+                            visible = false
+                        } else{
+                            offsetY = 0f
+                            visible = true
+                        }
+                    },
+                ), verticalArrangement = Arrangement.Bottom
         ) {
-            val categories = listOf("About", "Stats", "Moves", "Evolution")
-            var selectedCategory by remember { mutableStateOf("About") }
-            Spacer(
-                modifier
-                    .width(13.dp)
-                    .height(25.dp)
-            )
-            Box(
-                modifier = Modifier
-                    //.padding(horizontal = 5.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-            ) {
-                CategoryList(
-                    categories = categories,
-                    onCategorySelected = { selectedCategory = it },
-                    initiallyChosen = selectedCategory,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
+                    val categories = listOf("About", "Stats", "Moves", "Evolution")
+                    var selectedCategory by remember { mutableStateOf("About") }
+                    Spacer(
+                        modifier
+                            .width(13.dp)
+                            .height(25.dp)
+                    )
+                    Box(
+                        modifier = Modifier
+                            //.padding(horizontal = 5.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                    ) {
+                        CategoryList(
+                            categories = categories,
+                            onCategorySelected = { selectedCategory = it },
+                            initiallyChosen = selectedCategory,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
 
-            Spacer(modifier.height(13.dp))
-            Column(
-                modifier
-                    .padding(start = 13.dp)
-            ) {
-                //based on which category is the coresponding section function will be used
-                Sections(
-                    selectedCategory = selectedCategory,
-                    pokemon = pokemon,
-                    modifier = modifier
-                )
-                Spacer(
-                    modifier = Modifier
-                        .weight(1f)
-                )
-            }
-        }
+                    Spacer(modifier.height(13.dp))
+                    Column(
+                        modifier
+                            .padding(start = 13.dp)
+                    ) {
+                        //based on which category is the coresponding section function will be used
+                        Sections(
+                            selectedCategory = selectedCategory,
+                            pokemon = pokemon,
+                            modifier = modifier
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .weight(1f)
+                        )
+                    }
+                }
 
     }
 
