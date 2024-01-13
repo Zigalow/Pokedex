@@ -3,10 +3,12 @@ package dtu.group21.data.api
 import androidx.compose.runtime.mutableStateOf
 import dtu.group21.data.pokemon.AdvancedPokemon
 import dtu.group21.data.pokemon.BasicPokemon
-import dtu.group21.helpers.PokemonHelper
-import dtu.group21.models.api.JsonRequestMaker
+import dtu.group21.data.pokemon.BasicStatPokemon
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.StatPokemon
+import dtu.group21.helpers.PokemonHelper
+import dtu.group21.models.api.JsonRequestMaker
 import dtu.group21.models.pokemon.MoveDamageClass
 import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonMove
@@ -36,6 +38,32 @@ class PokeAPICo : PokemonAPI {
             spriteId = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${PokemonHelper.getPokedexIdString(pokedexId)}.png"
         )
     }
+
+    override suspend fun getStatPokemon(pokedexId: Int): StatPokemon {
+        val pokemonResponse = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
+
+        val idName = pokemonResponse.getString("name")
+        val types = pokemonResponse.getJSONArray("types")
+        val primaryTypeName = types.getJSONObject(0).getJSONObject("type").getString("name")
+        val secondaryTypeName =
+            if (types.length() == 2) types.getJSONObject(1).getJSONObject("type")
+                .getString("name") else "none"
+
+        val statsList = (0..5).map { i ->
+            pokemonResponse.getJSONArray("stats").getJSONObject(i).getInt("base_stat")
+        }
+        val stats = PokemonStats(statsList)
+
+        return BasicStatPokemon(
+            name = PokemonHelper.getEnglishName(pokedexId, idName),
+            pokedexId = pokedexId,
+            primaryType = PokemonType.getFromName(primaryTypeName),
+            secondaryType = PokemonType.getFromName(secondaryTypeName),
+            spriteId = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${PokemonHelper.getPokedexIdString(pokedexId)}.png",
+            stats = PokemonStats(statsList)
+        )
+    }
+    
 
     override suspend fun getDetailedPokemon(pokedexId: Int): DetailedPokemon {
         // TODO: maybe make this implement it itself, as there could be possibilities of optimizations

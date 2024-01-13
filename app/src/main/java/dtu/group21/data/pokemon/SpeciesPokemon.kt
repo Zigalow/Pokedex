@@ -2,7 +2,7 @@ package dtu.group21.data.pokemon
 
 import dtu.group21.models.pokemon.PokemonAbility
 
-interface SpeciesPokemon : DisplayPokemon {
+interface SpeciesPokemon : StatPokemon {
 
     val evolutionChainId: Int
     val genderRate: Int
