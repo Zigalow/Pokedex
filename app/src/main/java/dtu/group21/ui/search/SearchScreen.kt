@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import dtu.group21.data.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.helpers.PokemonHelper.getGeneration
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.PokemonType
@@ -142,7 +142,7 @@ fun SearchScreen(
     onNavigateToSort: () -> Unit,
     onPokemonClicked: (String) -> Unit,
     searchSettings: SearchSettings,
-    pokemonPool: MutableState<List<Resource<DisplayPokemon>>>,
+    pokemonPool: MutableState<List<Resource<StatPokemon>>>,
     modifier: Modifier = Modifier,
 ) {
     val systemUiController = rememberSystemUiController()
@@ -150,7 +150,7 @@ fun SearchScreen(
         systemUiController.setStatusBarColor(Color.White)
     }
     val allCandidates = pokemonPool.value
-    val candidates: State<List<Resource<DisplayPokemon>>> =
+    val candidates: State<List<Resource<StatPokemon>>> =
         liveLiteral("searchResults", allCandidates)
 
     updateCandidates(searchSettings, allCandidates)
@@ -260,9 +260,10 @@ fun SearchScreen(
 @OptIn(InternalComposeApi::class)
 fun updateCandidates(
     searchSettings: SearchSettings,
-    allCandidates: List<Resource<DisplayPokemon>>
+    allCandidates: List<Resource<StatPokemon>>
 ) {
-    val loadedCandidates = allCandidates.filter { it is Resource.Success }.map { (it as Resource.Success).data }
+    val loadedCandidates =
+        allCandidates.filter { it is Resource.Success }.map { (it as Resource.Success).data }
     val unloadedCandidates = Array(allCandidates.size - loadedCandidates.size) { Resource.Loading }
 
     val nameCandidates = loadedCandidates.filter { pokemon ->
@@ -311,13 +312,40 @@ fun updateCandidates(
         candidate
     }
 
-    val sortedCandidates = generationCandidates.sortedBy { pokemon ->
-        pokemon.pokedexId
+    val sortedStatCandidates = generationCandidates.sortedBy { pokemon ->
+        val candidate =
+            when (searchSettings.sortSettings.sortMethod) {
+                SortSettings.SortMethod.ID -> pokemon.pokedexId
+                SortSettings.SortMethod.HP -> pokemon.hp
+                SortSettings.SortMethod.ATTACK -> pokemon.attack
+                SortSettings.SortMethod.DEFENSE -> pokemon.defense
+                SortSettings.SortMethod.SPECIAL_ATTACK -> pokemon.specialAttack
+                SortSettings.SortMethod.SPECIAL_DEFENSE -> pokemon.specialDefense
+                SortSettings.SortMethod.SPEED -> pokemon.speed
+                SortSettings.SortMethod.TOTAL -> pokemon.total
+                else -> pokemon.pokedexId
+            }
+        candidate
     }
 
-    val orderedCandidates = if (searchSettings.sortSettings.sortType == SortSettings.SortType.Descending) sortedCandidates.reversed() else sortedCandidates
+    val sortedNameCandidates = generationCandidates.sortedBy { pokemon ->
+        val candidate = pokemon.name
+        candidate
+    }
 
-    // TODO: decide whether unloaded pokemons should also be shown here
+    val orderedCandidates =
+
+        if (searchSettings.sortSettings.sortType == SortSettings.SortType.Descending) {
+            if (searchSettings.sortSettings.sortMethod == SortSettings.SortMethod.NAME) {
+                sortedNameCandidates.reversed()
+            } else sortedStatCandidates.reversed()
+        } else {
+            if (searchSettings.sortSettings.sortMethod == SortSettings.SortMethod.NAME) {
+                sortedNameCandidates
+            } else sortedStatCandidates
+        }
+
+// TODO: decide whether unloaded pokemons should also be shown here
     val results = orderedCandidates.map { Resource.Success(it) } + unloadedCandidates
 
     updateLiveLiteralValue(
