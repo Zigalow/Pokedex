@@ -1,6 +1,6 @@
 package dtu.group21.ui.search
 
-class FilterSettings {
+object FilterSettings {
 
     enum class FilterType {
         IncludableTypes,

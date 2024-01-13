@@ -1,6 +1,6 @@
 package dtu.group21.ui.search
 
-class SortSettings {
+object SortSettings {
     enum class SortType {
         Ascending,
         Descending,
