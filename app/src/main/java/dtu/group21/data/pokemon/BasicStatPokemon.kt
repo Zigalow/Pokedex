@@ -9,19 +9,7 @@ data class BasicStatPokemon(
     override val primaryType: PokemonType,
     override val secondaryType: PokemonType,
     override val spriteId: String,
-    val stats: PokemonStats
+    override val stats: PokemonStats
 ) : StatPokemon {
-    override val hp: Int
-        get() = stats.hp
-    override val attack: Int
-        get() = stats.attack
-    override val defense: Int
-        get() = stats.defense
-    override val specialAttack: Int
-        get() = stats.specialAttack
-    override val specialDefense: Int
-        get() = stats.specialDefense
-    override val speed: Int
-        get() = stats.speed
     override val hasTwoTypes = (secondaryType != PokemonType.NONE)
 }
