@@ -6,5 +6,4 @@ interface GenderedPokemon : StatPokemon {
 
     val gender: PokemonGender
     val hasGenderDifferences: Boolean
-
 }
