@@ -2,6 +2,8 @@ package dtu.group21.ui.pokemonView
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.calculateTargetValue
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -71,6 +73,8 @@ import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
 import kotlin.math.sqrt
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -240,8 +244,8 @@ fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
-    var offsetY by remember {
-        mutableStateOf(0f)
+    var direction by remember {
+        mutableStateOf(true)
     }
     var visible by remember {
         mutableStateOf(true)
@@ -267,20 +271,27 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                         bottomEnd = 0.dp
                     )
                 )
-                .offset { IntOffset(0, offsetY.toInt()) }
                 .draggable(
                     orientation = Orientation.Vertical,
                     state = rememberDraggableState { changeY ->
-                        if (changeY < -5) {
-                            offsetY = sqrt(changeY * changeY)
+                        if (changeY < 0) {
+                            direction = true // dragging up
+                        } else direction = false // dragging down
+                    },
+                    onDragStopped = { velocity ->
+                        //  negative velocity = drag up
+                        //  positive velocity = drag down
+                        println(velocity)
+                        if (velocity == 0.0f && visible) {
                             visible = false
-                        } else{
-                            offsetY = 0f
+                        } else if (!direction && !visible && velocity == 0.0f) {
+                            visible = true
+                        } else if (direction) {
+                            visible = false
+                        } else if (!direction) {
                             visible = true
                         }
-                    },
-                    onDragStopped = {
-                        //TODO implement snap when drag was inside limit
+
                     }
                 ), verticalArrangement = Arrangement.Bottom
         ) {
