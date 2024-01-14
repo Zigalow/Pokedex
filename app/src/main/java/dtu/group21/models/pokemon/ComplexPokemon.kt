@@ -4,6 +4,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.GenderedPokemon
+import dtu.group21.models.pokemon.moves.BasicMove
+import dtu.group21.models.pokemon.moves.DisplayMove
 
 //@Entity(tableName = "favorites")
 class ComplexPokemon(
@@ -18,7 +20,7 @@ class ComplexPokemon(
     override val heightInCm: Int,
     override val stats: PokemonStats,
     val species: PokemonSpecies,
-    override val moves: Array<PokemonMove>,
+    override val moves: Array<DisplayMove>,
     override var isFavorite: MutableState<Boolean> = mutableStateOf(false)
 ) : GenderedPokemon, DetailedPokemon {
     //@Ignore
