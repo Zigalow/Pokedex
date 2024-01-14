@@ -99,7 +99,6 @@ class PokeAPICo : PokemonAPI {
         val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
 
         // Pokemon's ID
-        //val pokedexId = templatePokemon.pokedexId
         val pokemonResponse = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
 
         // move's name
@@ -112,7 +111,8 @@ class PokeAPICo : PokemonAPI {
         val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
 
         // Move categories name
-        val learnMoveMethods = moveObject.getJSONArray("version_group_details")
+        val moves = pokemonResponse.getJSONArray("moves")
+        val learnMoveMethods = moves.getJSONObject(0).getJSONArray("version_group_details")
         val moveMethodName = learnMoveMethods.getJSONObject(0).getJSONObject("move_learn_method").getString("name")
 
 
@@ -238,7 +238,7 @@ class PokeAPICo : PokemonAPI {
         val weightInGrams = pokemonResponse.getInt("weight") * 100
 
         val moveIdNames = getIdNames(pokemonResponse.getJSONArray("moves"), "move")
-        val moves = moveIdNames.map { getAdvancedMove(it) }
+        val moves = moveIdNames.map { getBasicMove(it, pokedexId) }
 
         val abilityIdNames = getIdNames(pokemonResponse.getJSONArray("abilities"), "ability")
         val abilities = abilityIdNames.map { getAbility(it, false) } // TODO: actually figure out if it's hidden
