@@ -49,10 +49,10 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
-import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.data.database.DatabaseViewModel
-import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.data.pokemon.DetailedPokemon
+import dtu.group21.models.api.PokemonViewModel
+import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonMove
@@ -64,7 +64,6 @@ import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
-
 
 @Composable
 fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
@@ -312,7 +311,6 @@ fun CategoryList(
     initiallyChosen: String = ""
 ) {
     var selectedCategory by remember { mutableStateOf(initiallyChosen) }
-
     LazyRow(
         modifier = modifier
             .height(25.dp)
