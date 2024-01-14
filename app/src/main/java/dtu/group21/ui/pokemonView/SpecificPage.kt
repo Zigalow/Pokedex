@@ -140,36 +140,36 @@ fun Top(
             modifier = Modifier
                 .weight(1f)
         ) {
-        backIcon(
-            modifier
-                .padding(vertical = 16.dp, horizontal = 19.dp)
-                .size(49.dp)
-                .clickable { onClickBack() }
-        )
+            backIcon(
+                modifier
+                    .padding(vertical = 16.dp, horizontal = 19.dp)
+                    .size(49.dp)
+                    .clickable { onClickBack() }
+            )
         }
         //Spacer(modifier.width(230.dp))
         Box(
             modifier = Modifier
                 .weight(0.1f)
         ) {
-        FavoritesIcon(
-            active = pokemon.isFavorite.value,
-            color = pokemon.primaryType.secondaryColor,
-            onClicked = {
-                pokemon.isFavorite.value = !pokemon.isFavorite.value
-                val database = MainActivity.database!!
-                val databaseViewModel = DatabaseViewModel()
-                val saveablePokemon = (pokemon as ComplexPokemon) // TODO
-                if (pokemon.isFavorite.value) {
-                    println("Saving pokemon")
-                    databaseViewModel.insertPokemon(saveablePokemon, database)
-                } else {
-                    println("Deleting pokemon")
-                    databaseViewModel.deletePokemon(saveablePokemon, database)
+            FavoritesIcon(
+                active = pokemon.isFavorite.value,
+                color = pokemon.primaryType.secondaryColor,
+                onClicked = {
+                    pokemon.isFavorite.value = !pokemon.isFavorite.value
+                    val database = MainActivity.database!!
+                    val databaseViewModel = DatabaseViewModel()
+                    val saveablePokemon = (pokemon as ComplexPokemon) // TODO
+                    if (pokemon.isFavorite.value) {
+                        println("Saving pokemon")
+                        databaseViewModel.insertPokemon(saveablePokemon, database)
+                    } else {
+                        println("Deleting pokemon")
+                        databaseViewModel.deletePokemon(saveablePokemon, database)
+                    }
                 }
-            }
 
-        )
+            )
         }
         Spacer(modifier.width(11.dp))
     }
@@ -256,10 +256,12 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 .width(13.dp)
                 .height(25.dp)
         )
-        Box( modifier = Modifier
-            //.padding(horizontal = 5.dp)
-            .fillMaxWidth()
-            .wrapContentHeight()) {
+        Box(
+            modifier = Modifier
+                //.padding(horizontal = 5.dp)
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
             CategoryList(
                 categories = categories,
                 onCategorySelected = { selectedCategory = it },
@@ -277,7 +279,8 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
             Sections(selectedCategory = selectedCategory, pokemon = pokemon, modifier = modifier)
             Spacer(
                 modifier = Modifier
-                    .weight(1f))
+                    .weight(1f)
+            )
         }
     }
 }
@@ -330,7 +333,6 @@ fun CategoryList(
     }
     onCategorySelected(selectedCategory)
 }
-
 
 @Composable
 fun Table(first: String, second: String) {
@@ -437,8 +439,34 @@ fun StatsSection(
 fun MovesSection(
     moves: Array<PokemonMove>
 ) {
-    Column {
-        MoveBoxColumn(moveList = moves.toList())
+    val moveCategories = listOf("Level", "Machine", "Egg", "Tutor")
+    var selectedCategory by remember { mutableStateOf("Level") }
+    Column(
+        modifier = Modifier
+            //.padding(horizontal = 5.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+    )
+    {
+
+        Box(
+            modifier = Modifier
+                .height(25.dp)
+                .align(Alignment.CenterHorizontally),
+            ) {
+            Text(text = "Move categories", modifier = Modifier.align(Alignment.Center))
+        }
+        
+        CategoryList(
+            categories = moveCategories,
+            onCategorySelected = { selectedCategory = it },
+            initiallyChosen = selectedCategory,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        Column {
+            MoveBoxColumn(moveList = moves.toList())
+        }
     }
 }
 
@@ -515,7 +543,6 @@ fun EvolutionPokemonImage(modifier: Modifier = Modifier, pokemon: EvolutionChain
     )
 }
 
-
 //region main components
 
 /*@Composable
@@ -566,7 +593,6 @@ fun FavoritesIcon(
     }
 }
 
-
 @Composable
 fun backIcon(modifier: Modifier) {
     Image(
@@ -584,7 +610,6 @@ fun arrow(modifier: Modifier) {
         modifier = modifier
     )
 }
-
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -636,7 +661,6 @@ fun MoveBoxColumn(moveList: List<PokemonMove>) {
         maxItemsInEachRow = 2
     ) {
 
-
         Spacer(modifier = Modifier.padding(vertical = 5.dp))
         for (i in moveList.indices) {
             moveBox(
@@ -650,7 +674,6 @@ fun MoveBoxColumn(moveList: List<PokemonMove>) {
         }
     }
 }
-
 
 @Composable
 fun moveBox(move: PokemonMove) {
@@ -744,6 +767,7 @@ fun moveBox(move: PokemonMove) {
         }
     }
 }
+
 @Composable
 fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
     Box(
