@@ -49,10 +49,10 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
-import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.data.database.DatabaseViewModel
-import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.data.pokemon.DetailedPokemon
+import dtu.group21.models.api.PokemonViewModel
+import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonSpecies
@@ -66,7 +66,6 @@ import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
-
 
 @Composable
 fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
@@ -143,36 +142,36 @@ fun Top(
             modifier = Modifier
                 .weight(1f)
         ) {
-        backIcon(
-            modifier
-                .padding(vertical = 16.dp, horizontal = 19.dp)
-                .size(49.dp)
-                .clickable { onClickBack() }
-        )
+            backIcon(
+                modifier
+                    .padding(vertical = 16.dp, horizontal = 19.dp)
+                    .size(49.dp)
+                    .clickable { onClickBack() }
+            )
         }
         //Spacer(modifier.width(230.dp))
         Box(
             modifier = Modifier
                 .weight(0.1f)
         ) {
-        FavoritesIcon(
-            active = pokemon.isFavorite.value,
-            color = pokemon.primaryType.secondaryColor,
-            onClicked = {
-                pokemon.isFavorite.value = !pokemon.isFavorite.value
-                val database = MainActivity.database!!
-                val databaseViewModel = DatabaseViewModel()
-                val saveablePokemon = (pokemon as ComplexPokemon) // TODO
-                if (pokemon.isFavorite.value) {
-                    println("Saving pokemon")
-                    databaseViewModel.insertPokemon(saveablePokemon, database)
-                } else {
-                    println("Deleting pokemon")
-                    databaseViewModel.deletePokemon(saveablePokemon, database)
+            FavoritesIcon(
+                active = pokemon.isFavorite.value,
+                color = pokemon.primaryType.secondaryColor,
+                onClicked = {
+                    pokemon.isFavorite.value = !pokemon.isFavorite.value
+                    val database = MainActivity.database!!
+                    val databaseViewModel = DatabaseViewModel()
+                    val saveablePokemon = (pokemon as ComplexPokemon) // TODO
+                    if (pokemon.isFavorite.value) {
+                        println("Saving pokemon")
+                        databaseViewModel.insertPokemon(saveablePokemon, database)
+                    } else {
+                        println("Deleting pokemon")
+                        databaseViewModel.deletePokemon(saveablePokemon, database)
+                    }
                 }
-            }
 
-        )
+            )
         }
         Spacer(modifier.width(11.dp))
     }
@@ -259,10 +258,12 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 .width(13.dp)
                 .height(25.dp)
         )
-        Box( modifier = Modifier
-            //.padding(horizontal = 5.dp)
-            .fillMaxWidth()
-            .wrapContentHeight()) {
+        Box(
+            modifier = Modifier
+                //.padding(horizontal = 5.dp)
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
             CategoryList(
                 categories = categories,
                 onCategorySelected = { selectedCategory = it },
@@ -280,7 +281,8 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
             Sections(selectedCategory = selectedCategory, pokemon = pokemon, modifier = modifier)
             Spacer(
                 modifier = Modifier
-                    .weight(1f))
+                    .weight(1f)
+            )
         }
     }
 }
@@ -334,7 +336,6 @@ fun CategoryList(
     }
     onCategorySelected(selectedCategory)
 }
-
 
 @Composable
 fun Table(first: String, second: String) {
@@ -455,7 +456,7 @@ fun MovesSection(
             modifier = Modifier
                 .height(25.dp)
                 .align(Alignment.CenterHorizontally),
-            ) {
+        ) {
             Text(text = "Move categories", modifier = Modifier.align(Alignment.Center))
         }
 
@@ -465,9 +466,9 @@ fun MovesSection(
             initiallyChosen = selectedCategory,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-
+        Spacer(modifier = Modifier.height(4.dp))
         Column {
-            MoveBoxColumn(moveList = moves.toList())
+            LevelMoveBoxColumn(moveList = moves.toList())
         }
     }
 }
@@ -545,7 +546,6 @@ fun EvolutionPokemonImage(modifier: Modifier = Modifier, pokemon: EvolutionChain
     )
 }
 
-
 //region main components
 
 /*@Composable
@@ -596,7 +596,6 @@ fun FavoritesIcon(
     }
 }
 
-
 @Composable
 fun backIcon(modifier: Modifier) {
     Image(
@@ -615,73 +614,75 @@ fun arrow(modifier: Modifier) {
     )
 }
 
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun MoveBoxColumn(moveList: List<DisplayMove>){
+fun LevelMoveBoxColumn(moveList: List<DisplayMove>) {
     val primaryWeight = 0.24f
     val secondaryWeight = 0.76f
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            modifier = Modifier.weight(primaryWeight),
-            text = "Level",
-            textAlign = TextAlign.Center
-        )
-        Text(
-            modifier = Modifier.weight(secondaryWeight),
-            text = "Move",
-            textAlign = TextAlign.Center
-        )
+    Column(modifier = Modifier.fillMaxWidth(0.98f)) {
+        Row(
+            modifier = Modifier
+                .background(
+                    shape = RoundedCornerShape(topEnd = 7.dp, topStart = 7.dp),
+                    color = Color(0xFFFFCC00)
+                ),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                modifier = Modifier.weight(primaryWeight),
+                text = "Level",
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.weight(secondaryWeight),
+                text = "Move",
+                textAlign = TextAlign.Center
+            )
 
-        Text(
-            modifier = Modifier.weight(primaryWeight),
+            Text(
+                modifier = Modifier.weight(primaryWeight),
 
-            text = "Power",
-            textAlign = TextAlign.Center
-        )
-        Text(
-            modifier = Modifier.weight(primaryWeight),
-            text = "Acc.",
-            textAlign = TextAlign.Center
-        )
-        Text(
-            modifier = Modifier.weight(primaryWeight),
-            text = "PP",
-            textAlign = TextAlign.Center
-        )
-    }
-    Divider(color = Color.Black)
+                text = "Power",
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.weight(primaryWeight),
+                text = "Acc.",
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.weight(primaryWeight),
+                text = "PP",
+                textAlign = TextAlign.Center
+            )
+        }
+//    Divider(color = Color.Black)
 
-    FlowRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.Center,
-        maxItemsInEachRow = 2
-    ) {
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.Center,
+            maxItemsInEachRow = 2
+        ) {
 
-
-        Spacer(modifier = Modifier.padding(vertical = 5.dp))
-        for (i in moveList.indices) {
-            moveBox(
+            Spacer(modifier = Modifier.padding(vertical = 5.dp))
+            for (i in moveList.indices) {
+                MoveBox(
 //                modifier = modifier
 //                    .size(190.dp)
 //                    .padding(horizontal = 8.dp, vertical = 5.dp),
-                move = moveList[i],
+                    move = moveList[i],
 //                onClicked = { onPokemonClicked(pokemons[i].name) }
-            )
-            Divider(modifier = Modifier.padding(vertical = 2.dp), color = Color.Black)
+                )
+                Divider(modifier = Modifier.padding(vertical = 2.dp), color = Color.Black)
+            }
         }
     }
 }
 
-
 @Composable
-fun moveBox(move: DisplayMove) {
+fun MoveBox(move: DisplayMove) {
     val primaryWeightUpper = 0.24f
     val secondaryWeightUpper = 0.76f
 
@@ -695,14 +696,14 @@ fun moveBox(move: DisplayMove) {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                if(move is LevelMove) {
+                if (move is LevelMove) {
                     Text(
                         modifier = Modifier.weight(primaryWeightUpper),
                         text = move.level.toString(),
 
                         textAlign = TextAlign.Center
                     )
-                } else if(move is MachineMove){
+                } else if (move is MachineMove) {
                     Text(
                         modifier = Modifier.weight(primaryWeightUpper),
                         text = move.machineId,
@@ -767,7 +768,7 @@ fun moveBox(move: DisplayMove) {
                         .weight(primaryWeightBottom)
                         .background(
                             shape = RoundedCornerShape(15.dp),
-                            color =  move.damageClass.color
+                            color = move.damageClass.color
                         ), contentAlignment = Alignment.Center
                 )
                 {
@@ -781,6 +782,7 @@ fun moveBox(move: DisplayMove) {
         }
     }
 }
+
 @Composable
 fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
     Box(
