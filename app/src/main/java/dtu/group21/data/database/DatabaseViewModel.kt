@@ -40,17 +40,17 @@ class DatabaseViewModel(
         for (move in pokemon.moves) {
             movesStringBuilder.append(move.name)
             movesStringBuilder.append(';')
-            movesStringBuilder.append(move.description)
-            movesStringBuilder.append(';')
+            //movesStringBuilder.append(/*move.description TODO*/ "For now")
+            //movesStringBuilder.append(';')
             movesStringBuilder.append(move.power.toString())
             movesStringBuilder.append(';')
             movesStringBuilder.append(move.accuracy.toString())
             movesStringBuilder.append(';')
-            movesStringBuilder.append(move.pp.toString())
-            movesStringBuilder.append(';')
+            //movesStringBuilder.append(/*move.pp.toString() TODO*/ "For now")
+            //movesStringBuilder.append(';')
             movesStringBuilder.append(move.type.toString())
-            movesStringBuilder.append(';')
-            movesStringBuilder.append(move.damageClass.toString())
+            //movesStringBuilder.append(';')
+            //movesStringBuilder.append(/*move.damageClass.toString() TODO*/ "For now")
 
             // for the next move
             movesStringBuilder.append("::")

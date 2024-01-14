@@ -10,6 +10,8 @@ import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
+import dtu.group21.models.pokemon.moves.BasicMove
+import dtu.group21.models.pokemon.moves.DisplayMove
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -130,29 +132,21 @@ class PokedexRequestMaker {
         return PreviewPokemon(pokedexId, name, types.first, types.second)
     }
 
-    private suspend fun getMove(moveName: String): PokemonMove {
+    private suspend fun getMove(moveName: String): DisplayMove {
         val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
 
         val namesArray = moveObject.getJSONArray("names")
         val name = getEnglishString(namesArray, "name")
-        val descriptionsArray = moveObject.getJSONArray("flavor_text_entries")
-        val description = getEnglishString(descriptionsArray, "flavor_text")
 
         val power = moveObject.get("power") as? Int
         val accuracy = moveObject.get("accuracy") as? Int
-        val pp = moveObject.getInt("pp")
         val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
-        val damageClass =
-            MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
 
-        return PokemonMove(
+        return BasicMove(
             name,
-            description,
             power,
             accuracy,
-            pp,
             type,
-            damageClass,
         )
     }
 
@@ -212,15 +206,12 @@ class PokedexRequestMaker {
 
         // Moves
         val movesArray = pokemon.getJSONArray("moves")
-        val pokemonMoves = Array(movesArray.length()) { _ ->
-            PokemonMove(
+        val pokemonMoves: Array<DisplayMove> = Array(movesArray.length()) { _ ->
+            BasicMove(
                 "",
-                "",
                 0,
                 0,
-                0,
-                PokemonType.NONE,
-                MoveDamageClass.PHYSICAL
+                PokemonType.NONE
             )
         }
         for (i in 0 until movesArray.length()) {

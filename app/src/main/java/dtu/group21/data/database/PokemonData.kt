@@ -4,13 +4,13 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.models.pokemon.MoveDamageClass
 import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonGender
-import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
 import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.models.pokemon.moves.BasicMove
+import dtu.group21.models.pokemon.moves.DisplayMove
 
 
 @Entity(tableName = "pokemons")
@@ -71,17 +71,13 @@ data class PokemonData(
         )
 
         val moveStrings = movesString.split("::")
-        val movesArray = Array(moveStrings.size) {
+        val movesArray: Array<DisplayMove> = Array(moveStrings.size) {
             val moveStringParts = moveStrings[it].split(";")
-
-            PokemonMove(
-                moveStringParts[0],
-                moveStringParts[1],
-                moveStringParts[2].toIntOrNull(),
-                moveStringParts[3].toIntOrNull(),
-                moveStringParts[4].toInt(),
-                PokemonType.getFromName(moveStringParts[5]),
-                MoveDamageClass.getFromName(moveStringParts[6])
+             BasicMove(
+                name = moveStringParts[0],
+                power = moveStringParts[1].toIntOrNull(),
+                accuracy = moveStringParts[2].toIntOrNull(),
+                type = PokemonType.getFromName(moveStringParts[3])
             )
         }
 

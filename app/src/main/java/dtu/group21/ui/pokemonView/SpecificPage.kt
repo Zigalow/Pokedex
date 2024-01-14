@@ -55,10 +55,10 @@ import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.PokemonGender
-import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
 import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.models.pokemon.moves.DisplayMove
 import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
@@ -437,7 +437,7 @@ fun StatsSection(
 
 @Composable
 fun MovesSection(
-    moves: Array<PokemonMove>
+    moves: Array<DisplayMove>
 ) {
     Column {
         MoveBoxColumn(moveList = moves.toList())
@@ -590,7 +590,7 @@ fun arrow(modifier: Modifier) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun MoveBoxColumn(moveList: List<PokemonMove>) {
+fun MoveBoxColumn(moveList: List<DisplayMove>) {
     val primaryWeight = 0.24f
     val secondaryWeight = 0.76f
     Row(
@@ -655,7 +655,7 @@ fun MoveBoxColumn(moveList: List<PokemonMove>) {
 
 
 @Composable
-fun moveBox(move: PokemonMove) {
+fun moveBox(move: DisplayMove) {
     val primaryWeightUpper = 0.24f
     val secondaryWeightUpper = 0.76f
 
@@ -703,11 +703,11 @@ fun moveBox(move: PokemonMove) {
                     text = accuracy,
                     textAlign = TextAlign.Center
                 )
-                Text(
+                /*Text(
                     modifier = Modifier.weight(primaryWeightUpper),
-                    text = move.pp.toString(),
+                    text = /*move.pp.toString() TODO*/ "for now",
                     textAlign = TextAlign.Center
-                )
+                )*/
             }
             Spacer(modifier = Modifier.padding(vertical = 2.dp))
             Row()
@@ -732,12 +732,12 @@ fun moveBox(move: PokemonMove) {
                         .weight(primaryWeightBottom)
                         .background(
                             shape = RoundedCornerShape(15.dp),
-                            color = move.damageClass.color
+                            color =  Color.White
                         ), contentAlignment = Alignment.Center
                 )
                 {
                     Text(
-                        text = move.damageClass.name,
+                        text = /*move.damageClass.name TODO*/ "More info",
                         // todo
                         fontSize = 12.sp, color = Color.White
                     )
