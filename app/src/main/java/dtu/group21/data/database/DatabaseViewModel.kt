@@ -46,11 +46,11 @@ class DatabaseViewModel(
             movesStringBuilder.append(';')
             movesStringBuilder.append(move.accuracy.toString())
             movesStringBuilder.append(';')
-            //movesStringBuilder.append(/*move.pp.toString() TODO*/ "For now")
-            //movesStringBuilder.append(';')
+            movesStringBuilder.append(move.pp.toString())
+            movesStringBuilder.append(';')
             movesStringBuilder.append(move.type.toString())
-            //movesStringBuilder.append(';')
-            //movesStringBuilder.append(/*move.damageClass.toString() TODO*/ "For now")
+            movesStringBuilder.append(';')
+            movesStringBuilder.append(move.damageClass.toString())
 
             // for the next move
             movesStringBuilder.append("::")

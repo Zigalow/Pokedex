@@ -12,6 +12,10 @@ import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
 import dtu.group21.models.pokemon.moves.BasicMove
 import dtu.group21.models.pokemon.moves.DisplayMove
+import dtu.group21.models.pokemon.moves.EggMoveData
+import dtu.group21.models.pokemon.moves.LevelMoveData
+import dtu.group21.models.pokemon.moves.MachineMoveData
+import dtu.group21.models.pokemon.moves.TutorMoveData
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -140,16 +144,83 @@ class PokedexRequestMaker {
 
         val power = moveObject.get("power") as? Int
         val accuracy = moveObject.get("accuracy") as? Int
+        val pp = moveObject.getInt("pp")
         val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
+        val damageClass =
+            MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
 
         return BasicMove(
             name,
             power,
             accuracy,
+            pp,
             type,
+            damageClass
         )
     }
+    private suspend fun getBasicMove(moveName: String, pokedexId: Int): DisplayMove {
+        val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
 
+        // Pokemon's ID
+        val pokemonResponse = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
+
+        // move's name
+        val name = getNameFromSpecies(pokemonResponse)
+
+        // Other data
+        val power = moveObject.get("power") as? Int
+        val accuracy = moveObject.get("accuracy") as? Int
+        val pp = moveObject.getInt("pp")
+
+        val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
+
+        // Move categories name
+        val moves = pokemonResponse.getJSONArray("moves")
+        val learnMoveMethods = moves.getJSONObject(0).getJSONArray("version_group_details")
+        val moveMethodName = learnMoveMethods.getJSONObject(0).getJSONObject("move_learn_method").getString("name")
+        val damageClass =
+            MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
+
+
+        return when (moveMethodName) {
+            "machine" -> {
+                val machines = moveObject.getJSONArray("machines")
+
+                val machineURL = IdFromUrl(machines.getJSONObject(0).getJSONObject("machine").getString("url"))
+
+                val machineObject = jsonRequestMaker.makeRequest("move/$machineURL")
+                val machineID = machineObject.getString("id")
+
+                MachineMoveData(name, power, accuracy, pp, type, damageClass, machineID)
+            }
+            "learn" -> {
+                val move = pokemonResponse.getJSONObject("moves").getJSONObject("move")
+                val learnMoveName = move.get("name")
+
+                var level = 0
+                if (learnMoveName == name) {
+                    for(i in 0 until learnMoveMethods.length()) {
+                        level = learnMoveMethods.getJSONObject(i).getInt("level_learned_at")
+                    }
+                }
+                LevelMoveData(name, power, accuracy, pp, type, damageClass, level)
+
+            }
+            "tutor" -> {
+                TutorMoveData(name, power, accuracy, pp, type, damageClass)
+            }
+            "egg" -> {
+                EggMoveData(name, power, accuracy, pp, type, damageClass)
+            }
+            else -> {
+                BasicMove(name, power, accuracy, pp, type, damageClass)
+            }
+        }
+    }
+
+    private fun IdFromUrl( url: String): Int {
+        return url.split("/").dropLast(1).last().toInt()
+    }
     private suspend fun getAbility(abilityName: String, isHidden: Boolean): PokemonAbility {
         val abilityObject = jsonRequestMaker.makeRequest("ability/$abilityName")
 
@@ -211,7 +282,9 @@ class PokedexRequestMaker {
                 "",
                 0,
                 0,
-                PokemonType.NONE
+                0,
+                PokemonType.NONE,
+                MoveDamageClass.PHYSICAL
             )
         }
         for (i in 0 until movesArray.length()) {

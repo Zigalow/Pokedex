@@ -16,8 +16,10 @@ import dtu.group21.models.pokemon.moves.AdvancedMove
 import dtu.group21.models.pokemon.moves.BasicMove
 import dtu.group21.models.pokemon.moves.DetailedMove
 import dtu.group21.models.pokemon.moves.DisplayMove
+import dtu.group21.models.pokemon.moves.EggMoveData
 import dtu.group21.models.pokemon.moves.LevelMoveData
 import dtu.group21.models.pokemon.moves.MachineMoveData
+import dtu.group21.models.pokemon.moves.TutorMoveData
 import org.json.JSONArray
 
 class PokeAPICo : PokemonAPI {
@@ -94,6 +96,9 @@ class PokeAPICo : PokemonAPI {
             damageClass,
         )
     }
+    private fun IdFromUrl( url: String): Int {
+        return url.split("/").dropLast(1).last().toInt()
+    }
 
     private suspend fun getBasicMove(moveName: String, pokedexId: Int): DisplayMove {
         val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
@@ -108,28 +113,28 @@ class PokeAPICo : PokemonAPI {
         // Other data
         val power = moveObject.get("power") as? Int
         val accuracy = moveObject.get("accuracy") as? Int
+        val pp = moveObject.getInt("pp")
+
         val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
 
         // Move categories name
         val moves = pokemonResponse.getJSONArray("moves")
         val learnMoveMethods = moves.getJSONObject(0).getJSONArray("version_group_details")
         val moveMethodName = learnMoveMethods.getJSONObject(0).getJSONObject("move_learn_method").getString("name")
+        val damageClass =
+            MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
 
 
-        when (moveMethodName) {
+        return when (moveMethodName) {
             "machine" -> {
                 val machines = moveObject.getJSONArray("machines")
 
-                val machineURL =
-                    machines.getJSONObject(0).getJSONObject("machine").getString("url").split("/")
-                        .dropLast(1)
-                        .last()
-                        .toInt()
+                val machineURL = IdFromUrl(machines.getJSONObject(0).getJSONObject("machine").getString("url"))
 
                 val machineObject = jsonRequestMaker.makeRequest("move/$machineURL")
                 val machineID = machineObject.getString("id")
 
-                return MachineMoveData(name, power, accuracy, type, machineID)
+                MachineMoveData(name, power, accuracy, pp, type, damageClass, machineID)
             }
             "learn" -> {
                 val move = pokemonResponse.getJSONObject("moves").getJSONObject("move")
@@ -141,11 +146,17 @@ class PokeAPICo : PokemonAPI {
                         level = learnMoveMethods.getJSONObject(i).getInt("level_learned_at")
                     }
                 }
-                return LevelMoveData(name, power, accuracy, type, level)
+                LevelMoveData(name, power, accuracy, pp, type, damageClass, level)
 
             }
+            "tutor" -> {
+                TutorMoveData(name, power, accuracy, pp, type, damageClass)
+            }
+            "egg" -> {
+                EggMoveData(name, power, accuracy, pp, type, damageClass)
+            }
             else -> {
-                return BasicMove(name, power, accuracy, type)
+                BasicMove(name, power, accuracy, pp, type, damageClass)
             }
         }
     }

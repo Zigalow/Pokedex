@@ -49,21 +49,24 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
-import dtu.group21.data.database.DatabaseViewModel
-import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.models.api.PokemonViewModel
+import dtu.group21.data.database.DatabaseViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.models.pokemon.moves.DisplayMove
+import dtu.group21.models.pokemon.moves.LevelMove
+import dtu.group21.models.pokemon.moves.MachineMove
 import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
+
 
 @Composable
 fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
@@ -140,36 +143,36 @@ fun Top(
             modifier = Modifier
                 .weight(1f)
         ) {
-            backIcon(
-                modifier
-                    .padding(vertical = 16.dp, horizontal = 19.dp)
-                    .size(49.dp)
-                    .clickable { onClickBack() }
-            )
+        backIcon(
+            modifier
+                .padding(vertical = 16.dp, horizontal = 19.dp)
+                .size(49.dp)
+                .clickable { onClickBack() }
+        )
         }
         //Spacer(modifier.width(230.dp))
         Box(
             modifier = Modifier
                 .weight(0.1f)
         ) {
-            FavoritesIcon(
-                active = pokemon.isFavorite.value,
-                color = pokemon.primaryType.secondaryColor,
-                onClicked = {
-                    pokemon.isFavorite.value = !pokemon.isFavorite.value
-                    val database = MainActivity.database!!
-                    val databaseViewModel = DatabaseViewModel()
-                    val saveablePokemon = (pokemon as ComplexPokemon) // TODO
-                    if (pokemon.isFavorite.value) {
-                        println("Saving pokemon")
-                        databaseViewModel.insertPokemon(saveablePokemon, database)
-                    } else {
-                        println("Deleting pokemon")
-                        databaseViewModel.deletePokemon(saveablePokemon, database)
-                    }
+        FavoritesIcon(
+            active = pokemon.isFavorite.value,
+            color = pokemon.primaryType.secondaryColor,
+            onClicked = {
+                pokemon.isFavorite.value = !pokemon.isFavorite.value
+                val database = MainActivity.database!!
+                val databaseViewModel = DatabaseViewModel()
+                val saveablePokemon = (pokemon as ComplexPokemon) // TODO
+                if (pokemon.isFavorite.value) {
+                    println("Saving pokemon")
+                    databaseViewModel.insertPokemon(saveablePokemon, database)
+                } else {
+                    println("Deleting pokemon")
+                    databaseViewModel.deletePokemon(saveablePokemon, database)
                 }
+            }
 
-            )
+        )
         }
         Spacer(modifier.width(11.dp))
     }
@@ -256,12 +259,10 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 .width(13.dp)
                 .height(25.dp)
         )
-        Box(
-            modifier = Modifier
-                //.padding(horizontal = 5.dp)
-                .fillMaxWidth()
-                .wrapContentHeight()
-        ) {
+        Box( modifier = Modifier
+            //.padding(horizontal = 5.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()) {
             CategoryList(
                 categories = categories,
                 onCategorySelected = { selectedCategory = it },
@@ -279,8 +280,7 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
             Sections(selectedCategory = selectedCategory, pokemon = pokemon, modifier = modifier)
             Spacer(
                 modifier = Modifier
-                    .weight(1f)
-            )
+                    .weight(1f))
         }
     }
 }
@@ -314,6 +314,7 @@ fun CategoryList(
     initiallyChosen: String = ""
 ) {
     var selectedCategory by remember { mutableStateOf(initiallyChosen) }
+
     LazyRow(
         modifier = modifier
             .height(25.dp)
@@ -333,6 +334,7 @@ fun CategoryList(
     }
     onCategorySelected(selectedCategory)
 }
+
 
 @Composable
 fun Table(first: String, second: String) {
@@ -456,7 +458,7 @@ fun MovesSection(
             ) {
             Text(text = "Move categories", modifier = Modifier.align(Alignment.Center))
         }
-        
+
         CategoryList(
             categories = moveCategories,
             onCategorySelected = { selectedCategory = it },
@@ -543,6 +545,7 @@ fun EvolutionPokemonImage(modifier: Modifier = Modifier, pokemon: EvolutionChain
     )
 }
 
+
 //region main components
 
 /*@Composable
@@ -593,6 +596,7 @@ fun FavoritesIcon(
     }
 }
 
+
 @Composable
 fun backIcon(modifier: Modifier) {
     Image(
@@ -611,9 +615,10 @@ fun arrow(modifier: Modifier) {
     )
 }
 
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun MoveBoxColumn(moveList: List<DisplayMove>) {
+fun MoveBoxColumn(moveList: List<DisplayMove>){
     val primaryWeight = 0.24f
     val secondaryWeight = 0.76f
     Row(
@@ -638,8 +643,6 @@ fun MoveBoxColumn(moveList: List<DisplayMove>) {
             text = "Power",
             textAlign = TextAlign.Center
         )
-
-
         Text(
             modifier = Modifier.weight(primaryWeight),
             text = "Acc.",
@@ -661,6 +664,7 @@ fun MoveBoxColumn(moveList: List<DisplayMove>) {
         maxItemsInEachRow = 2
     ) {
 
+
         Spacer(modifier = Modifier.padding(vertical = 5.dp))
         for (i in moveList.indices) {
             moveBox(
@@ -674,6 +678,7 @@ fun MoveBoxColumn(moveList: List<DisplayMove>) {
         }
     }
 }
+
 
 @Composable
 fun moveBox(move: DisplayMove) {
@@ -690,11 +695,20 @@ fun moveBox(move: DisplayMove) {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    modifier = Modifier.weight(primaryWeightUpper),
-                    text = "7"/*"move.level.toString()"*/,
-                    textAlign = TextAlign.Center
-                )
+                if(move is LevelMove) {
+                    Text(
+                        modifier = Modifier.weight(primaryWeightUpper),
+                        text = move.level.toString(),
+
+                        textAlign = TextAlign.Center
+                    )
+                } else if(move is MachineMove){
+                    Text(
+                        modifier = Modifier.weight(primaryWeightUpper),
+                        text = move.machineId,
+                        textAlign = TextAlign.Center
+                    )
+                }
                 Text(
                     modifier = Modifier.weight(secondaryWeightUpper),
                     text = move.name,
@@ -724,11 +738,11 @@ fun moveBox(move: DisplayMove) {
                     text = accuracy,
                     textAlign = TextAlign.Center
                 )
-                /*Text(
+                Text(
                     modifier = Modifier.weight(primaryWeightUpper),
-                    text = /*move.pp.toString() TODO*/ "for now",
+                    text = move.pp.toString(),
                     textAlign = TextAlign.Center
-                )*/
+                )
             }
             Spacer(modifier = Modifier.padding(vertical = 2.dp))
             Row()
@@ -753,12 +767,12 @@ fun moveBox(move: DisplayMove) {
                         .weight(primaryWeightBottom)
                         .background(
                             shape = RoundedCornerShape(15.dp),
-                            color =  Color.White
+                            color =  move.damageClass.color
                         ), contentAlignment = Alignment.Center
                 )
                 {
                     Text(
-                        text = /*move.damageClass.name TODO*/ "More info",
+                        text = move.damageClass.name,
                         // todo
                         fontSize = 12.sp, color = Color.White
                     )
@@ -767,7 +781,6 @@ fun moveBox(move: DisplayMove) {
         }
     }
 }
-
 @Composable
 fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
     Box(

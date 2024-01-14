@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import dtu.group21.models.pokemon.ComplexPokemon
+import dtu.group21.models.pokemon.MoveDamageClass
 import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonSpecies
@@ -74,10 +75,12 @@ data class PokemonData(
         val movesArray: Array<DisplayMove> = Array(moveStrings.size) {
             val moveStringParts = moveStrings[it].split(";")
              BasicMove(
-                name = moveStringParts[0],
-                power = moveStringParts[1].toIntOrNull(),
-                accuracy = moveStringParts[2].toIntOrNull(),
-                type = PokemonType.getFromName(moveStringParts[3])
+                 name = moveStringParts[0],
+                 power = moveStringParts[1].toIntOrNull(),
+                 accuracy = moveStringParts[2].toIntOrNull(),
+                 pp = moveStringParts[3].toInt(),
+                 type = PokemonType.getFromName(moveStringParts[4]),
+                 damageClass =  MoveDamageClass.getFromName(moveStringParts[5])
             )
         }
 

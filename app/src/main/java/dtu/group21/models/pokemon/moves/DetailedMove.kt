@@ -8,8 +8,8 @@ interface DetailedMove : DisplayMove {
     //    val power: Int?
 //    val accuracy: Int?
 //    val type: PokemonType
-    val damageClass: MoveDamageClass
-    val pp: Int
+    //val damageClass: MoveDamageClass
+    //val pp: Int
     val description: String
     val pokemonTarget: Int? // todo make enums
     val priority: Int
