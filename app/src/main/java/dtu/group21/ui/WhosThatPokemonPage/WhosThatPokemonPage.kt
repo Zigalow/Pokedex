@@ -42,7 +42,8 @@ import dtu.group21.ui.shared.bigFontSize
 import kotlin.random.Random
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.ButtonDefaults
-
+import androidx.compose.runtime.*
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +55,19 @@ fun WhosThatPokemonPage(
     var index by remember {
         mutableStateOf(0)
     }
+
+    var showPokemon by remember { mutableStateOf(false) }
+
     val currentPokemon = pokemonPool.value[index]
+
+    LaunchedEffect(showPokemon) {
+        if (showPokemon) {
+            showPokemon = true //showcase pokemon true
+            delay(2000) // Delay for 3 seconds
+            showPokemon=false
+            index = Random.nextInt(pokemonPool.value.size) // Change to next Pokémon
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -101,7 +114,7 @@ fun WhosThatPokemonPage(
         if (currentPokemon is Resource.Success) {
             PokemonImage(
                 pokemon = currentPokemon.data,
-                silhoutteColor = Color.Black
+                silhoutteColor = if (showPokemon) null else Color.Black
             )
         }
         Box(
@@ -143,8 +156,7 @@ fun WhosThatPokemonPage(
             onClick = {
                 if (currentPokemon is Resource.Success) {
                     if (currentPokemon.data.name.equals(guess, ignoreCase = true)) {
-                        // Generate a random index
-                        index = Random.nextInt(pokemonPool.value.size)
+                        showPokemon = true // Reveal Pokémon
                     }
                 }
             },
