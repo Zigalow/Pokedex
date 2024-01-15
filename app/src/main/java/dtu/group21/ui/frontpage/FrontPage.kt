@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,7 +27,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +46,7 @@ import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.PaginatedColumn
+import dtu.group21.ui.shared.PaginationElement
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.theme.Yellow60
 import java.util.Locale
@@ -58,7 +57,7 @@ fun FrontPage(
     pokemons: MutableState<List<Resource<DisplayPokemon>>>
 ) {
     val pokemonIds = remember {
-        mutableStateOf(1..20)
+        mutableStateOf(101..160)
     }
 
     val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
@@ -114,17 +113,28 @@ fun FrontPage(
                 modifier = Modifier
                     .padding(horizontal = 5.dp)
                     .fillMaxWidth(),
-                loadFollowing = {
-                    println("Front Page wants to load following")
-                    val current = pokemonIds.value
-                    pokemonIds.value = current.first..(current.last + 20)
-
+                loadPrevious = {
+                    // TODO: make boundary checks
                     LaunchedEffect(Unit) {
-                        println("Loading pokemons")
+                        val current = pokemonIds.value
+                        pokemonIds.value = (current.first - 20)..(current.last - 20)
+
+                        println("Loading pokemons ${pokemonIds.value}")
                         val pokedexViewModel = PokedexViewModel()
                         pokedexViewModel.getPokemons(pokemonIds.value.toList(), pokemons)
                     }
-                }
+                },
+                loadFollowing = {
+                    // TODO: make boundary checks
+                    LaunchedEffect(Unit) {
+                        val current = pokemonIds.value
+                        pokemonIds.value = (current.first + 20)..(current.last + 20)
+
+                        println("Loading pokemons ${pokemonIds.value}")
+                        val pokedexViewModel = PokedexViewModel()
+                        pokedexViewModel.getPokemons(pokemonIds.value.toList(), pokemons)
+                    }
+                },
             )
         }
         FavoritesIcon(
@@ -186,6 +196,7 @@ fun PokemonColumn(
     modifier: Modifier = Modifier,
     pokemons: List<Resource<DisplayPokemon>>,
     onPokemonClicked: (String) -> Unit,
+    loadPrevious: @Composable () -> Unit,
     loadFollowing: @Composable () -> Unit,
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -193,33 +204,72 @@ fun PokemonColumn(
     val itemWidth = (screenWidth / chunks) - 6.dp //-6.dp to consider patting in between each box
     val alignedPokemons = pokemons.chunked(chunks)
 
+    val elements = alignedPokemons.map { pokemonResources ->
+        val loadedIndex = pokemonResources.indexOfFirst { it is Resource.Success }
+
+        // This key system works pretty well when scrolling down, but is not sufficient when scrolling up
+        val key: Any? = if (loadedIndex == -1) {
+            null
+        }
+        else {
+            val loadedPokemon = (pokemonResources[loadedIndex] as Resource.Success).data
+            val firstId = loadedPokemon.pokedexId - loadedIndex
+
+            firstId
+        }
+
+        PaginationElement(
+            key = key,
+            content = {
+                Row(
+                    Modifier.fillMaxWidth()
+                ) {
+                    for (pokemonResource in pokemonResources) {
+                        PokemonBox(
+                            modifier = Modifier
+                                .width(itemWidth)
+                                .aspectRatio(1f)
+                                .padding(2.dp),
+                            pokemonResource = pokemonResource,
+                            onClicked = onPokemonClicked
+                        )
+                    }
+                }
+            }
+        )
+    }
+
     PaginatedColumn(
         loadPrevious = {
             println("Pagination wants to load previous")
+            loadPrevious()
         },
         loadFollowing = {
             println("Pagination wants to load following")
             loadFollowing()
         },
-        modifier = modifier
-    ) {
-        items(alignedPokemons.size) { index ->
-            Row(
-                Modifier.fillMaxWidth()
-            ) {
-                for (pokemonResource in alignedPokemons[index]) {
-                    PokemonBox(
-                        modifier = Modifier
-                            .width(itemWidth)
-                            .aspectRatio(1f)
-                            .padding(2.dp),
-                        pokemonResource = pokemonResource,
-                        onClicked = onPokemonClicked
-                    )
-                }
+        modifier = modifier,
+        elements = elements,
+    )
+    /* {
+    items(alignedPokemons.size) { index ->
+        Row(
+            Modifier.fillMaxWidth()
+        ) {
+            for (pokemonResource in alignedPokemons[index]) {
+                PokemonBox(
+                    modifier = Modifier
+                        .width(itemWidth)
+                        .aspectRatio(1f)
+                        .padding(2.dp),
+                    pokemonResource = pokemonResource,
+                    onClicked = onPokemonClicked
+                )
             }
         }
     }
+}
+     */
 }
 
 @Composable

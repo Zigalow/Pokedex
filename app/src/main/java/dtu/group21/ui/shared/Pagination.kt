@@ -11,24 +11,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import okhttp3.internal.wait
 
+data class PaginationElement(
+    val key: Any? = null,
+    val content: @Composable () -> Unit
+)
+
 @Composable
 fun PaginatedColumn(
-    loadPrevious: () -> Unit,
+    loadPrevious: @Composable () -> Unit,
     loadFollowing: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    content: LazyListScope.() -> Unit,
+    elements: List<PaginationElement>
 ) {
     val scrollState = rememberLazyListState()
 
-    val itemCountState = remember {
-        derivedStateOf { scrollState.layoutInfo.totalItemsCount }.asIntState()
+    val visibleIndexesState = remember {
+        derivedStateOf { scrollState.layoutInfo.visibleItemsInfo.map { it.index } }
     }
 
-    if (itemCountState.intValue != 0) {
-        if (!scrollState.canScrollBackward) {
+    if (elements.isNotEmpty()) {
+        val firstIndex = elements.indices.first
+        val lastIndex = elements.indices.last
+
+        if (firstIndex in visibleIndexesState.value) {
             loadPrevious()
         }
-        if (!scrollState.canScrollForward) {
+        if (lastIndex in visibleIndexesState.value) {
             loadFollowing()
         }
     }
@@ -37,6 +45,10 @@ fun PaginatedColumn(
         modifier = modifier,
         state = scrollState,
     ) {
-        content()
+        for (element in elements) {
+            item(key = element.key) {
+                element.content()
+            }
+        }
     }
 }
