@@ -671,9 +671,9 @@ fun LevelMoveBoxColumn(moveList: List<LevelMove>) {
             Spacer(modifier = Modifier.padding(vertical = 5.dp))
             for (i in moveList.indices) {
                 MoveBox(
-//                modifier = modifier
+                //modifier = Modifier
 //                    .size(190.dp)
-//                    .padding(horizontal = 8.dp, vertical = 5.dp),
+                    //.padding(horizontal = 8.dp),
                     mostLeftWeight = mostLeftWeight,
                     leftWeight = leftWeight,
                     rightWeight = rightWeight,
@@ -960,7 +960,7 @@ fun MoveBox(
                 textAlign = TextAlign.Center
             )
         }
-        Spacer(modifier = Modifier.weight(0.2f))
+        Spacer(modifier = Modifier.height(6.dp))
         Row{
             Box(
                 modifier = Modifier
