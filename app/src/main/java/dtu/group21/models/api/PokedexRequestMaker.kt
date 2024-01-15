@@ -165,7 +165,8 @@ class PokedexRequestMaker {
         val pokemonResponse = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
 
         // move's name
-        val name = getNameFromSpecies(pokemonResponse)
+        val namesArray = moveObject.getJSONArray("names")
+        val name = getEnglishString(namesArray, "name")
 
         // Other data
         val power = moveObject.get("power") as? Int
@@ -193,9 +194,9 @@ class PokedexRequestMaker {
 
                 MachineMoveData(name, power, accuracy, pp, type, damageClass, machineID)
             }
-            "learn" -> {
+            "level-up" -> {
                 val move = pokemonResponse.getJSONObject("moves").getJSONObject("move")
-                val learnMoveName = move.get("name")
+                val learnMoveName = move.getString("name")
 
                 var level = 0
                 if (learnMoveName == name) {
@@ -288,8 +289,9 @@ class PokedexRequestMaker {
             )
         }
         for (i in 0 until movesArray.length()) {
-            pokemonMoves[i] =
-                getMove(movesArray.getJSONObject(i).getJSONObject("move").getString("name"))
+            pokemonMoves[i] = getBasicMove(movesArray.getJSONObject(i).getJSONObject("move").getString("name"),pokedexId)
+
+            //getMove(movesArray.getJSONObject(i).getJSONObject("move").getString("name"))
         }
 
         // Abilities
