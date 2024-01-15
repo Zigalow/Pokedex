@@ -143,17 +143,25 @@ class PokeAPICo : PokemonAPI {
         return when (moveMethodName) {
             "machine" -> {
                 val machines = moveObject.getJSONArray("machines")
+                    println("\n machine Name == " + moveName)
+                    println("machines lenght == " + machines.length())
+                var machineURL = ""
+                if(machines.length() > 0) {
+                    machineURL =
+                        machines.getJSONObject(0).getJSONObject("machine").getString("url")
+                            .split("/").dropLast(1)
+                            .last().toString()
+                    println(
+                        "machineURL == " + machines.getJSONObject(0).getJSONObject("machine")
+                            .getString("url")
+                    )
+                    println("machine == " + machineURL)
 
-                val machineURL = machines.getJSONObject(0).getJSONObject("machine").getString("url").split("/").dropLast(1)
-                    .last().toString()
-                //val machineURLNum = extractIdFromUrl(machineURL)
-                //println("machineURL == " + machines.getJSONObject(0).getJSONObject("machine").getString("url"))
-                //println("machine == " + machineURL)
-                //val machineObject = jsonRequestMaker.makeRequest("machine/$machineURL")
-                //val machineID = machineObject.getString("id")
+                } else if (machines.length() <= 0){
+                    machineURL = "-"
+                }
 
-                MachineMoveData(name, power, accuracy, pp, type, damageClass, /*machineID*/machineURL)
-
+                MachineMoveData(name, power, accuracy, pp, type, damageClass, machineURL)
             }
             "level-up" -> {
                 var level = learnMoveMethods.getJSONObject(learnMoveMethods.length()-1).getInt("level_learned_at")
