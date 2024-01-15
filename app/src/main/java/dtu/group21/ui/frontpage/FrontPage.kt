@@ -1,5 +1,6 @@
 package dtu.group21.ui.frontpage
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -281,7 +282,7 @@ fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon) {
     AsyncImage(
         model = pokemon.spriteId,
         contentDescription = pokemon.name,
-        modifier = modifier
+        modifier = modifier.animateContentSize()
     )
     /*Image(
             painter = rememberAsyncImagePainter(pokemon.spriteResourceId),
