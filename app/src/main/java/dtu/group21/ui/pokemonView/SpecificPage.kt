@@ -39,34 +39,41 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
-import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.data.database.DatabaseViewModel
+import dtu.group21.data.pokemon.DetailedPokemon
+import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.models.pokemon.DetailedPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.PokemonGender
-import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
 import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.models.pokemon.moves.DisplayMove
+import dtu.group21.models.pokemon.moves.EggMove
+import dtu.group21.models.pokemon.moves.EggTutorMove
+import dtu.group21.models.pokemon.moves.LevelMove
+import dtu.group21.models.pokemon.moves.MachineMove
+import dtu.group21.models.pokemon.moves.TutorMove
 import dtu.group21.pokedex.MainActivity
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
-
 
 @Composable
 fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
@@ -152,7 +159,6 @@ fun Top(
                     .clickable { onClickBack() }
             )
         }
-        //Spacer(modifier.width(230.dp))
         Box(
             modifier = Modifier
                 .weight(0.1f)
@@ -173,7 +179,6 @@ fun Top(
                         databaseViewModel.deletePokemon(saveablePokemon, database)
                     }
                 }
-
             )
         }
         Spacer(modifier.width(11.dp))
@@ -263,7 +268,6 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
         )
         Box(
             modifier = Modifier
-                //.padding(horizontal = 5.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
@@ -339,7 +343,6 @@ fun CategoryList(
     }
     onCategorySelected(selectedCategory)
 }
-
 
 @Composable
 fun Table(first: String, second: String) {
@@ -503,7 +506,6 @@ fun AboutSection(
         Table(first = "Weight", second = pokemonWeight)
         Table(first = "Height", second = pokemonHeight)
         Table(first = "Introduced", second = pokemonGeneration)
-
         Spacer(modifier.height(30.dp))
     }
     Column {
@@ -545,10 +547,67 @@ fun StatsSection(
 
 @Composable
 fun MovesSection(
-    moves: Array<PokemonMove>
+    moves: Array<DisplayMove>
 ) {
-    Column {
-        MoveBoxColumn(moveList = moves.toList())
+    val levelMoves: MutableList<LevelMove> = mutableListOf()
+    val machineMoves: MutableList<MachineMove> = mutableListOf()
+    val eggMoves: MutableList<EggMove> = mutableListOf()
+    val tutorMoves: MutableList<TutorMove> = mutableListOf()
+
+    for (move in moves) {
+        when (move) {
+            is LevelMove -> levelMoves.add(move)
+            is MachineMove -> machineMoves.add(move)
+            is EggMove -> eggMoves.add(move)
+            is TutorMove -> tutorMoves.add(move)
+        }
+    }
+
+    levelMoves.sortBy { it.level }
+    machineMoves.sortBy { it.machineId }
+    eggMoves.sortBy { it.name }
+    tutorMoves.sortBy { it.name }
+
+    val moveCategories = listOf("Level", "Machine", "Egg", "Tutor")
+    var selectedCategory by remember { mutableStateOf("Level") }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    )
+    {
+
+        Box(
+            modifier = Modifier
+                .height(25.dp)
+                .align(Alignment.CenterHorizontally),
+        ) {
+            Text(text = "Move categories", modifier = Modifier.align(Alignment.Center))
+        }
+
+        CategoryList(
+            categories = moveCategories,
+            onCategorySelected = { selectedCategory = it },
+            initiallyChosen = selectedCategory,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        Column {
+            val commonModifier = Modifier
+                .shadow(2.2.dp)
+                .background(Color(0xFFFBFBFB))
+
+            when (selectedCategory) {
+                "Level" -> LevelMoveBoxColumn(modifier = commonModifier, moveList = levelMoves)
+                "Machine" -> MachineMoveBoxColumn(
+                    modifier = commonModifier,
+                    moveList = machineMoves
+                )
+
+                "Egg" -> EggTutorMoveBoxColumn(modifier = commonModifier, moveList = eggMoves)
+                "Tutor" -> EggTutorMoveBoxColumn(modifier = commonModifier, moveList = tutorMoves)
+            }
+        }
     }
 }
 
@@ -624,29 +683,6 @@ fun EvolutionPokemonImage(modifier: Modifier = Modifier, pokemon: EvolutionChain
     )
 }
 
-
-//region main components
-
-/*@Composable
-fun favoritesIconF(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .size(60.dp)
-            .offset(0.dp, 11.dp)
-            .background(
-                color = pokemonType.secondaryColor,
-                shape = CircleShape
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.white_heart),
-            contentDescription = "White heart",
-            modifier = Modifier.size(30.dp)
-        )
-    }
-}*/
-
 @Composable
 fun FavoritesIcon(
     active: Boolean,
@@ -675,7 +711,6 @@ fun FavoritesIcon(
     }
 }
 
-
 @Composable
 fun backIcon(modifier: Modifier) {
     Image(
@@ -694,161 +729,278 @@ fun arrow(modifier: Modifier) {
     )
 }
 
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun MoveBoxColumn(moveList: List<PokemonMove>) {
-    val primaryWeight = 0.24f
-    val secondaryWeight = 0.76f
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            modifier = Modifier.weight(primaryWeight),
-            text = "Level",
-            textAlign = TextAlign.Center
+fun LevelMoveBoxColumn(modifier: Modifier = Modifier, moveList: List<LevelMove>) {
+    val leftWeight = 0.5f
+    val mostLeftWeight = 0.3f
+    val rightWeight = 0.20f
+    val textSize = 15.sp
+    Column(modifier = Modifier.fillMaxWidth(0.98f)) {
+        MoveLabelRow(
+            labels = listOf("Level", "Move", "Power", "Acc.", "PP"),
+            textSize = textSize,
+            mostLeftWeight = mostLeftWeight,
+            leftWeight = leftWeight,
+            rightWeight = rightWeight
         )
-        Text(
-            modifier = Modifier.weight(secondaryWeight),
-            text = "Move",
-            textAlign = TextAlign.Center
-        )
+        FlowRow(
+            modifier = modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.Center,
+            maxItemsInEachRow = 2
+        ) {
 
-        Text(
-            modifier = Modifier.weight(primaryWeight),
-
-            text = "Power",
-            textAlign = TextAlign.Center
-        )
-
-
-        Text(
-            modifier = Modifier.weight(primaryWeight),
-            text = "Acc.",
-            textAlign = TextAlign.Center
-        )
-        Text(
-            modifier = Modifier.weight(primaryWeight),
-            text = "PP",
-            textAlign = TextAlign.Center
-        )
-    }
-    Divider(color = Color.Black)
-
-    FlowRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.Center,
-        maxItemsInEachRow = 2
-    ) {
-
-
-        Spacer(modifier = Modifier.padding(vertical = 5.dp))
-        for (i in moveList.indices) {
-            moveBox(
-//                modifier = modifier
-//                    .size(190.dp)
-//                    .padding(horizontal = 8.dp, vertical = 5.dp),
-                move = moveList[i],
-//                onClicked = { onPokemonClicked(pokemons[i].name) }
-            )
-            Divider(modifier = Modifier.padding(vertical = 2.dp), color = Color.Black)
+            Spacer(modifier = Modifier.padding(vertical = 5.dp))
+            for (i in moveList.indices) {
+                MoveBox(
+                    mostLeftWeight = mostLeftWeight,
+                    leftWeight = leftWeight,
+                    rightWeight = rightWeight,
+                    move = moveList[i],
+                )
+                Divider(modifier = Modifier.padding(vertical = 2.dp), color = Color.Black)
+            }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun MachineMoveBoxColumn(modifier: Modifier = Modifier, moveList: List<MachineMove>) {
+    val leftWeight = 0.5f
+    val mostLeftWeight = 0.3f
+    val rightWeight = 0.20f
+    val textSize = 15.sp
+    Column(modifier = Modifier.fillMaxWidth(0.98f)) {
+        MoveLabelRow(
+            labels = listOf("Machine", "Move", "Power", "Acc.", "PP"),
+            textSize = textSize,
+            mostLeftWeight = mostLeftWeight,
+            leftWeight = leftWeight,
+            rightWeight = rightWeight
+        )
+        FlowRow(
+            modifier = modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.Center,
+            maxItemsInEachRow = 2
+        ) {
+
+            Spacer(modifier = Modifier.padding(vertical = 5.dp))
+            for (i in moveList.indices) {
+                MoveBox(
+                    mostLeftWeight = mostLeftWeight,
+                    leftWeight = leftWeight,
+                    rightWeight = rightWeight,
+                    move = moveList[i],
+                )
+                Divider(modifier = Modifier.padding(vertical = 2.dp), color = Color.Black)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun EggTutorMoveBoxColumn(modifier: Modifier = Modifier, moveList: List<EggTutorMove>) {
+    val leftWeight = 0.8f
+    val rightWeight = 0.20f
+    val textSize = 15.sp
+    Column(modifier = Modifier.fillMaxWidth(0.98f)) {
+        MoveLabelRow(
+            labels = listOf("Move", "Power", "Acc.", "PP"),
+            textSize = textSize,
+            leftWeight = 0.8f,
+            rightWeight = 0.2f
+        )
+
+        FlowRow(
+            modifier = modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.Center,
+            maxItemsInEachRow = 2
+        ) {
+
+            Spacer(modifier = Modifier.height(5.dp))
+            for (i in moveList.indices) {
+                MoveBox(
+                    move = moveList[i],
+                    leftWeight = leftWeight,
+                    rightWeight = rightWeight,
+                )
+                Divider(modifier = Modifier.padding(vertical = 2.dp), color = Color.Black)
+            }
+        }
+    }
+}
 
 @Composable
-fun moveBox(move: PokemonMove) {
-    val primaryWeightUpper = 0.24f
-    val secondaryWeightUpper = 0.76f
+fun MoveLabelRow(
+    modifier: Modifier = Modifier,
+    labels: List<String>,
+    textSize: TextUnit,
+    mostLeftWeight: Float = 1f,
+    leftWeight: Float = 1f,
+    rightWeight: Float = 1f
+) {
+    Row(
+        modifier = modifier
+            .height(30.dp)
+            .clip(RoundedCornerShape(topEnd = 7.dp, topStart = 7.dp))
+            .shadow(2.2.dp)
+            .background(
+                shape = RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp),
+                color = Color(0xFFFFCC00)
+            ),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        var weight: Float
+        for (i in labels.indices) {
+            weight = when (i) {
+                0 -> {
+                    if (labels.size == 5) {
+                        mostLeftWeight
+                    } else {
+                        leftWeight
+                    }
+                }
 
-    val primaryWeightBottom = 0.4f
-    val secondaryWeightBottom = 0.6f
+                1 -> {
+                    if (labels.size == 5) {
+                        leftWeight
+                    } else {
+                        rightWeight
+                    }
+                }
 
-    Box {
-        Column {
-            Row(
+                else -> rightWeight
+            }
+            Text(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    modifier = Modifier.weight(primaryWeightUpper),
-                    text = "7"/*"move.level.toString()"*/,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    modifier = Modifier.weight(secondaryWeightUpper),
-                    text = move.name,
-                    textAlign = TextAlign.Center
-                )
-                val power: String
-                if (move.power == null) {
-                    power = "-"
-                } else {
-                    power = move.power.toString()
-                }
-                Text(
-                    modifier = Modifier.weight(primaryWeightUpper),
+                    .weight(weight)
+                    .align(Alignment.CenterVertically),
+                text = labels[i],
+                textAlign = TextAlign.Center,
+                fontSize = textSize
+            )
+        }
+    }
 
-                    text = power,
-                    textAlign = TextAlign.Center
-                )
+}
 
-                val accuracy: String
-                if (move.accuracy == null) {
-                    accuracy = "-"
-                } else {
-                    accuracy = move.accuracy.toString()
-                }
+@Composable
+fun MoveBox(
+    mostLeftWeight: Float = 1f,
+    leftWeight: Float = 1f,
+    rightWeight: Float = 1f,
+    move: DisplayMove
+) {
+    val topRowTextSize = 15.sp
+    val bottomRowTextSize = topRowTextSize
+    val rightWeightBottom = 0.4f
+    val leftWeightBottom = 0.6f
+
+
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (move is LevelMove) {
                 Text(
-                    modifier = Modifier.weight(primaryWeightUpper),
-                    text = accuracy,
+                    modifier = Modifier.weight(mostLeftWeight),
+                    text = move.level.toString(),
+                    fontSize = topRowTextSize,
                     textAlign = TextAlign.Center
                 )
+            } else if (move is MachineMove) {
                 Text(
-                    modifier = Modifier.weight(primaryWeightUpper),
-                    text = move.pp.toString(),
+                    modifier = Modifier.weight(mostLeftWeight),
+                    text = move.machineId,
+                    textAlign = TextAlign.Center,
+                    fontSize = topRowTextSize,
+                )
+            }
+            Text(
+                modifier = Modifier.weight(leftWeight),
+                text = move.name,
+                textAlign = TextAlign.Center,
+                fontSize = topRowTextSize,
+            )
+            val power: String
+            if (move.power == null) {
+                power = "-"
+            } else {
+                power = move.power.toString()
+            }
+            Text(
+                modifier = Modifier.weight(rightWeight),
+
+                text = power,
+                fontSize = topRowTextSize,
+                textAlign = TextAlign.Center
+            )
+
+            val accuracy: String
+            if (move.accuracy == null) {
+                accuracy = "-"
+            } else {
+                accuracy = move.accuracy.toString()
+            }
+            Text(
+                modifier = Modifier.weight(rightWeight),
+                text = accuracy,
+                fontSize = topRowTextSize,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.weight(rightWeight),
+                text = move.pp.toString(),
+                fontSize = topRowTextSize,
+                textAlign = TextAlign.Center
+            )
+        }
+        Spacer(modifier = Modifier.height(6.dp))
+        Row {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(
+                        shape = RoundedCornerShape(8.dp),
+                        color = move.type.primaryColor
+                    ),
+                contentAlignment = Alignment.Center,
+            )
+            {
+                Text(
+                    text = move.type.name,
+                    fontSize = bottomRowTextSize, color = Color.White,
                     textAlign = TextAlign.Center
                 )
             }
-            Spacer(modifier = Modifier.padding(vertical = 2.dp))
-            Row()
+
+            Spacer(modifier = Modifier.weight(0.2f))
+
+            Box(
+                modifier = Modifier
+                    .weight(0.5f)
+                    .background(
+                        shape = RoundedCornerShape(8.dp),
+                        color = move.damageClass.color
+                    ),
+                contentAlignment = Alignment.Center
+            )
             {
-                Box(
-                    modifier = Modifier
-                        .weight(secondaryWeightBottom)
-                        .background(
-                            shape = RoundedCornerShape(15.dp),
-                            color = move.type.primaryColor
-                        ), contentAlignment = Alignment.Center
+                Text(
+                    text = move.damageClass.name,
+                    fontSize = bottomRowTextSize,
+                    color = Color.White
                 )
-                {
-                    Text(
-                        text = move.type.name,
-                        // todo
-                        fontSize = 12.sp, color = Color.White
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .weight(primaryWeightBottom)
-                        .background(
-                            shape = RoundedCornerShape(15.dp),
-                            color = move.damageClass.color
-                        ), contentAlignment = Alignment.Center
-                )
-                {
-                    Text(
-                        text = move.damageClass.name,
-                        // todo
-                        fontSize = 12.sp, color = Color.White
-                    )
-                }
             }
         }
     }
@@ -860,7 +1012,8 @@ fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType
         modifier = modifier.background(
             color = pokemonType.primaryColor,
             shape = RoundedCornerShape(15.dp)
-        ), contentAlignment = Alignment.Center
+        ),
+        contentAlignment = Alignment.Center
 
     ) {
         val name = if (pokemonType == PokemonType.NONE) "" else pokemonType.name

@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.models.pokemon.DetailedPokemon
+import dtu.group21.data.pokemon.DetailedPokemon
+import dtu.group21.models.pokemon.moves.LevelMove
+import dtu.group21.models.pokemon.moves.MachineMove
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -40,8 +42,8 @@ class DatabaseViewModel(
         for (move in pokemon.moves) {
             movesStringBuilder.append(move.name)
             movesStringBuilder.append(';')
-            movesStringBuilder.append(move.description)
-            movesStringBuilder.append(';')
+            //movesStringBuilder.append(/*move.description TODO*/ "For now")
+            //movesStringBuilder.append(';')
             movesStringBuilder.append(move.power.toString())
             movesStringBuilder.append(';')
             movesStringBuilder.append(move.accuracy.toString())
@@ -51,6 +53,15 @@ class DatabaseViewModel(
             movesStringBuilder.append(move.type.toString())
             movesStringBuilder.append(';')
             movesStringBuilder.append(move.damageClass.toString())
+
+            if(move is LevelMove){
+                movesStringBuilder.append(';')
+                movesStringBuilder.append(move.level.toString())
+            }
+            if(move is MachineMove){
+                movesStringBuilder.append(';')
+                movesStringBuilder.append(move.machineId)
+            }
 
             // for the next move
             movesStringBuilder.append("::")

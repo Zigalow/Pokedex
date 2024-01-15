@@ -32,7 +32,7 @@ import dtu.group21.ui.shared.buttonColor
 @Composable
 fun SortScreen(
     onNavigateBack: () -> Unit,
-    //onDoneSorting: () -> Unit,
+
     sortSettings: SortSettings,
     modifier: Modifier = Modifier,
 ) {

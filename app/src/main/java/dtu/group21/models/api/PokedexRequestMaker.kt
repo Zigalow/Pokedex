@@ -10,6 +10,12 @@ import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.models.pokemon.PokemonStats
+import dtu.group21.models.pokemon.moves.BasicMove
+import dtu.group21.models.pokemon.moves.DisplayMove
+import dtu.group21.models.pokemon.moves.EggMoveData
+import dtu.group21.models.pokemon.moves.LevelMoveData
+import dtu.group21.models.pokemon.moves.MachineMoveData
+import dtu.group21.models.pokemon.moves.TutorMoveData
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -108,7 +114,6 @@ class PokedexRequestMaker {
         return ""
     }
 
-
     suspend fun getSimplePokemon(pokedexId: Int): EvolutionChainPokemon {
         val speciesObject = jsonRequestMaker.makeRequest("pokemon-species/$pokedexId")
         val name = getNameFromSpecies(speciesObject)
@@ -130,30 +135,84 @@ class PokedexRequestMaker {
         return PreviewPokemon(pokedexId, name, types.first, types.second)
     }
 
-    private suspend fun getMove(moveName: String): PokemonMove {
+    private suspend fun getBasicMove(moveName: String, pokedexId: Int): DisplayMove {
         val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
 
+        // Pokemon's ID
+        val pokemonResponse = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
+
+        // move's name
         val namesArray = moveObject.getJSONArray("names")
         val name = getEnglishString(namesArray, "name")
-        val descriptionsArray = moveObject.getJSONArray("flavor_text_entries")
-        val description = getEnglishString(descriptionsArray, "flavor_text")
 
+        // Other data
         val power = moveObject.get("power") as? Int
         val accuracy = moveObject.get("accuracy") as? Int
         val pp = moveObject.getInt("pp")
+
         val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
+
+        // Move categories name
+        val moves = pokemonResponse.getJSONArray("moves")
+        var learnMoveMethods = JSONArray()
+        var moveMethodName = "Tutor"
         val damageClass =
             MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
 
-        return PokemonMove(
-            name,
-            description,
-            power,
-            accuracy,
-            pp,
-            type,
-            damageClass,
-        )
+        // To find the move category for the latest version/game
+        for (i in 0 until moves.length()) {
+            val movesObject = moves.getJSONObject(i).getJSONObject("move")
+            val moveNameYES = movesObject.getString("name")
+
+            if (moveNameYES == moveName) {
+                learnMoveMethods =
+                    if (moves.length() > 0) {
+                        moves.getJSONObject(i).getJSONArray("version_group_details")
+                    } else {
+                        JSONArray()
+                    }
+                moveMethodName =
+                    learnMoveMethods.getJSONObject(0).getJSONObject("move_learn_method")
+                        .getString("name")
+                break
+            }
+        }
+
+        return when (moveMethodName) {
+            "machine" -> {
+                val machines = moveObject.getJSONArray("machines")
+                var machineURL = ""
+
+                if (machines.length() > 0) {
+                    machineURL =
+                        machines.getJSONObject(0).getJSONObject("machine").getString("url")
+                            .split("/").dropLast(1)
+                            .last().toString()
+                } else if (machines.length() <= 0) {
+                    machineURL = "-"
+                }
+
+                MachineMoveData(name, power, accuracy, pp, type, damageClass, machineURL)
+            }
+
+            "level-up" -> {
+                var level = learnMoveMethods.getJSONObject(learnMoveMethods.length() - 1)
+                    .getInt("level_learned_at")
+                LevelMoveData(name, power, accuracy, pp, type, damageClass, level)
+            }
+
+            "tutor" -> {
+                TutorMoveData(name, power, accuracy, pp, type, damageClass)
+            }
+
+            "egg" -> {
+                EggMoveData(name, power, accuracy, pp, type, damageClass)
+            }
+
+            else -> {
+                BasicMove(name, power, accuracy, pp, type, damageClass)
+            }
+        }
     }
 
     private suspend fun getAbility(abilityName: String, isHidden: Boolean): PokemonAbility {
@@ -212,9 +271,8 @@ class PokedexRequestMaker {
 
         // Moves
         val movesArray = pokemon.getJSONArray("moves")
-        val pokemonMoves = Array(movesArray.length()) { _ ->
-            PokemonMove(
-                "",
+        val pokemonMoves: Array<DisplayMove> = Array(movesArray.length()) { _ ->
+            BasicMove(
                 "",
                 0,
                 0,
@@ -224,8 +282,10 @@ class PokedexRequestMaker {
             )
         }
         for (i in 0 until movesArray.length()) {
-            pokemonMoves[i] =
-                getMove(movesArray.getJSONObject(i).getJSONObject("move").getString("name"))
+            pokemonMoves[i] = getBasicMove(
+                movesArray.getJSONObject(i).getJSONObject("move").getString("name"),
+                pokedexId
+            )
         }
 
         // Abilities

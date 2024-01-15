@@ -1,9 +1,11 @@
-package dtu.group21.models.pokemon
+package dtu.group21.data.pokemon
 
 import androidx.compose.runtime.MutableState
+import dtu.group21.models.pokemon.PokemonMove
+import dtu.group21.models.pokemon.PokemonStats
+import dtu.group21.models.pokemon.moves.BasicMove
+import dtu.group21.models.pokemon.moves.DetailedMove
 import dtu.group21.models.pokemon.moves.DisplayMove
-import dtu.group21.models.pokemon.moves.LevelMove
-import dtu.group21.models.pokemon.moves.MachineMove
 
 interface DetailedPokemon : SpeciesPokemon {
     //    val name: String
@@ -24,7 +26,7 @@ interface DetailedPokemon : SpeciesPokemon {
     //    val heightInCm: Int
     //    val abilities: List<PokemonAbility>
     var isFavorite: MutableState<Boolean>
-    val moves: Array<PokemonMove>
+    val moves: Array<DisplayMove>
     val stats: PokemonStats
     
 }
