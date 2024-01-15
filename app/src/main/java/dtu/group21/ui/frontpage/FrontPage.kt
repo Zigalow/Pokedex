@@ -42,17 +42,18 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dtu.group21.data.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.data.PokedexViewModel
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.theme.Yellow60
 import java.util.Locale
 
 @Composable
-fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource<DisplayPokemon>>>) {
+fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource<StatPokemon>>>) {
     val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
     LaunchedEffect(Unit) {
         val pokedexViewModel = PokedexViewModel()
@@ -70,16 +71,28 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource
             UpperMenu(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Box(modifier = Modifier.weight(0.1f).fillMaxWidth()){
+                Box(modifier = Modifier
+                    .weight(0.1f)
+                    .fillMaxWidth()) {
                     MenuIcon(
                         size = 49.dp,
                         onClicked = { menuIsOpen = true })
                 }
-                Box(modifier = Modifier.weight(0.5f).fillMaxWidth(),contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
                     PokemonLogo(size = 174.dp)
                 }
 
-                Box(modifier = Modifier.weight(0.1f).fillMaxWidth(),contentAlignment = Alignment.CenterEnd) {
+                Box(
+                    modifier = Modifier
+                        .weight(0.1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
                     SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
                 }
 
@@ -108,9 +121,11 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource
         if (menuIsOpen) {
             Column(
                 modifier = Modifier.width(80.dp),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
                 ) {
-                Box(modifier = Modifier
-                    .fillMaxHeight()) {
                     Menu(
                         modifier = Modifier
                             .fillMaxHeight(),
@@ -120,7 +135,8 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .size(60.dp),
-                            onClicked = { onNavigate("settings")
+                            onClicked = {
+                                onNavigate("settings")
                             }
                         )
                     }
@@ -153,7 +169,7 @@ fun PokemonColumn(
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val chunks = if (screenWidth > 600.dp) 4 else 2
-    val itemWidth = (screenWidth / chunks)-6.dp //-6.dp to consider patting in between each box
+    val itemWidth = (screenWidth / chunks) - 6.dp //-6.dp to consider patting in between each box
     val alignedPokemons = pokemons.chunked(chunks)
 
     LazyColumn(modifier.fillMaxWidth()) {
@@ -178,9 +194,10 @@ fun PokemonColumn(
 }
 
 @Composable
-fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit){
-    Box(modifier = modifier
-        .clickable { onClicked() },
+fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
+    Box(
+        modifier = modifier
+            .clickable { onClicked() },
         contentAlignment = Alignment.Center
     )
     {
@@ -294,7 +311,6 @@ fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon) {
 fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
 
-
 @Composable
 fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, size: Dp) {
     Box(
@@ -317,7 +333,11 @@ fun formatPokemonId(unformattedNumber: Int): String {
 }
 
 @Composable
-fun PokemonBox(modifier: Modifier = Modifier, pokemonResource: Resource<DisplayPokemon>, onClicked: (String) -> Unit) {
+fun PokemonBox(
+    modifier: Modifier = Modifier,
+    pokemonResource: Resource<DisplayPokemon>,
+    onClicked: (String) -> Unit
+) {
     when (pokemonResource) {
         is Resource.Failure -> {
             // TODO: handle?

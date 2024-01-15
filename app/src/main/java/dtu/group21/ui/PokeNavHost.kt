@@ -26,15 +26,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dtu.group21.data.PokedexViewModel
+import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.models.api.Resource
-import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.ui.favorites.FavoritesPage
 import dtu.group21.ui.frontpage.FrontPage
 import dtu.group21.ui.pokemonView.SpecificPage
 import dtu.group21.ui.pokemonView.isOnline
 import dtu.group21.ui.search.FilterScreen
 import dtu.group21.ui.search.SearchScreen
-import dtu.group21.ui.search.SearchSettings
 import dtu.group21.ui.search.SortScreen
 import dtu.group21.ui.settings.SettingsPage
 
@@ -69,16 +68,16 @@ fun PokeNavHost(startDestination: String = "home") {
         val navController = rememberNavController()
         val searchSettings = remember { SearchSettings() }
 
-        val favouritePokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+        val favouritePokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
         LaunchedEffect(Unit) {
             val pokedexViewModel = PokedexViewModel()
             pokedexViewModel.getFavoritePokemons(favouritePokemons)
         }
 
-        val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+        val pokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
         LaunchedEffect(Unit) {
             val pokedexViewModel = PokedexViewModel()
-            val ids = (intArrayOf(133, 134, 135, 236, 237, 252, 253, 254, 265, 267, 268, 269, 270,1))
+            val ids = (1..151)
             pokedexViewModel.getPokemons(ids.toList(), pokemons)
         }
 
