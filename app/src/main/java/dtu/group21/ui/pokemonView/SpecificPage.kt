@@ -99,7 +99,7 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
         val viewModel = PokedexViewModel()
         viewModel.getDetails(pokedexId, pokemon)
     }
-    if(pokemon.value.name!="loading...") {
+    if (pokemon.value.name != "loading...") {
         Mid(modifier = Modifier, pokemon.value)
     }
     Inspect(pokemon = pokemon.value, onNavigateBack = onNavigateBack)
@@ -260,7 +260,7 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
         verticalArrangement = Arrangement.Bottom
     ) {
         val categories = listOf("About", "Stats", "Moves", "Evolution")
-        var selectedCategory by remember { mutableStateOf("About") }
+        val selectedCategory = remember { mutableStateOf("About") }
         Spacer(
             modifier
                 .width(13.dp)
@@ -273,8 +273,8 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
         ) {
             CategoryList(
                 categories = categories,
-                onCategorySelected = { selectedCategory = it },
-                initiallyChosen = selectedCategory,
+                onCategorySelected = { selectedCategory.value = it },
+                initiallyChosen = selectedCategory.value,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
@@ -285,7 +285,7 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                 .padding(start = 13.dp)
         ) {
             //based on which category is the coresponding section function will be used
-            Sections(selectedCategory = selectedCategory, pokemon = pokemon, modifier = modifier)
+            Sections(pokemon = pokemon, selectedCategory = selectedCategory.value, modifier = modifier)
             Spacer(
                 modifier = Modifier
                     .weight(1f)
@@ -322,7 +322,7 @@ fun CategoryList(
     modifier: Modifier = Modifier,
     initiallyChosen: String = ""
 ) {
-    var selectedCategory by remember { mutableStateOf(initiallyChosen) }
+    var selectedCategory: String by remember { mutableStateOf(initiallyChosen) }
 
     LazyRow(
         modifier = modifier
@@ -363,7 +363,13 @@ fun Table(first: String, second: String) {
 }
 
 @Composable
-fun StatsBar(first: String, second: String, max: Int, animDuration: Int = 1000, animDelay: Int = 0 ) {
+fun StatsBar(
+    first: String,
+    second: String,
+    max: Int,
+    animDuration: Int = 1000,
+    animDelay: Int = 0
+) {
     val percentage = (second.toFloat() / max)
     var animationPlayed by remember {
         mutableStateOf(false)
@@ -371,22 +377,22 @@ fun StatsBar(first: String, second: String, max: Int, animDuration: Int = 1000, 
     val currentPercent = animateFloatAsState(
         targetValue = if (animationPlayed) {
             percentage
-        }else 0f,
+        } else 0f,
         animationSpec = tween(
             animDuration,
             animDelay
         )
     )
-    LaunchedEffect(key1 = true){
+    LaunchedEffect(key1 = true) {
         animationPlayed = true
     }
     var boxColor = Color.Gray
 
-    if(first.equals("Total")){
+    if (first.equals("Total")) {
         boxColor =
             if (second.toInt() < max * 0.2) {
                 Color(0xFFFF0000)
-            } else if(second.toInt() >= max * 0.2 && second.toInt() < max * 0.4){
+            } else if (second.toInt() >= max * 0.2 && second.toInt() < max * 0.4) {
                 Color(0xFFFFB800)
             } else if (second.toInt() >= max * 0.4 && second.toInt() < max * 0.6) {
                 Color(0xFFA0E515)
@@ -409,7 +415,7 @@ fun StatsBar(first: String, second: String, max: Int, animDuration: Int = 1000, 
                 Color(0xFF00E1FF)
             }
     }
-    
+
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -428,11 +434,12 @@ fun StatsBar(first: String, second: String, max: Int, animDuration: Int = 1000, 
                 .height(5.dp)
                 .background(shape = RoundedCornerShape(15.dp), color = Color(0xFFD9D9D9))
                 .align(Alignment.CenterVertically)
-        ){
-            Box(modifier = Modifier
-                .fillMaxWidth(currentPercent.value)
-                .height(5.dp)
-                .background(shape = RoundedCornerShape(15.dp), color = boxColor)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(currentPercent.value)
+                    .height(5.dp)
+                    .background(shape = RoundedCornerShape(15.dp), color = boxColor)
 
             )
         }
@@ -516,7 +523,7 @@ fun AboutSection(
             //Table(first = "Egg cycles", second = "20 (4.884-5.140 steps)")
         } else {
             Spacer(modifier = Modifier.height(10.dp))
-            Table(first = "Genderless", second = "100%");
+            Table(first = "Genderless", second = "100%")
         }
     }
     Spacer(modifier.fillMaxHeight())
@@ -528,19 +535,19 @@ fun StatsSection(
     modifier: Modifier
 ) {
     Column {
-        StatsBar(first = "HP", second = stats.hp.toString(),255)
-        StatsBar(first = "Attack", second = stats.attack.toString(),255,1000,100)
-        StatsBar(first = "Defense", second = stats.defense.toString(),255,1000,200)
-        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(),255,1000,300)
-        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(),255,1000,400)
-        StatsBar(first = "Speed", second = stats.speed.toString(),255,1000,500)
+        StatsBar(first = "HP", second = stats.hp.toString(), 255)
+        StatsBar(first = "Attack", second = stats.attack.toString(), 255, 1000, 100)
+        StatsBar(first = "Defense", second = stats.defense.toString(), 255, 1000, 200)
+        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(), 255, 1000, 300)
+        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(), 255, 1000, 400)
+        StatsBar(first = "Speed", second = stats.speed.toString(), 255, 1000, 500)
         Row {
             Spacer(modifier = Modifier.weight(0.0001f))
             Divider(Modifier.weight(0.5f))
             Spacer(modifier = Modifier.weight(0.01f))
         }
         Spacer(Modifier.height(5.dp))
-        StatsBar(first = "Total", second = stats.total.toString(),720,1000,600)
+        StatsBar(first = "Total", second = stats.total.toString(), 720, 1000, 600)
     }
     Spacer(modifier.fillMaxHeight())
 }
@@ -550,26 +557,25 @@ fun MovesSection(
     moves: Array<DisplayMove>
 ) {
     val levelMoves: MutableList<LevelMove> = mutableListOf()
-    val machineMoves: MutableList<MachineMove> = mutableListOf()
+    val initialMachineMoves: MutableList<MachineMove> = mutableListOf()
     val eggMoves: MutableList<EggMove> = mutableListOf()
     val tutorMoves: MutableList<TutorMove> = mutableListOf()
 
     for (move in moves) {
         when (move) {
             is LevelMove -> levelMoves.add(move)
-            is MachineMove -> machineMoves.add(move)
+            is MachineMove -> initialMachineMoves.add(move)
             is EggMove -> eggMoves.add(move)
             is TutorMove -> tutorMoves.add(move)
         }
     }
-
     levelMoves.sortBy { it.level }
-    machineMoves.sortBy { it.machineId }
+    val machineMoves = sortMachineMoves(initialMachineMoves)
     eggMoves.sortBy { it.name }
     tutorMoves.sortBy { it.name }
 
     val moveCategories = listOf("Level", "Machine", "Egg", "Tutor")
-    var selectedCategory by remember { mutableStateOf("Level") }
+    var selectedCategory: String by remember { mutableStateOf("Level") }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -609,6 +615,19 @@ fun MovesSection(
             }
         }
     }
+}
+
+private fun sortMachineMoves(originalList: List<MachineMove>): List<MachineMove> {
+    val (machineMovesWithDash, machineMovesWithoutDash) = originalList.partition {
+        it.machineId.contains(
+            "-"
+        )
+    }
+
+    val sortedMachineMovesWithDash = machineMovesWithDash.sortedBy { it.machineId }
+    val sortedMachineMovesWithoutDash = machineMovesWithoutDash.sortedBy { it.machineId.toInt() }
+
+    return sortedMachineMovesWithDash + sortedMachineMovesWithoutDash
 }
 
 @Composable
