@@ -136,7 +136,7 @@ fun WhosThatPokemonPage(
         Button(
             onClick = {
                 if (currentPokemon is Resource.Success) {
-                    if (currentPokemon.data.name.equals(guess)) {
+                    if (currentPokemon.data.name.equals(guess, ignoreCase = true)) {
                         // Generate a random index
                         index = Random.nextInt(pokemonPool.value.size)
                     }
