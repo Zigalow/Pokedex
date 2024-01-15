@@ -1,5 +1,6 @@
 package dtu.group21.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -14,6 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Vertical
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -155,9 +158,12 @@ fun PokeNavHost(startDestination: String = "home") {
 
     }
     else {
-        Column {
-            Text(text = "No internet connection")
-            Button(modifier = Modifier.size(200.dp),onClick = {
+        Box(modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Button(modifier = Modifier
+                .size(200.dp),
+                onClick = {
                 isOnline = true
             }) {
                 Icon(modifier = Modifier.fillMaxSize(),imageVector = Icons.Default.Refresh, contentDescription = null)
