@@ -70,36 +70,6 @@ class PokeAPICo : PokemonAPI {
         }
         return ""
     }
-
-    private suspend fun getMove(moveName: String): PokemonMove {
-        val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
-
-        val namesArray = moveObject.getJSONArray("names")
-        val name = getLanguageString(namesArray, "name")
-        val descriptionsArray = moveObject.getJSONArray("flavor_text_entries")
-        val description = getLanguageString(descriptionsArray, "flavor_text")
-
-        val power = moveObject.get("power") as? Int
-        val accuracy = moveObject.get("accuracy") as? Int
-        val pp = moveObject.getInt("pp")
-        val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
-        val damageClass =
-            MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
-
-        return PokemonMove(
-            name,
-            description,
-            power,
-            accuracy,
-            pp,
-            type,
-            damageClass,
-        )
-    }
-    private fun IdFromUrl( url: String): Int {
-        return url.split("/").dropLast(1).last().toInt()
-    }
-
     private suspend fun getBasicMove(moveName: String, pokedexId: Int): DisplayMove {
         val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
 
@@ -123,6 +93,7 @@ class PokeAPICo : PokemonAPI {
         var moveMethodName = "Tutor"
         val damageClass = MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
 
+        // To find the move category for the latest version/game
         for (i in 0 until moves.length()) {
             val movesObject = moves.getJSONObject(i).getJSONObject("move")
             val moveNameYES = movesObject.getString("name")
@@ -135,28 +106,20 @@ class PokeAPICo : PokemonAPI {
                         JSONArray()
                     }
                 moveMethodName = learnMoveMethods.getJSONObject(0).getJSONObject("move_learn_method").getString("name")
-
-                break // Break out of the loop once the moveName is found
+                break
             }
         }
 
         return when (moveMethodName) {
             "machine" -> {
                 val machines = moveObject.getJSONArray("machines")
-                    println("\n machine Name == " + moveName)
-                    println("machines lenght == " + machines.length())
                 var machineURL = ""
+
                 if(machines.length() > 0) {
                     machineURL =
                         machines.getJSONObject(0).getJSONObject("machine").getString("url")
                             .split("/").dropLast(1)
                             .last().toString()
-                    println(
-                        "machineURL == " + machines.getJSONObject(0).getJSONObject("machine")
-                            .getString("url")
-                    )
-                    println("machine == " + machineURL)
-
                 } else if (machines.length() <= 0){
                     machineURL = "-"
                 }
@@ -165,12 +128,6 @@ class PokeAPICo : PokemonAPI {
             }
             "level-up" -> {
                 var level = learnMoveMethods.getJSONObject(learnMoveMethods.length()-1).getInt("level_learned_at")
-
-                /*for (i in 0 until learnMoveMethods.length()) {
-                    level = learnMoveMethods.getJSONObject(i).getInt("level_learned_at")
-                }*/
-
-
                 LevelMoveData(name, power, accuracy, pp, type, damageClass, level)
             }
             "tutor" -> {
@@ -184,7 +141,6 @@ class PokeAPICo : PokemonAPI {
             }
         }
     }
-
 
     private suspend fun getAdvancedMove(moveName: String): DetailedMove {
         val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
