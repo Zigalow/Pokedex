@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.models.pokemon.DetailedPokemon
+import dtu.group21.data.pokemon.DetailedPokemon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

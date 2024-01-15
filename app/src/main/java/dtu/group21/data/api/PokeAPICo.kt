@@ -1,9 +1,12 @@
 package dtu.group21.data.api
 
 import androidx.compose.runtime.mutableStateOf
+import dtu.group21.data.pokemon.AdvancedPokemon
+import dtu.group21.data.pokemon.BasicPokemon
+import dtu.group21.helpers.PokemonHelper
 import dtu.group21.models.api.JsonRequestMaker
-import dtu.group21.models.pokemon.DetailedPokemon
-import dtu.group21.models.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.DetailedPokemon
+import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.MoveDamageClass
 import dtu.group21.models.pokemon.PokemonAbility
 import dtu.group21.models.pokemon.PokemonMove
@@ -25,20 +28,13 @@ class PokeAPICo : PokemonAPI {
             if (types.length() == 2) types.getJSONObject(1).getJSONObject("type")
                 .getString("name") else "none"
 
-        // TODO should probably have an actual class instead of this anonymous class
-        val pokemon = object : DisplayPokemon {
-            override val name: String = idName
-            override val pokedexId: Int = pokedexId
-            override val primaryType: PokemonType = PokemonType.getFromName(primaryTypeName)
-            override val secondaryType: PokemonType = PokemonType.getFromName(secondaryTypeName)
-            override val spriteId: String =
-                "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${
-                    pokedexId.toString().padStart(3, '0')
-                }.png"
-            override val hasTwoTypes: Boolean = secondaryTypeName != "none"
-        }
-
-        return pokemon
+        return BasicPokemon(
+            name = PokemonHelper.getEnglishName(pokedexId, idName),
+            pokedexId = pokedexId,
+            primaryType = PokemonType.getFromName(primaryTypeName),
+            secondaryType = PokemonType.getFromName(secondaryTypeName),
+            spriteId = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${PokemonHelper.getPokedexIdString(pokedexId)}.png"
+        )
     }
 
     override suspend fun getDetailedPokemon(pokedexId: Int): DetailedPokemon {
@@ -136,31 +132,23 @@ class PokeAPICo : PokemonAPI {
         val isMythical = speciesResponse.getBoolean("is_mythical")
         val categoryName = getLanguageString(speciesResponse.getJSONArray("genera"), "genus")
 
-        // TODO should probably have an actual class instead of this anonymous class
-        val pokemon = object : DetailedPokemon {
+        return AdvancedPokemon(
+            template = templatePokemon,
+            moves = moves.toTypedArray(),
+            stats = stats,
+            evolutionChainId = evolutionChainId,
+            genderRate = genderRate,
+            isBaby = isBaby,
+            isLegendary = isLegendary,
+            isMythical = isMythical,
+            category = categoryName,
+            generation = PokemonHelper.getGeneration(pokedexId),
+            weightInGrams = weightInGrams,
+            heightInCm = heightInCm,
+            abilities = abilities.toTypedArray(),
             // TODO: in my opinion should not be in the class
-            override var isFavorite = mutableStateOf(false)
-            override val moves: Array<PokemonMove> = moves.toTypedArray()
-            override val stats: PokemonStats = stats
-            override val evolutionChainId: Int = evolutionChainId
-            override val genderRate: Int = genderRate
-            override val isBaby: Boolean = isBaby
-            override val isLegendary: Boolean = isLegendary
-            override val isMythical: Boolean = isMythical
-            override val category: String = categoryName
-            override val generation: Int = 0 // TODO
-            override val weightInGrams: Int = weightInGrams
-            override val heightInCm: Int = heightInCm
-            override val abilities: Array<PokemonAbility> = abilities.toTypedArray()
-            override val name: String = templatePokemon.name
-            override val pokedexId: Int = templatePokemon.pokedexId
-            override val primaryType: PokemonType = templatePokemon.primaryType
-            override val secondaryType: PokemonType = templatePokemon.secondaryType
-            override val spriteId: String = templatePokemon.spriteId
-            override val hasTwoTypes: Boolean = templatePokemon.hasTwoTypes
-        }
-
-        return pokemon
+            isFavorite = mutableStateOf(false),
+        )
     }
 
     override suspend fun getMove(moveId: Int): PokemonMove {

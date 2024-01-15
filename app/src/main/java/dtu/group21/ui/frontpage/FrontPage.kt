@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -47,7 +45,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.models.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.theme.Yellow60
@@ -55,6 +53,13 @@ import java.util.Locale
 
 @Composable
 fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource<DisplayPokemon>>>) {
+    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+    LaunchedEffect(Unit) {
+        val pokedexViewModel = PokedexViewModel()
+        val ids = (1..50)
+        pokedexViewModel.getPokemons(ids.toList(),pokemons)
+    }
+
     var menuIsOpen by remember { mutableStateOf(false) }
     val systemUiController = rememberSystemUiController()
     SideEffect {
@@ -162,8 +167,7 @@ fun PokemonColumn(
                         modifier = Modifier
                             .width(itemWidth)
                             .aspectRatio(1f)
-                            .padding(2.dp)
-                            .weight(1f),
+                            .padding(2.dp),
                         pokemonResource = pokemonResource,
                         onClicked = onPokemonClicked
                     )
@@ -379,7 +383,7 @@ fun PokemonBox(modifier: Modifier = Modifier, pokemonResource: Resource<DisplayP
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = capitalizeFirstLetter(pokemon.name),
+                                text = pokemon.name,
                                 modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                                 fontSize = 17.sp,
                                 color = Color.White,
