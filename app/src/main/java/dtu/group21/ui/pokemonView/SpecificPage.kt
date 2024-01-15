@@ -37,6 +37,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -659,7 +661,8 @@ fun LevelMoveBoxColumn(moveList: List<LevelMove>) {
 
         FlowRow(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth().shadow(2.dp)
+                .background(Color(0xFFFBFBFB))
                 .verticalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.Center,
             maxItemsInEachRow = 2
@@ -845,6 +848,8 @@ fun MoveLabelRow(
     Row(
         modifier = modifier
             .height(30.dp)
+            .clip(RoundedCornerShape(topEnd = 7.dp, topStart = 7.dp))
+            .shadow(2.dp)
             .background(
                 shape = RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp),
                 color = Color(0xFFFFCC00)
