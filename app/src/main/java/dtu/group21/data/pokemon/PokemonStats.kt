@@ -1,4 +1,4 @@
-package dtu.group21.models.pokemon
+package dtu.group21.data.pokemon
 
 data class PokemonStats(
     val hp: Int,

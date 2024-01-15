@@ -9,7 +9,6 @@ import dtu.group21.data.database.AppDatabase
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.data.pokemon.StatPokemon
-import dtu.group21.models.api.Resource
 import dtu.group21.pokedex.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -169,22 +168,10 @@ class PokedexViewModel(
         }
     }
 
-    fun getDetails(pokedexId: Int, destination: MutableState<DetailedPokemon>, cacheResult: Boolean = true) {
+    fun getDetails(pokedexId: Int, destination: MutableState<Resource<DetailedPokemon>>, cacheResult: Boolean = true) {
         coroutineScope.launch {
             getDetailsInternal(pokedexId, cacheResult).collect {
-                when (it) {
-                    is Resource.Success -> {
-                        destination.value = it.data
-                    }
-
-                    is Resource.Failure -> {
-                        // TODO handle?
-                    }
-
-                    Resource.Loading -> {
-                        // Do nothing
-                    }
-                }
+                destination.value = it
             }
         }
     }

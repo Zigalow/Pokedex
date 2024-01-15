@@ -1,4 +1,4 @@
-package dtu.group21.models.api
+package dtu.group21.data
 
 sealed class Resource<out T> {
     data object Loading : Resource<Nothing>()

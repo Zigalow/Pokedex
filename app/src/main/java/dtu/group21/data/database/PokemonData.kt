@@ -4,13 +4,13 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.models.pokemon.MoveDamageClass
-import dtu.group21.models.pokemon.PokemonAbility
-import dtu.group21.models.pokemon.PokemonGender
-import dtu.group21.models.pokemon.PokemonMove
+import dtu.group21.data.pokemon.moves.MoveDamageClass
+import dtu.group21.data.pokemon.PokemonAbility
+import dtu.group21.data.pokemon.PokemonGender
+import dtu.group21.data.pokemon.moves.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
-import dtu.group21.models.pokemon.PokemonStats
-import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.data.pokemon.PokemonStats
+import dtu.group21.data.pokemon.PokemonType
 
 
 @Entity(tableName = "pokemons")

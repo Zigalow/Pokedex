@@ -1,4 +1,6 @@
-package dtu.group21.models.pokemon
+package dtu.group21.data.pokemon.moves
+
+import dtu.group21.data.pokemon.PokemonType
 
 data class PokemonMove(
     val name: String,

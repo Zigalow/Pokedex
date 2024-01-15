@@ -35,7 +35,7 @@ import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
 import dtu.group21.data.pokemon.StatPokemon
-import dtu.group21.models.api.Resource
+import dtu.group21.data.Resource
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.SearchIcon
@@ -190,7 +190,7 @@ fun FavoritePokemonBox(
                         contentAlignment = Alignment.BottomStart
                     ) {
                         Text(
-                            text = capitalizeFirstLetter(pokemon.name),
+                            text = pokemon.name,
                             fontSize = 17.sp,
                             color = Color.White,
                             textAlign = TextAlign.Start,

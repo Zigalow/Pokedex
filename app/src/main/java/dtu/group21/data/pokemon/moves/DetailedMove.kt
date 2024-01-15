@@ -1,7 +1,6 @@
-package dtu.group21.models.pokemon.moves
+package dtu.group21.data.pokemon.moves
 
 import dtu.group21.data.pokemon.StatPokemon
-import dtu.group21.models.pokemon.MoveDamageClass
 
 interface DetailedMove : DisplayMove {
     //    val name: String

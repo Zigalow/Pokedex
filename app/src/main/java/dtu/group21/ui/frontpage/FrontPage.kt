@@ -45,9 +45,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.data.PokedexViewModel
-import dtu.group21.models.api.Resource
-import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.data.Resource
+import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.theme.Yellow60
 import java.util.Locale
@@ -287,7 +286,7 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
     ) {
         val name = if (pokemonType == PokemonType.NONE) "" else pokemonType.name
         Text(
-            text = capitalizeFirstLetter(name),
+            text = name,
             // todo
             fontSize = 11.sp, color = Color.White
         )
@@ -310,23 +309,6 @@ fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon) {
 
 fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
-
-@Composable
-fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, size: Dp) {
-    Box(
-        modifier = modifier.background(
-            color = pokemon.primaryType.primaryColor,
-            shape = RoundedCornerShape(30.dp)
-        ),
-    ) {
-        Text(
-            text = capitalizeFirstLetter(pokemon.species.name),
-            modifier = Modifier.padding(start = 8.dp),
-            fontSize = 17.sp,
-            color = Color.White,
-        )
-    }
-}
 
 fun formatPokemonId(unformattedNumber: Int): String {
     return "#${"%04d".format(unformattedNumber)}"

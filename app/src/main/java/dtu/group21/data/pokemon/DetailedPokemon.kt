@@ -1,7 +1,7 @@
 package dtu.group21.data.pokemon
 
 import androidx.compose.runtime.MutableState
-import dtu.group21.models.pokemon.PokemonMove
+import dtu.group21.data.pokemon.moves.PokemonMove
 
 interface DetailedPokemon : SpeciesPokemon {
     //    val name: String

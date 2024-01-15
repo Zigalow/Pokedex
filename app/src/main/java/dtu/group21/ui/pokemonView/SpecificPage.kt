@@ -2,8 +2,6 @@ package dtu.group21.ui.pokemonView
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.calculateTargetValue
-import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,10 +29,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,77 +54,76 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
+import dtu.group21.data.Resource
 import dtu.group21.models.api.PokemonViewModel
-import dtu.group21.data.database.DatabaseViewModel
-import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
-import dtu.group21.models.pokemon.PokemonGender
-import dtu.group21.models.pokemon.PokemonMove
+import dtu.group21.data.pokemon.PokemonGender
+import dtu.group21.data.pokemon.moves.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
-import dtu.group21.models.pokemon.PokemonStats
-import dtu.group21.models.pokemon.PokemonType
-import dtu.group21.pokedex.MainActivity
+import dtu.group21.data.pokemon.PokemonStats
+import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
-import kotlin.math.sqrt
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 
 
 @Composable
 fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
     val pokemon = remember {
-        mutableStateOf(
-            ComplexPokemon(
-                0,
-                PokemonType.NONE,
-                PokemonType.NONE,
-                PokemonGender.MALE,
-                "",
-                emptyArray(),
-                0,
-                0,
-                PokemonStats(0, 0, 0, 0, 0, 0),
-                PokemonSpecies("Loading", 0, false, false, false, false),
-                emptyArray()
-            ) as DetailedPokemon
-        )
+        mutableStateOf<Resource<DetailedPokemon>>(Resource.Loading)
     }
 
     LaunchedEffect(Unit) {
         val viewModel = PokedexViewModel()
         viewModel.getDetails(pokedexId, pokemon)
     }
-    Mid(modifier = Modifier, pokemon.value)
-    Inspect(pokemon = pokemon.value, onNavigateBack = onNavigateBack)
+    Mid(
+        pokemonResource = pokemon.value,
+        modifier = Modifier
+    )
+    Inspect(
+        pokemonResource = pokemon.value,
+        onNavigateBack = onNavigateBack
+    )
 }
 
 @Composable
-fun Inspect(pokemon: DetailedPokemon, onNavigateBack: () -> Unit) {
+fun Inspect(
+    pokemonResource: Resource<DetailedPokemon>,
+    onNavigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (pokemonResource !is Resource.Success)
+        return
+
+    val pokemon = pokemonResource.data
+
     val systemUiController = rememberSystemUiController()
     SideEffect {
         systemUiController.setStatusBarColor(pokemon.primaryType.secondaryColor)
     }
-    val modifier = Modifier
     Column(
         modifier
             .background(color = pokemon.primaryType.secondaryColor)
             .fillMaxSize()
     ) {
         Column(verticalArrangement = Arrangement.Top) {
-            Top(pokemon = pokemon, onClickBack = onNavigateBack)
-
-            Mid(modifier, pokemon)
+            Top(
+                pokemon = pokemon,
+                onClickBack = onNavigateBack
+            )
+            Mid(
+                pokemonResource = pokemonResource,
+                modifier = modifier
+            )
         }
         Column(
             modifier
@@ -171,17 +166,7 @@ fun Top(
                 active = pokemon.isFavorite.value,
                 color = pokemon.primaryType.secondaryColor,
                 onClicked = {
-                    pokemon.isFavorite.value = !pokemon.isFavorite.value
-                    val database = MainActivity.database!!
-                    val databaseViewModel = DatabaseViewModel()
-                    val saveablePokemon = (pokemon as ComplexPokemon) // TODO
-                    if (pokemon.isFavorite.value) {
-                        println("Saving pokemon")
-                        databaseViewModel.insertPokemon(saveablePokemon, database)
-                    } else {
-                        println("Deleting pokemon")
-                        databaseViewModel.deletePokemon(saveablePokemon, database)
-                    }
+                    // TODO
                 }
 
             )
@@ -191,7 +176,20 @@ fun Top(
 }
 
 @Composable
-fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
+fun Mid(
+    pokemonResource: Resource<DetailedPokemon>,
+    modifier: Modifier = Modifier
+) {
+    // TODO: make prettier
+    if (pokemonResource !is Resource.Success) {
+        CircularProgressIndicator(
+            color = Color.Black,
+        )
+        return
+    }
+
+    val pokemon = pokemonResource.data
+
     Column(
         modifier
             .height(105.dp)

@@ -1,10 +1,7 @@
 package dtu.group21.data.pokemon
 
 import androidx.compose.runtime.MutableState
-import dtu.group21.models.pokemon.PokemonAbility
-import dtu.group21.models.pokemon.PokemonMove
-import dtu.group21.models.pokemon.PokemonStats
-import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.data.pokemon.moves.PokemonMove
 
 data class AdvancedPokemon(
     override val name: String,

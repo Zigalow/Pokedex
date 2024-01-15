@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,7 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dtu.group21.data.PokedexViewModel
 import dtu.group21.data.pokemon.StatPokemon
-import dtu.group21.models.api.Resource
+import dtu.group21.data.Resource
 import dtu.group21.ui.favorites.FavoritesPage
 import dtu.group21.ui.frontpage.FrontPage
 import dtu.group21.ui.pokemonView.SpecificPage

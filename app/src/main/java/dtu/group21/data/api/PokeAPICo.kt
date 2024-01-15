@@ -9,11 +9,11 @@ import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.helpers.PokemonHelper
 import dtu.group21.models.api.JsonRequestMaker
-import dtu.group21.models.pokemon.MoveDamageClass
-import dtu.group21.models.pokemon.PokemonAbility
-import dtu.group21.models.pokemon.PokemonMove
-import dtu.group21.models.pokemon.PokemonStats
-import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.data.pokemon.moves.MoveDamageClass
+import dtu.group21.data.pokemon.PokemonAbility
+import dtu.group21.data.pokemon.moves.PokemonMove
+import dtu.group21.data.pokemon.PokemonStats
+import dtu.group21.data.pokemon.PokemonType
 import org.json.JSONArray
 
 class PokeAPICo : PokemonAPI {

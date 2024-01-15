@@ -49,8 +49,8 @@ import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.helpers.PokemonHelper.getGeneration
-import dtu.group21.models.api.Resource
-import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.data.Resource
+import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.ui.favorites.FavoritePokemonBox
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize

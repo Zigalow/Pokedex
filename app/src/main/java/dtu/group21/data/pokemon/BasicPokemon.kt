@@ -1,8 +1,5 @@
 package dtu.group21.data.pokemon
 
-import dtu.group21.models.pokemon.PokemonGender
-import dtu.group21.models.pokemon.PokemonType
-
 data class BasicPokemon(
     override val name: String,
     override val pokedexId: Int,

@@ -1,6 +1,6 @@
-package dtu.group21.models.pokemon.moves
+package dtu.group21.data.pokemon.moves
 
-import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.data.pokemon.PokemonType
 
 interface DisplayMove {
     val name: String
