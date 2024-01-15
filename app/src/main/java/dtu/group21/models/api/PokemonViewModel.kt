@@ -124,28 +124,50 @@ class PokemonViewModel(
         emit(Resource.Loading)
 
         val evolutionChain = ArrayList<ArrayList<EvolutionChainPokemon>>()
+        println("Base pokemon")
         val basePokemon = pokedexRequestMaker.getSimplePokemon(pokedexId)
         evolutionChain.add(arrayListOf(basePokemon))
+        for (i in evolutionChain) {
+            println("Current i: ${i}")
+            for (j in i) {
+                println("Id: ${ j.id }")
+            }
+        }
 
         // Load previous
         var loadPreviousOf = basePokemon
         while (!loadPreviousOf.isRoot) {
+            println("PreviousPokemon")
             val previousPokemon = pokedexRequestMaker.getSimplePokemon(loadPreviousOf.precedingPokemonId)
             evolutionChain.add(0, arrayListOf(previousPokemon))
+            for (i in evolutionChain) {
+                println("Current i: ${i}")
+                for (j in i) {
+                    println("Id: ${ j.id }")
+                }
+            }
             loadPreviousOf = previousPokemon
         }
 
+        // Bug was present in the below section. It would not work, if the first
         // Load next
         var loadNextOf = basePokemon
         while (loadNextOf.hasEvolutions) {
+            println("NextPokemon")
             val possibilites = ArrayList<EvolutionChainPokemon>()
             for (nextId in loadNextOf.evolutionIds) {
                 possibilites.add(pokedexRequestMaker.getSimplePokemon(nextId))
             }
-            evolutionChain.add(possibilites)
-
+            if (possibilites.size < 3) {
+                evolutionChain.add(arrayListOf(possibilites.first()))
+                loadNextOf = possibilites.removeFirst()
+            } else {
+                evolutionChain.add(possibilites)
+                break
+            }
+            
             // TODO actually handle branching
-            break
+//            break
         }
 
         // Return all the pokemons

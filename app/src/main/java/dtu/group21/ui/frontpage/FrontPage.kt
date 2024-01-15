@@ -1,5 +1,6 @@
 package dtu.group21.ui.frontpage
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -42,6 +44,7 @@ import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.data.pokemon.StatPokemon
+import dtu.group21.data.PokedexViewModel
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.models.pokemon.PokemonType
@@ -51,6 +54,13 @@ import java.util.Locale
 
 @Composable
 fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource<StatPokemon>>>) {
+    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+    LaunchedEffect(Unit) {
+        val pokedexViewModel = PokedexViewModel()
+        val ids = (1..50)
+        pokedexViewModel.getPokemons(ids.toList(),pokemons)
+    }
+
     var menuIsOpen by remember { mutableStateOf(false) }
     val systemUiController = rememberSystemUiController()
     SideEffect {
@@ -289,7 +299,7 @@ fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon) {
     AsyncImage(
         model = pokemon.spriteId,
         contentDescription = pokemon.name,
-        modifier = modifier
+        modifier = modifier.animateContentSize()
     )
     /*Image(
             painter = rememberAsyncImagePainter(pokemon.spriteResourceId),

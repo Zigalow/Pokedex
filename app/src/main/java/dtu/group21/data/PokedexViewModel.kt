@@ -4,7 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import dtu.group21.data.api.PokeAPICo
 import dtu.group21.data.api.PokemonAPI
-import dtu.group21.data.caches.PokemonCache
+import dtu.group21.data.caches.PokedexCache
 import dtu.group21.data.database.AppDatabase
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
@@ -42,7 +42,7 @@ class PokedexViewModel(
         cacheResults: Boolean = true
     ) {
         coroutineScope.launch {
-            getPokemonsInternal(pokedexIds, cacheResults).collect {
+            getPokemonsInternal(pokedexIds).collect {
                 when (it) {
                     is Resource.Success -> {
                         destination.value = it.data
@@ -60,21 +60,35 @@ class PokedexViewModel(
         }
     }
 
-    private suspend fun getPokemonsInternal(
-        pokedexIds: List<Int>,
-        cacheResults: Boolean
-    ): Flow<Resource<List<Resource<StatPokemon>>>> = flow {
-        val pokemons = mutableListOf<Resource<StatPokemon>>()
-        pokedexIds.forEach { pokemons.add(Resource.Loading) }
-        emit(Resource.Success(pokemons.toList()))
+    private suspend fun getPokemonsInternal(pokedexIds: List<Int>): Flow<Resource<List<Resource<DisplayPokemon>>>> = flow {
+        val pokemons = mutableMapOf<Int, Resource<DisplayPokemon>>()
+        pokedexIds.forEach { pokemons[it] = Resource.Loading }
 
-        pokedexIds.forEachIndexed { i, id ->
-            getPokemonInternal(id, cacheResults).collect {
+        // TODO: probably make this better
+        fun getPokemonList(map: Map<Int, Resource<DisplayPokemon>>, order: List<Int>): List<Resource<DisplayPokemon>> {
+            return order.map { map[it]!! }
+        }
+
+        val leftToLoad = pokedexIds.toMutableList()
+
+        println("Looking for matches in the cache in $pokedexIds")
+        println("Cache content: ${PokedexCache.pokemons.map { it.pokedexId }}")
+        // Check for cache hits
+        PokedexCache.pokemons.forEach { cached ->
+            if (cached.pokedexId in pokedexIds) {
+                pokemons[cached.pokedexId] = Resource.Success(cached)
+                leftToLoad.remove(cached.pokedexId)
+            }
+        }
+        emit(Resource.Success(getPokemonList(pokemons, pokedexIds)))
+
+        leftToLoad.forEachIndexed { i, id ->
+            getPokemonInternal(id, true).collect {
                 when (it) {
                     is Resource.Success -> {
-                        pokemons.removeAt(i)
-                        pokemons.add(i, Resource.Success(it.data))
-                        emit(Resource.Success(pokemons.toList()))
+                        val pokemon = it.data
+                        pokemons[pokemon.pokedexId] = Resource.Success(pokemon)
+                        emit(Resource.Success(getPokemonList(pokemons, pokedexIds)))
                     }
 
                     is Resource.Failure -> {
@@ -95,9 +109,11 @@ class PokedexViewModel(
         destination: MutableState<DisplayPokemon>,
         cacheResult: Boolean = true
     ) {
-        if (pokedexId in PokemonCache) {
-            destination.value = PokemonCache[pokedexId]!!
-        } else {
+        val cached = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
+        if (cached != null) {
+            destination.value = cached
+        }
+        else {
             coroutineScope.launch {
                 getPokemonInternal(pokedexId, cacheResult).collect {
                     when (it) {
@@ -128,11 +144,9 @@ class PokedexViewModel(
         }
         emit(Resource.Loading)
 
-        var retrievedPokemon: StatPokemon? = null
-
-        if (pokedexId in PokemonCache) {
-            retrievedPokemon = PokemonCache[pokedexId]
-        } else {
+        var retrievedPokemon: DisplayPokemon? = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
+        if (retrievedPokemon == null) {
+            println("Cache miss on pokemon '$pokedexId'")
             // Database look-up
             val databaseMatches = database.favoritesDao().getPokemonById(pokedexId)
             if (databaseMatches.isNotEmpty()) {
@@ -144,7 +158,7 @@ class PokedexViewModel(
             }
 
             if (cacheResult) {
-                PokemonCache.add(retrievedPokemon)
+                PokedexCache.addDisplayPokemon(retrievedPokemon)
             }
         }
 
@@ -155,9 +169,9 @@ class PokedexViewModel(
         }
     }
 
-    fun getDetails(pokedexId: Int, destination: MutableState<DetailedPokemon>) {
+    fun getDetails(pokedexId: Int, destination: MutableState<DetailedPokemon>, cacheResult: Boolean = true) {
         coroutineScope.launch {
-            getDetailsInternal(pokedexId).collect {
+            getDetailsInternal(pokedexId, cacheResult).collect {
                 when (it) {
                     is Resource.Success -> {
                         destination.value = it.data
@@ -175,19 +189,15 @@ class PokedexViewModel(
         }
     }
 
-    private suspend fun getDetailsInternal(pokedexId: Int): Flow<Resource<DetailedPokemon>> = flow {
+    private suspend fun getDetailsInternal(pokedexId: Int, cacheResult: Boolean): Flow<Resource<DetailedPokemon>> = flow {
         if (pokedexId < 1 || pokedexId > 1010) {
             emit(Resource.Failure("Number not valid"))
             return@flow
         }
         emit(Resource.Loading)
 
-        var retrievedPokemon: DetailedPokemon? = null
-
-        // TODO: make a cache for the details as well
-        if (pokedexId in PokemonCache && false) {
-            // retrievedPokemon = PokemonCache[pokedexId]
-        } else {
+        var retrievedPokemon: DetailedPokemon? = PokedexCache.details.firstOrNull { it.pokedexId == pokedexId }
+        if (retrievedPokemon == null) {
             // Database look-up
             val databaseMatches = database.favoritesDao().getPokemonById(pokedexId)
             if (databaseMatches.isNotEmpty()) {
@@ -196,6 +206,10 @@ class PokedexViewModel(
             // Fetching online
             else {
                 retrievedPokemon = api.getDetailedPokemon(pokedexId)
+            }
+
+            if (cacheResult) {
+                PokedexCache.addDetailedPokemon(retrievedPokemon)
             }
         }
 
