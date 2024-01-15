@@ -96,9 +96,9 @@ class PokeAPICo : PokemonAPI {
         // To find the move category for the latest version/game
         for (i in 0 until moves.length()) {
             val movesObject = moves.getJSONObject(i).getJSONObject("move")
-            val moveNameYES = movesObject.getString("name")
+            val moveNameFromMove = movesObject.getString("name")
 
-            if (moveNameYES == moveName) {
+            if (moveNameFromMove == moveName) {
                 learnMoveMethods =
                     if (moves.length() > 0) {
                         moves.getJSONObject(i).getJSONArray("version_group_details")
