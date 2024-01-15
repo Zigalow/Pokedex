@@ -41,6 +41,7 @@ import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
 import kotlin.random.Random
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.ButtonDefaults
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,7 +98,7 @@ fun WhosThatPokemonPage(
                 .padding(top = 20.dp)
         )
         */
-        if (currentPokemon is Resource.Success){
+        if (currentPokemon is Resource.Success) {
             PokemonImage(
                 pokemon = currentPokemon.data,
                 silhoutteColor = Color.Black
@@ -106,33 +107,38 @@ fun WhosThatPokemonPage(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, start = 10.dp, end = 10.dp) // Adjust start and end padding to reduce box width
+                .padding(
+                    top = 10.dp,
+                    start = 10.dp,
+                    end = 10.dp
+                ) // Adjust start and end padding to reduce box width
                 .background(
                     color = Color(0xFFE0E0E0), // Replace with your desired color
                     shape = RoundedCornerShape(15.dp)
                 ),
             contentAlignment = Alignment.Center
-        ){TextField(
-            value = guess,
-            onValueChange = { guess = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp), // Padding inside the box
-            label = { Text("Your Guess") },
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = Color.Black,
-                cursorColor = Color.Black,
-                containerColor = Color.Transparent, // No background color
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                errorIndicatorColor = Color.Transparent,
+        ) {
+            TextField(
+                value = guess,
+                onValueChange = { guess = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), // Padding inside the box
+                label = { Text("Your Guess") },
+                colors = TextFieldDefaults.textFieldColors(
+                    textColor = Color.Black,
+                    cursorColor = Color.Black,
+                    containerColor = Color.Transparent, // No background color
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent,
 
-                )
-        )}
+                    )
+            )
+        }
         // Input field for the guess
 
         // Button to submit the guess
-
         Button(
             onClick = {
                 if (currentPokemon is Resource.Success) {
@@ -144,10 +150,14 @@ fun WhosThatPokemonPage(
             },
             modifier = Modifier
                 .padding(top = 20.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFFFCC00) // Set the button color using the hexadecimal value
+            )
         ) {
-            Text("Guess", fontSize = 18.sp)
+            Text("Guess", fontSize = 18.sp, color = Color.White) // Set the text color to white for better contrast
         }
+
     }
 }
 
