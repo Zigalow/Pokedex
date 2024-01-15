@@ -1,6 +1,6 @@
 package dtu.group21.data.caches
 
-import dtu.group21.data.pokemon.StatPokemon
+import dtu.group21.data.pokemon.DisplayPokemon
 
 class PokemonCache<T : DisplayPokemon> : Cache<T>() {
     // Access operators

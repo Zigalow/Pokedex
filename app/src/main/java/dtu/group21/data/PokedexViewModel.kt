@@ -60,12 +60,12 @@ class PokedexViewModel(
         }
     }
 
-    private suspend fun getPokemonsInternal(pokedexIds: List<Int>): Flow<Resource<List<Resource<DisplayPokemon>>>> = flow {
-        val pokemons = mutableMapOf<Int, Resource<DisplayPokemon>>()
+    private suspend fun getPokemonsInternal(pokedexIds: List<Int>): Flow<Resource<List<Resource<StatPokemon>>>> = flow {
+        val pokemons = mutableMapOf<Int, Resource<StatPokemon>>()
         pokedexIds.forEach { pokemons[it] = Resource.Loading }
 
         // TODO: probably make this better
-        fun getPokemonList(map: Map<Int, Resource<DisplayPokemon>>, order: List<Int>): List<Resource<DisplayPokemon>> {
+        fun getPokemonList(map: Map<Int, Resource<StatPokemon>>, order: List<Int>): List<Resource<StatPokemon>> {
             return order.map { map[it]!! }
         }
 
@@ -144,7 +144,7 @@ class PokedexViewModel(
         }
         emit(Resource.Loading)
 
-        var retrievedPokemon: DisplayPokemon? = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
+        var retrievedPokemon: StatPokemon? = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
         if (retrievedPokemon == null) {
             println("Cache miss on pokemon '$pokedexId'")
             // Database look-up

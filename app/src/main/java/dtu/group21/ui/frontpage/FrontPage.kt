@@ -54,7 +54,7 @@ import java.util.Locale
 
 @Composable
 fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource<StatPokemon>>>) {
-    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+    val pokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
     LaunchedEffect(Unit) {
         val pokedexViewModel = PokedexViewModel()
         val ids = (1..50)
