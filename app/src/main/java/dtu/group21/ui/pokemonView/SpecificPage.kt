@@ -37,12 +37,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -60,6 +63,7 @@ import dtu.group21.models.pokemon.PokemonStats
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.models.pokemon.moves.DisplayMove
 import dtu.group21.models.pokemon.moves.EggMove
+import dtu.group21.models.pokemon.moves.EggTutorMove
 import dtu.group21.models.pokemon.moves.LevelMove
 import dtu.group21.models.pokemon.moves.MachineMove
 import dtu.group21.models.pokemon.moves.TutorMove
@@ -487,8 +491,8 @@ fun MovesSection(
             when (selectedCategory) {
                 "Level" -> LevelMoveBoxColumn(moveList = levelMoves)
                 "Machine" -> MachineMoveBoxColumn(moveList = machineMoves)
-                "Egg" -> EggMoveBoxColumn(moveList = eggMoves)
-                "Tutor" -> TutorMoveBoxColumn(moveList = tutorMoves)
+                "Egg" -> EggTutorMoveBoxColumn(moveList = eggMoves)
+                "Tutor" -> EggTutorMoveBoxColumn(moveList = tutorMoves)
             }
         }
     }
@@ -638,8 +642,10 @@ fun arrow(modifier: Modifier) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LevelMoveBoxColumn(moveList: List<LevelMove>) {
-    val primaryWeight = 0.24f
-    val secondaryWeight = 0.76f
+    val leftWeight = 0.5f
+    val mostLeftWeight = 0.3f
+    val rightWeight = 0.20f
+    val textSize = 15.sp
     Column(modifier = Modifier.fillMaxWidth(0.98f)) {
         Row(
             modifier = Modifier
@@ -649,39 +655,14 @@ fun LevelMoveBoxColumn(moveList: List<LevelMove>) {
                 ),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "Level",
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.weight(secondaryWeight),
-                text = "Move",
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-
-                text = "Power",
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "Acc.",
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "PP",
-                textAlign = TextAlign.Center
-            )
+            MoveLabelRow(labels = listOf("Level", "Move", "Power", "Acc.", "PP"), textSize = textSize, mostLeftWeight = mostLeftWeight , leftWeight = leftWeight, rightWeight = rightWeight)
         }
 //    Divider(color = Color.Black)
 
         FlowRow(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth().shadow(2.dp)
+                .background(Color(0xFFFBFBFB))
                 .verticalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.Center,
             maxItemsInEachRow = 2
@@ -693,6 +674,9 @@ fun LevelMoveBoxColumn(moveList: List<LevelMove>) {
 //                modifier = modifier
 //                    .size(190.dp)
 //                    .padding(horizontal = 8.dp, vertical = 5.dp),
+                    mostLeftWeight = mostLeftWeight,
+                    leftWeight = leftWeight,
+                    rightWeight = rightWeight,
                     move = moveList[i],
 //                onClicked = { onPokemonClicked(pokemons[i].name) }
                 )
@@ -705,9 +689,10 @@ fun LevelMoveBoxColumn(moveList: List<LevelMove>) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MachineMoveBoxColumn(moveList: List<MachineMove>) {
-    val primaryWeight = 0.3f
-    val secondaryWeight = 0.70f
-    val textSize = 12.sp
+    val leftWeight = 0.5f
+    val mostLeftWeight = 0.3f
+    val rightWeight = 0.20f
+    val textSize = 15.sp
     Column(modifier = Modifier.fillMaxWidth(0.98f)) {
         Row(
             modifier = Modifier
@@ -717,33 +702,7 @@ fun MachineMoveBoxColumn(moveList: List<MachineMove>) {
                 ),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "Machine",
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.weight(secondaryWeight),
-                text = "Move",
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-
-                text = "Power",
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "Acc.",
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "PP",
-                textAlign = TextAlign.Center
-            )
+            MoveLabelRow(labels = listOf("Machine", "Move", "Power", "Acc.", "PP"), textSize = textSize, mostLeftWeight = mostLeftWeight , leftWeight = leftWeight, rightWeight = rightWeight)
         }
 //    Divider(color = Color.Black)
 
@@ -761,6 +720,10 @@ fun MachineMoveBoxColumn(moveList: List<MachineMove>) {
 //                modifier = modifier
 //                    .size(190.dp)
 //                    .padding(horizontal = 8.dp, vertical = 5.dp),
+                    mostLeftWeight = mostLeftWeight,
+
+                    leftWeight = leftWeight,
+                    rightWeight = rightWeight,
                     move = moveList[i],
 //                onClicked = { onPokemonClicked(pokemons[i].name) }
                 )
@@ -772,47 +735,12 @@ fun MachineMoveBoxColumn(moveList: List<MachineMove>) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun EggMoveBoxColumn(moveList: List<EggMove>) {
+fun EggTutorMoveBoxColumn(moveList: List<EggTutorMove>) {
     val leftWeight = 0.8f
     val rightWeight = 0.20f
     val textSize = 15.sp
     Column(modifier = Modifier.fillMaxWidth(0.98f)) {
-        Row(
-            modifier = Modifier
-                .background(
-                    shape = RoundedCornerShape(topEnd = 7.dp, topStart = 7.dp),
-                    color = Color(0xFFFFCC00)
-                ),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                modifier = Modifier.weight(leftWeight),
-                text = "Move",
-                textAlign = TextAlign.Center,
-                fontSize = textSize
-            )
-
-            Text(
-                modifier = Modifier.weight(rightWeight),
-
-                text = "Power",
-                textAlign = TextAlign.Center,
-                fontSize = textSize
-            )
-            Text(
-                modifier = Modifier.weight(rightWeight),
-                text = "Acc.",
-                textAlign = TextAlign.Center,
-                fontSize = textSize
-            )
-            Text(
-                modifier = Modifier.weight(rightWeight),
-                text = "PP",
-                textAlign = TextAlign.Center,
-                fontSize = textSize
-            )
-        }
-  
+        MoveLabelRow(labels = listOf("Move", "Power", "Acc.", "PP"), textSize = textSize, leftWeight = 0.8f, rightWeight = 0.2f)
 
         FlowRow(
             modifier = Modifier
@@ -823,7 +751,7 @@ fun EggMoveBoxColumn(moveList: List<EggMove>) {
             maxItemsInEachRow = 2
         ) {
 
-            Spacer(modifier = Modifier.height( 5.dp))
+            Spacer(modifier = Modifier.height(5.dp))
             for (i in moveList.indices) {
                 MoveBox(
 //                modifier = modifier
@@ -839,10 +767,10 @@ fun EggMoveBoxColumn(moveList: List<EggMove>) {
         }
     }
 }
-
+/*
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TutorMoveBoxColumn(moveList: List<TutorMove>) {
+fun TutorMoveBoxColumn(moveList: List<Egg>) {
     val primaryWeight = 0.24f
     val secondaryWeight = 0.76f
     Column(modifier = Modifier.fillMaxWidth(0.98f)) {
@@ -905,10 +833,67 @@ fun TutorMoveBoxColumn(moveList: List<TutorMove>) {
             }
         }
     }
+}*/
+
+
+@Composable
+fun MoveLabelRow(
+    modifier: Modifier = Modifier,
+    labels: List<String>,
+    textSize: TextUnit,
+    mostLeftWeight: Float = 1f,
+    leftWeight: Float = 1f,
+    rightWeight: Float = 1f
+) {
+    Row(
+        modifier = modifier
+            .height(30.dp)
+            .clip(RoundedCornerShape(topEnd = 7.dp, topStart = 7.dp))
+            .shadow(2.dp)
+            .background(
+                shape = RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp),
+                color = Color(0xFFFFCC00)
+            ),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        var weight: Float
+            for (i in labels.indices) {
+                weight = when (i) {
+                    0 -> {
+                        if (labels.size == 5) {
+                            mostLeftWeight
+                        } else {
+                            leftWeight
+                        }
+                    }
+
+                    1 -> {
+                        if (labels.size == 5) {
+                            leftWeight
+                        } else {
+                            rightWeight
+                        }
+                    }
+                    else -> rightWeight
+                }
+                Text(
+                    modifier = Modifier.weight(weight).align(Alignment.CenterVertically),
+                    text = labels[i],
+                    textAlign = TextAlign.Center,
+                    fontSize = textSize
+                )
+            }
+    }
+
 }
 
 @Composable
-fun MoveBox(leftWeight: Float = 1f, rightWeight: Float = 1f, move: DisplayMove) {
+fun MoveBox(
+    mostLeftWeight: Float = 1f,
+    leftWeight: Float = 1f,
+    rightWeight: Float = 1f,
+    move: DisplayMove
+) {
     val topRowTextSize = 15.sp
     val bottomRowTextSize = 12.sp
     val rightWeightBottom = 0.4f
@@ -923,15 +908,14 @@ fun MoveBox(leftWeight: Float = 1f, rightWeight: Float = 1f, move: DisplayMove) 
         ) {
             if (move is LevelMove) {
                 Text(
-                    modifier = Modifier.weight(leftWeight),
+                    modifier = Modifier.weight(mostLeftWeight),
                     text = move.level.toString(),
                     fontSize = topRowTextSize,
-
                     textAlign = TextAlign.Center
                 )
             } else if (move is MachineMove) {
                 Text(
-                    modifier = Modifier.weight(leftWeight),
+                    modifier = Modifier.weight(mostLeftWeight),
                     text = move.machineId,
                     textAlign = TextAlign.Center,
                     fontSize = topRowTextSize,
@@ -976,7 +960,6 @@ fun MoveBox(leftWeight: Float = 1f, rightWeight: Float = 1f, move: DisplayMove) 
                 textAlign = TextAlign.Center
             )
         }
-        //Spacer(modifier = Modifier.padding(vertical = 2.dp))
         Spacer(modifier = Modifier.weight(0.2f))
         Row{
             Box(
