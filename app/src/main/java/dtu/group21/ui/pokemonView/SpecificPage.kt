@@ -128,7 +128,8 @@ fun Inspect(pokemon: DetailedPokemon, onNavigateBack: () -> Unit) {
                 .background(color = pokemon.primaryType.secondaryColor)
         ) {
             PokemonImage(
-                pokemon = pokemon, modifier = Modifier
+                pokemon = pokemon,
+                modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .fillMaxHeight(0.4f)
             )
@@ -145,26 +146,21 @@ fun Top(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Box(
-            modifier = Modifier
-                .weight(1f)
+            modifier = Modifier.weight(1f)
         ) {
             backIcon(
                 modifier
                     .padding(vertical = 16.dp, horizontal = 19.dp)
                     .size(49.dp)
-                    .clickable { onClickBack() }
-            )
+                    .clickable { onClickBack() })
         }
         Box(
-            modifier = Modifier
-                .weight(0.1f)
+            modifier = Modifier.weight(0.1f)
         ) {
-            FavoritesIcon(
-                active = pokemon.isFavorite.value,
+            FavoritesIcon(active = pokemon.isFavorite.value,
                 color = pokemon.primaryType.secondaryColor,
                 onClicked = {
                     pokemon.isFavorite.value = !pokemon.isFavorite.value
@@ -178,8 +174,7 @@ fun Top(
                         println("Deleting pokemon")
                         databaseViewModel.deletePokemon(saveablePokemon, database)
                     }
-                }
-            )
+                })
         }
         Spacer(modifier.width(11.dp))
     }
@@ -193,8 +188,7 @@ fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
             .fillMaxWidth()
     ) {
         Row(
-            modifier
-                .height(35.dp)
+            modifier.height(35.dp)
         ) {
             Spacer(modifier.width(13.dp))
             Text(
@@ -216,8 +210,7 @@ fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
         }
         Spacer(modifier.height(24.dp))
         Row(
-            modifier
-                .height(35.dp)
+            modifier.height(35.dp)
         ) {
             Spacer(modifier.width(13.dp))
             LargerPokemonTypeBox(
@@ -225,8 +218,7 @@ fun Mid(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                     .width(80.dp)
                     .height(29.dp)
                     .background(
-                        color = pokemon.primaryType.primaryColor,
-                        shape = RoundedCornerShape(15.dp)
+                        color = pokemon.primaryType.primaryColor, shape = RoundedCornerShape(15.dp)
                     ), pokemonType = pokemon.primaryType
             )
             Spacer(modifier.width(15.dp))
@@ -249,15 +241,10 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
         modifier
             .fillMaxSize()
             .background(
-                Color.White,
-                shape = RoundedCornerShape(
-                    topStart = 32.dp,
-                    topEnd = 32.dp,
-                    bottomStart = 0.dp,
-                    bottomEnd = 0.dp
+                Color.White, shape = RoundedCornerShape(
+                    topStart = 32.dp, topEnd = 32.dp, bottomStart = 0.dp, bottomEnd = 0.dp
                 )
-            ),
-        verticalArrangement = Arrangement.Bottom
+            ), verticalArrangement = Arrangement.Bottom
     ) {
         val categories = listOf("About", "Stats", "Moves", "Evolution")
         val selectedCategory = remember { mutableStateOf("About") }
@@ -281,14 +268,14 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
 
         Spacer(modifier.height(13.dp))
         Column(
-            modifier
-                .padding(start = 13.dp)
+            modifier.padding(start = 13.dp)
         ) {
             //based on which category is the coresponding section function will be used
-            Sections(pokemon = pokemon, selectedCategory = selectedCategory.value, modifier = modifier)
+            Sections(
+                pokemon = pokemon, selectedCategory = selectedCategory.value, modifier = modifier
+            )
             Spacer(
-                modifier = Modifier
-                    .weight(1f)
+                modifier = Modifier.weight(1f)
             )
         }
     }
@@ -301,12 +288,9 @@ fun Category(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .clickable {
-                onClick()
-            }
-    ) {
+    Box(modifier = modifier.clickable {
+            onClick()
+        }) {
         Text(
             text = title,
             color = if (isSelected) Color.Black else Color.Gray,
@@ -332,12 +316,9 @@ fun CategoryList(
         items(categories) { category ->
             val isSelected = selectedCategory == category
             Category(
-                title = category,
-                isSelected = isSelected,
-                onClick = {
+                title = category, isSelected = isSelected, onClick = {
                     selectedCategory = category
-                },
-                modifier = Modifier.padding(horizontal = 15.dp)
+                }, modifier = Modifier.padding(horizontal = 15.dp)
             )
         }
     }
@@ -350,13 +331,10 @@ fun Table(first: String, second: String) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            color = Color.Black.copy(alpha = 0.4f),
-            text = first,
-            modifier = Modifier.weight(0.35f)
+            color = Color.Black.copy(alpha = 0.4f), text = first, modifier = Modifier.weight(0.35f)
         )
         Text(
-            text = second,
-            modifier = Modifier.weight(1f)
+            text = second, modifier = Modifier.weight(1f)
         )
     }
     Spacer(modifier = Modifier.height(10.dp))
@@ -364,11 +342,7 @@ fun Table(first: String, second: String) {
 
 @Composable
 fun StatsBar(
-    first: String,
-    second: String,
-    max: Int,
-    animDuration: Int = 1000,
-    animDelay: Int = 0
+    first: String, second: String, max: Int, animDuration: Int = 1000, animDelay: Int = 0
 ) {
     val percentage = (second.toFloat() / max)
     var animationPlayed by remember {
@@ -377,10 +351,8 @@ fun StatsBar(
     val currentPercent = animateFloatAsState(
         targetValue = if (animationPlayed) {
             percentage
-        } else 0f,
-        animationSpec = tween(
-            animDuration,
-            animDelay
+        } else 0f, animationSpec = tween(
+            animDuration, animDelay
         )
     )
     LaunchedEffect(key1 = true) {
@@ -389,44 +361,39 @@ fun StatsBar(
     var boxColor = Color.Gray
 
     if (first.equals("Total")) {
-        boxColor =
-            if (second.toInt() < max * 0.2) {
-                Color(0xFFFF0000)
-            } else if (second.toInt() >= max * 0.2 && second.toInt() < max * 0.4) {
-                Color(0xFFFFB800)
-            } else if (second.toInt() >= max * 0.4 && second.toInt() < max * 0.6) {
-                Color(0xFFA0E515)
-            } else if (second.toInt() >= max * 0.6 && second.toInt() < max * 0.8) {
-                Color(0xFF23CD5E)
-            } else {
-                Color(0xFF00E1FF)
-            }
+        boxColor = if (second.toInt() < max * 0.2) {
+            Color(0xFFFF0000)
+        } else if (second.toInt() >= max * 0.2 && second.toInt() < max * 0.4) {
+            Color(0xFFFFB800)
+        } else if (second.toInt() >= max * 0.4 && second.toInt() < max * 0.6) {
+            Color(0xFFA0E515)
+        } else if (second.toInt() >= max * 0.6 && second.toInt() < max * 0.8) {
+            Color(0xFF23CD5E)
+        } else {
+            Color(0xFF00E1FF)
+        }
     } else {
-        boxColor =
-            if (second.toInt() in 0 until 50) {
-                Color(0xFFFF0000)
-            } else if (second.toInt() in 50 until 90) {
-                Color(0xFFFF9800)
-            } else if (second.toInt() in 90 until 120) {
-                Color(0xFFA0E515)
-            } else if (second.toInt() in 120 until 150) {
-                Color(0xFF23CD5E)
-            } else {
-                Color(0xFF00E1FF)
-            }
+        boxColor = if (second.toInt() in 0 until 50) {
+            Color(0xFFFF0000)
+        } else if (second.toInt() in 50 until 90) {
+            Color(0xFFFF9800)
+        } else if (second.toInt() in 90 until 120) {
+            Color(0xFFA0E515)
+        } else if (second.toInt() in 120 until 150) {
+            Color(0xFF23CD5E)
+        } else {
+            Color(0xFF00E1FF)
+        }
     }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            color = Color.Black.copy(alpha = 0.4f),
-            text = first,
-            modifier = Modifier.weight(0.15f)
+            color = Color.Black.copy(alpha = 0.4f), text = first, modifier = Modifier.weight(0.15f)
         )
         Text(
-            text = second,
-            modifier = Modifier.weight(0.1f)
+            text = second, modifier = Modifier.weight(0.1f)
         )
         Box(
             modifier = Modifier
@@ -443,8 +410,7 @@ fun StatsBar(
 
             )
         }
-        Spacer(modifier = Modifier.weight(0.02f))
-        /*Text(
+        Spacer(modifier = Modifier.weight(0.02f))/*Text(
             text = max.toString(),
             modifier = Modifier.weight(0.1f).align(Alignment.Bottom)
         )*/
@@ -461,45 +427,40 @@ fun Sections(modifier: Modifier, selectedCategory: String, pokemon: DetailedPoke
         "Evolution" -> EvolutionSection(
             modifier = Modifier
                 .padding(horizontal = 2.dp)
-                .fillMaxWidth(),
-            pokemon
+                .fillMaxWidth(), pokemon
         )
     }
 }
 
 @Composable
 fun AboutSection(
-    pokemon: DetailedPokemon,
-    modifier: Modifier
+    pokemon: DetailedPokemon, modifier: Modifier
 ) {
     val weightInGrams: Double = pokemon.weightInGrams.toDouble()
 
-    val pokemonWeight =
-        when (pokemon.weightInGrams) {
-            in 1 until 1000 -> "$weightInGrams g"
-            in 1000 until 1000000 -> "${weightInGrams / 1000} kg"
-            else -> "${weightInGrams / 1000000} t"
-        }
+    val pokemonWeight = when (pokemon.weightInGrams) {
+        in 1 until 1000 -> "$weightInGrams g"
+        in 1000 until 1000000 -> "${weightInGrams / 1000} kg"
+        else -> "${weightInGrams / 1000000} t"
+    }
     val heightInCm = pokemon.heightInCm.toDouble()
-    val pokemonHeight =
-        when (pokemon.heightInCm) {
-            in 1 until 100 -> "$heightInCm cm"
-            in 100 until 10000 -> "${heightInCm / 100} m"
-            else -> "${heightInCm / 100000} km"
-        }
+    val pokemonHeight = when (pokemon.heightInCm) {
+        in 1 until 100 -> "$heightInCm cm"
+        in 100 until 10000 -> "${heightInCm / 100} m"
+        else -> "${heightInCm / 100000} km"
+    }
 
-    val pokemonGeneration =
-        when (pokemon.pokedexId) {
-            in 1..151 -> "Generation 1"
-            in 152..251 -> "Generation 2"
-            in 252..386 -> "Generation 3"
-            in 387..493 -> "Generation 4"
-            in 494..649 -> "Generation 5"
-            in 650..721 -> "Generation 6"
-            in 722..809 -> "Generation 7"
-            in 810..905 -> "Generation 8"
-            else -> "Generation 9"
-        }
+    val pokemonGeneration = when (pokemon.pokedexId) {
+        in 1..151 -> "Generation 1"
+        in 152..251 -> "Generation 2"
+        in 252..386 -> "Generation 3"
+        in 387..493 -> "Generation 4"
+        in 494..649 -> "Generation 5"
+        in 650..721 -> "Generation 6"
+        in 722..809 -> "Generation 7"
+        in 810..905 -> "Generation 8"
+        else -> "Generation 9"
+    }
 
     Column {
         Table(first = "Category", second = pokemon.category)
@@ -531,8 +492,7 @@ fun AboutSection(
 
 @Composable
 fun StatsSection(
-    stats: PokemonStats,
-    modifier: Modifier
+    stats: PokemonStats, modifier: Modifier
 ) {
     Column {
         StatsBar(first = "HP", second = stats.hp.toString(), 255)
@@ -580,8 +540,7 @@ fun MovesSection(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-    )
-    {
+    ) {
 
         Box(
             modifier = Modifier
@@ -606,8 +565,7 @@ fun MovesSection(
             when (selectedCategory) {
                 "Level" -> LevelMoveBoxColumn(modifier = commonModifier, moveList = levelMoves)
                 "Machine" -> MachineMoveBoxColumn(
-                    modifier = commonModifier,
-                    moveList = machineMoves
+                    modifier = commonModifier, moveList = machineMoves
                 )
 
                 "Egg" -> EggTutorMoveBoxColumn(modifier = commonModifier, moveList = eggMoves)
@@ -632,8 +590,7 @@ private fun sortMachineMoves(originalList: List<MachineMove>): List<MachineMove>
 
 @Composable
 fun EvolutionSection(
-    modifier: Modifier,
-    pokemon: DetailedPokemon
+    modifier: Modifier, pokemon: DetailedPokemon
 ) {
     val evolutionChain = remember {
         mutableStateOf(ArrayList<List<EvolutionChainPokemon>>())
@@ -646,8 +603,7 @@ fun EvolutionSection(
         }
     }
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Center
+        modifier = modifier, horizontalArrangement = Arrangement.Center
     ) {
         if (evolutionChain.value.isEmpty()) {
             println("Loading evolutions")
@@ -704,21 +660,16 @@ fun EvolutionPokemonImage(modifier: Modifier = Modifier, pokemon: EvolutionChain
 
 @Composable
 fun FavoritesIcon(
-    active: Boolean,
-    color: Color,
-    onClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    active: Boolean, color: Color, onClicked: () -> Unit, modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .size(60.dp)
             .offset(0.dp, 11.dp)
             .background(
-                shape = CircleShape,
-                color = color
+                shape = CircleShape, color = color
             )
-            .clickable { onClicked() },
-        contentAlignment = Alignment.Center
+            .clickable { onClicked() }, contentAlignment = Alignment.Center
     ) {
         val imageId =
             if (active) R.drawable.favorite_icon_active else R.drawable.favorite_icon_inactive
@@ -874,8 +825,7 @@ fun MoveLabelRow(
             .background(
                 shape = RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp),
                 color = Color(0xFFFFCC00)
-            ),
-        horizontalArrangement = Arrangement.Center
+            ), horizontalArrangement = Arrangement.Center
     ) {
         var weight: Float
         for (i in labels.indices) {
@@ -913,10 +863,7 @@ fun MoveLabelRow(
 
 @Composable
 fun MoveBox(
-    mostLeftWeight: Float = 1f,
-    leftWeight: Float = 1f,
-    rightWeight: Float = 1f,
-    move: DisplayMove
+    mostLeftWeight: Float = 1f, leftWeight: Float = 1f, rightWeight: Float = 1f, move: DisplayMove
 ) {
     val topRowTextSize = 15.sp
     val bottomRowTextSize = topRowTextSize
@@ -926,9 +873,7 @@ fun MoveBox(
 
     Column {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
         ) {
             if (move is LevelMove) {
                 Text(
@@ -960,9 +905,7 @@ fun MoveBox(
             Text(
                 modifier = Modifier.weight(rightWeight),
 
-                text = power,
-                fontSize = topRowTextSize,
-                textAlign = TextAlign.Center
+                text = power, fontSize = topRowTextSize, textAlign = TextAlign.Center
             )
 
             val accuracy: String
@@ -990,15 +933,14 @@ fun MoveBox(
                 modifier = Modifier
                     .weight(1f)
                     .background(
-                        shape = RoundedCornerShape(8.dp),
-                        color = move.type.primaryColor
+                        shape = RoundedCornerShape(8.dp), color = move.type.primaryColor
                     ),
                 contentAlignment = Alignment.Center,
-            )
-            {
+            ) {
                 Text(
                     text = move.type.name,
-                    fontSize = bottomRowTextSize, color = Color.White,
+                    fontSize = bottomRowTextSize,
+                    color = Color.White,
                     textAlign = TextAlign.Center
                 )
             }
@@ -1009,16 +951,11 @@ fun MoveBox(
                 modifier = Modifier
                     .weight(0.5f)
                     .background(
-                        shape = RoundedCornerShape(8.dp),
-                        color = move.damageClass.color
-                    ),
-                contentAlignment = Alignment.Center
-            )
-            {
+                        shape = RoundedCornerShape(8.dp), color = move.damageClass.color
+                    ), contentAlignment = Alignment.Center
+            ) {
                 Text(
-                    text = move.damageClass.name,
-                    fontSize = bottomRowTextSize,
-                    color = Color.White
+                    text = move.damageClass.name, fontSize = bottomRowTextSize, color = Color.White
                 )
             }
         }
@@ -1029,10 +966,8 @@ fun MoveBox(
 fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
     Box(
         modifier = modifier.background(
-            color = pokemonType.primaryColor,
-            shape = RoundedCornerShape(15.dp)
-        ),
-        contentAlignment = Alignment.Center
+            color = pokemonType.primaryColor, shape = RoundedCornerShape(15.dp)
+        ), contentAlignment = Alignment.Center
 
     ) {
         val name = if (pokemonType == PokemonType.NONE) "" else pokemonType.name
