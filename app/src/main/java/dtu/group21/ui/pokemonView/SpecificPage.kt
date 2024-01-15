@@ -462,6 +462,12 @@ fun MovesSection(
         }
     }
 
+    levelMoves.sortBy { it.level }
+    machineMoves.sortBy { it.machineId }
+    eggMoves.sortBy { it.name }
+    tutorMoves.sortBy { it.name }
+    
+    
     val moveCategories = listOf("Level", "Machine", "Egg", "Tutor")
     var selectedCategory by remember { mutableStateOf("Level") }
     Column(
