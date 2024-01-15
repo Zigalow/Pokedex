@@ -1,4 +1,6 @@
-package dtu.group21.models.pokemon
+package dtu.group21.data.pokemon
+
+import dtu.group21.models.pokemon.PokemonAbility
 
 interface SpeciesPokemon : DisplayPokemon {
 

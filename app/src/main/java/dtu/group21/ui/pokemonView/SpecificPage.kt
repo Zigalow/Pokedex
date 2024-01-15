@@ -60,7 +60,7 @@ import dtu.group21.data.PokedexViewModel
 import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.data.database.DatabaseViewModel
 import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.models.pokemon.DetailedPokemon
+import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.models.pokemon.PokemonGender
 import dtu.group21.models.pokemon.PokemonMove

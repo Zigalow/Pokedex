@@ -26,9 +26,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dtu.group21.data.PokedexViewModel
-import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.models.api.Resource
-import dtu.group21.models.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.ui.favorites.FavoritesPage
 import dtu.group21.ui.frontpage.FrontPage
 import dtu.group21.ui.pokemonView.SpecificPage
@@ -162,7 +161,8 @@ fun PokeNavHost(startDestination: String = "home") {
             }
         }
 
-    }else{
+    }
+    else {
         Column {
             Text(text = "No internet connection")
             Button(modifier = Modifier.size(200.dp),onClick = {
