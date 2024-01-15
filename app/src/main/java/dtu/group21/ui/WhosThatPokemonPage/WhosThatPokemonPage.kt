@@ -36,6 +36,7 @@ import dtu.group21.models.api.Resource
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
+import kotlin.random.Random
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,10 +113,13 @@ fun WhosThatPokemonPage(
 
         Button(
             onClick = {
-                if(currentPokemon is Resource.Success){
-                    if(currentPokemon.data.name.equals(guess)) index ++
+                if (currentPokemon is Resource.Success) {
+                    if (currentPokemon.data.name.equals(guess)) {
+                        // Generate a random index
+                        index = Random.nextInt(pokemonPool.value.size)
+                    }
                 }
-                      },
+            },
             modifier = Modifier
                 .padding(top = 20.dp)
                 .fillMaxWidth()
@@ -124,21 +128,4 @@ fun WhosThatPokemonPage(
         }
     }
 }
-/*
 
-class WhosThatPokemonViewModel : ViewModel() {
-
-    //Eksempler for billeder
-
-    //var currentPokemonSilhouette: Int = R.drawable.pokemon_silhouette // Placeholder
-    //private var currentPokemonName: String = "pikachu" // Placeholder
-
-    fun checkGuess(guess: String) {
-        if (guess.equals(currentPokemonName, ignoreCase = true)) {
-                //If correct, input some text saying it's correct
-        } else {
-            //If wrong, input some text saying it's wrong.
-        }
-    }
-}*/
-//Mangler: to add logic to update currentPokemonSilhouette and currentPokemonName
