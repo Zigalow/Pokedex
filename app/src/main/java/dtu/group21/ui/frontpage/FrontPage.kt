@@ -44,12 +44,16 @@ import dtu.group21.data.PokedexViewModel
 import dtu.group21.models.api.Resource
 import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
+import dtu.group21.helpers.PokemonHelper
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.PaginatedColumn
 import dtu.group21.ui.shared.PaginationElement
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.theme.Yellow60
 import java.util.Locale
+import kotlin.math.min
+
+const val lookAmount = 20
 
 @Composable
 fun FrontPage(
@@ -57,14 +61,14 @@ fun FrontPage(
     pokemons: MutableState<List<Resource<DisplayPokemon>>>
 ) {
     val pokemonIds = remember {
-        mutableStateOf(101..160)
+        mutableStateOf(1..40)
     }
 
     val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
     LaunchedEffect(Unit) {
         println("Loading pokemons")
         val pokedexViewModel = PokedexViewModel()
-        pokedexViewModel.getPokemons(pokemonIds.value.toList().reversed(), pokemons)
+        pokedexViewModel.getPokemons(pokemonIds.value.toList(), pokemons)
     }
 
     var menuIsOpen by remember { mutableStateOf(false) }
@@ -114,10 +118,14 @@ fun FrontPage(
                     .padding(horizontal = 5.dp)
                     .fillMaxWidth(),
                 loadPrevious = {
-                    // TODO: make boundary checks
                     LaunchedEffect(Unit) {
                         val current = pokemonIds.value
-                        pokemonIds.value = (current.first - 20)..(current.last - 20)
+                        val lookbackAmount = min(lookAmount, current.first - 1)
+                        if (lookbackAmount == 0) {
+                            return@LaunchedEffect
+                        }
+
+                        pokemonIds.value = (current.first - lookbackAmount)..(current.last - lookbackAmount)
 
                         println("Loading pokemons ${pokemonIds.value}")
                         val pokedexViewModel = PokedexViewModel()
@@ -128,7 +136,12 @@ fun FrontPage(
                     // TODO: make boundary checks
                     LaunchedEffect(Unit) {
                         val current = pokemonIds.value
-                        pokemonIds.value = (current.first + 20)..(current.last + 20)
+                        val lookforwardAmount = min(lookAmount, PokemonHelper.validIds.last - current.last)
+                        if (lookforwardAmount == 0) {
+                            return@LaunchedEffect
+                        }
+
+                        pokemonIds.value = (current.first + lookforwardAmount)..(current.last + lookforwardAmount)
 
                         println("Loading pokemons ${pokemonIds.value}")
                         val pokedexViewModel = PokedexViewModel()
