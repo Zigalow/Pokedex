@@ -14,11 +14,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,26 +27,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import com.example.pokedex.R
-import dtu.group21.ui.search.SearchBar
+import dtu.group21.data.pokemon.DisplayPokemon
+import dtu.group21.models.api.Resource
+import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
-import dtu.group21.ui.shared.buttonColor
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhosThatPokemonPage(
     onNavigateBack: () -> Unit,
-    //viewModel: WhosThatPokemonViewModel = viewModel()
+    pokemonPool: MutableState<List<Resource<DisplayPokemon>>>,
 ) {
     var guess by remember { mutableStateOf("") }
-    //val pokemonImage = viewModel.currentPokemonSilhouette
+    var index by remember {
+        mutableStateOf(0)
+    }
+    val currentPokemon = pokemonPool.value[index]
 
     Column(
         modifier = Modifier
@@ -73,7 +75,9 @@ fun WhosThatPokemonPage(
             )
             Text(
                 text = "Who's That Pokemon",
-                modifier = Modifier.weight(0.01f).fillMaxWidth(),
+                modifier = Modifier
+                    .weight(0.01f)
+                    .fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
             )
@@ -88,7 +92,12 @@ fun WhosThatPokemonPage(
                 .padding(top = 20.dp)
         )
         */
-
+        if (currentPokemon is Resource.Success){
+            PokemonImage(
+                pokemon = currentPokemon.data,
+                silhoutteColor = Color.Black
+            )
+        }
         // Input field for the guess
         TextField(
             value = guess,
@@ -100,9 +109,13 @@ fun WhosThatPokemonPage(
         )
 
         // Button to submit the guess
+
         Button(
-            onClick = { viewModel.checkGuess(guess) },
-            colors = ButtonDefaults.buttonColors(backgroundColor = buttonColor),
+            onClick = {
+                if(currentPokemon is Resource.Success){
+                    if(currentPokemon.data.name.equals(guess)) index ++
+                }
+                      },
             modifier = Modifier
                 .padding(top = 20.dp)
                 .fillMaxWidth()
@@ -111,6 +124,7 @@ fun WhosThatPokemonPage(
         }
     }
 }
+/*
 
 class WhosThatPokemonViewModel : ViewModel() {
 
@@ -119,7 +133,6 @@ class WhosThatPokemonViewModel : ViewModel() {
     //var currentPokemonSilhouette: Int = R.drawable.pokemon_silhouette // Placeholder
     //private var currentPokemonName: String = "pikachu" // Placeholder
 
-
     fun checkGuess(guess: String) {
         if (guess.equals(currentPokemonName, ignoreCase = true)) {
                 //If correct, input some text saying it's correct
@@ -127,5 +140,5 @@ class WhosThatPokemonViewModel : ViewModel() {
             //If wrong, input some text saying it's wrong.
         }
     }
-}
+}*/
 //Mangler: to add logic to update currentPokemonSilhouette and currentPokemonName

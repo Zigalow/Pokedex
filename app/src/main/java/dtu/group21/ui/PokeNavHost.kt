@@ -135,7 +135,9 @@ fun PokeNavHost(startDestination: String = "home") {
         }
         composable("WhosThatPokemon") {
             WhosThatPokemonPage(
-                onNavigateBack = { popBackStackCustom(navController) }
+                onNavigateBack = { popBackStackCustom(navController)
+                },
+                pokemonPool = pokemons
             )
         }
         composable("favorites") {

@@ -30,7 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -290,11 +292,12 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
 }
 
 @Composable
-fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon) {
+fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon, silhoutteColor: Color? = null) {
     AsyncImage(
         model = pokemon.spriteId,
         contentDescription = pokemon.name,
-        modifier = modifier
+        modifier = modifier,
+        colorFilter = if (silhoutteColor == null) null else ColorFilter.tint(silhoutteColor)
     )
     /*Image(
             painter = rememberAsyncImagePainter(pokemon.spriteResourceId),
