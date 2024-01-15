@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,6 +37,7 @@ import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
 import kotlinx.coroutines.delay
 import kotlin.random.Random
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,8 +73,9 @@ fun WhosThatPokemonPage(
     ) {
         UpperMenu(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(74.dp)
+               // .fillMaxWidth()
+                .fillMaxSize()
+                //.height(74.dp)
         ) {
             Spacer(Modifier.width(10.dp))
             Image(
@@ -86,14 +87,15 @@ fun WhosThatPokemonPage(
                     .clickable { onNavigateBack() },
                 alignment = Alignment.CenterStart,
             )
-            Text(
-                text = "Who's That Pokemon",
-                modifier = Modifier
-                    .weight(0.01f)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                fontSize = bigFontSize,
-            )
+            Box(modifier = Modifier.weight(0.5f).fillMaxWidth(), contentAlignment = Alignment.Center){
+                Image(
+                    painter = painterResource(id = R.drawable.whos_that_pokemon_logo),
+                    contentDescription = "Who's That Pokemon?",
+                    modifier = Modifier
+                        //.size(200.dp) // Adjust the size as needed
+                )
+            }
+
             Spacer(Modifier.width(45.dp))
         }
         /* Display the Pokémon silhouette
