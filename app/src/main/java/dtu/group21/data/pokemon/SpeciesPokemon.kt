@@ -1,7 +1,6 @@
 package dtu.group21.data.pokemon
 
 interface SpeciesPokemon : StatPokemon {
-
     val evolutionChainId: Int
     val genderRate: Int
     val isBaby: Boolean
