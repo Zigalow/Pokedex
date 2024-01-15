@@ -64,7 +64,7 @@ fun FrontPage(
     LaunchedEffect(Unit) {
         println("Loading pokemons")
         val pokedexViewModel = PokedexViewModel()
-        pokedexViewModel.getPokemons(pokemonIds.value.toList(), pokemons)
+        pokedexViewModel.getPokemons(pokemonIds.value.toList().reversed(), pokemons)
     }
 
     var menuIsOpen by remember { mutableStateOf(false) }
@@ -200,23 +200,30 @@ fun PokemonColumn(
     loadFollowing: @Composable () -> Unit,
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    val chunks = if (screenWidth > 600.dp) 4 else 2
-    val itemWidth = (screenWidth / chunks) - 6.dp //-6.dp to consider patting in between each box
-    val alignedPokemons = pokemons.chunked(chunks)
+    val chunkSize = if (screenWidth > 600.dp) 4 else 2
+    val itemWidth = (screenWidth / chunkSize) - 6.dp //-6.dp to consider patting in between each box
+    val alignedPokemons = pokemons.chunked(chunkSize)
 
-    val elements = alignedPokemons.map { pokemonResources ->
-        val loadedIndex = pokemonResources.indexOfFirst { it is Resource.Success }
+    val anchorIndex = pokemons.indexOfFirst { it is Resource.Success }
 
-        // This key system works pretty well when scrolling down, but is not sufficient when scrolling up
-        val key: Any? = if (loadedIndex == -1) {
-            null
-        }
-        else {
-            val loadedPokemon = (pokemonResources[loadedIndex] as Resource.Success).data
-            val firstId = loadedPokemon.pokedexId - loadedIndex
+    val firstKey = if (anchorIndex == -1) {
+        1
+    }
+    else {
+        val anchor = pokemons[anchorIndex]
+        val anchorRowIndex = alignedPokemons.indexOfFirst { anchor in it }
+        val anchorRow = alignedPokemons[anchorRowIndex]
 
-            firstId
-        }
+        val anchorPokemon = (anchor as Resource.Success).data
+        println("Anchor: ${anchorPokemon.name} (#${anchorPokemon.pokedexId})")
+        println("Anchor row: $anchorRow ($anchorRowIndex)")
+
+        (anchorPokemon.pokedexId - anchorRow.indexOf(anchor)) - (anchorRowIndex * chunkSize)
+    }
+    println("First key: $firstKey")
+
+    val elements = alignedPokemons.mapIndexed { index, pokemonResources ->
+        val key = firstKey + (index * chunkSize)
 
         PaginationElement(
             key = key,

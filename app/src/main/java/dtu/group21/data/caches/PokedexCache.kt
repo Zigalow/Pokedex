@@ -14,7 +14,7 @@ object PokedexCache {
 
     init {
         // Set initial sizes of the caches
-        displayCache.size = 20
+        displayCache.size = 100
         detailsCache.size = 5
         favoritesCache.size = -1 // no limit
     }
