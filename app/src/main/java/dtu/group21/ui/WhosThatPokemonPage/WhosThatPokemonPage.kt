@@ -17,15 +17,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,11 +36,8 @@ import dtu.group21.models.api.Resource
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
-import kotlin.random.Random
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.runtime.*
 import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,6 +151,7 @@ fun WhosThatPokemonPage(
                 if (currentPokemon is Resource.Success) {
                     if (currentPokemon.data.name.equals(guess, ignoreCase = true)) {
                         showPokemon = true // Reveal Pokémon
+                        guess = ""
                     }
                 }
             },
