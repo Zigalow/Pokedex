@@ -851,7 +851,6 @@ fun MoveLabelRow(
             ),
         horizontalArrangement = Arrangement.Center
     ) {
-
         var weight: Float
             for (i in labels.indices) {
                 weight = when (i) {
@@ -873,7 +872,7 @@ fun MoveLabelRow(
                     else -> rightWeight
                 }
                 Text(
-                    modifier = Modifier.weight(weight),
+                    modifier = Modifier.weight(weight).align(Alignment.CenterVertically),
                     text = labels[i],
                     textAlign = TextAlign.Center,
                     fontSize = textSize
