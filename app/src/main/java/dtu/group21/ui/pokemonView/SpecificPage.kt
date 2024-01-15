@@ -494,11 +494,15 @@ fun MovesSection(
         )
         Spacer(modifier = Modifier.height(15.dp))
         Column {
+            val commonModifier = Modifier
+                .shadow(2.2.dp)
+                .background(Color(0xFFFBFBFB))
+            
             when (selectedCategory) {
-                "Level" -> LevelMoveBoxColumn(moveList = levelMoves)
-                "Machine" -> MachineMoveBoxColumn(moveList = machineMoves)
-                "Egg" -> EggTutorMoveBoxColumn(moveList = eggMoves)
-                "Tutor" -> EggTutorMoveBoxColumn(moveList = tutorMoves)
+                "Level" -> LevelMoveBoxColumn(modifier = commonModifier, moveList = levelMoves)
+                "Machine" -> MachineMoveBoxColumn(modifier = commonModifier, moveList = machineMoves)
+                "Egg" -> EggTutorMoveBoxColumn(modifier = commonModifier, moveList = eggMoves)
+                "Tutor" -> EggTutorMoveBoxColumn(modifier = commonModifier, moveList = tutorMoves)
             }
         }
     }
@@ -647,28 +651,33 @@ fun arrow(modifier: Modifier) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun LevelMoveBoxColumn(moveList: List<LevelMove>) {
+fun LevelMoveBoxColumn(modifier: Modifier = Modifier, moveList: List<LevelMove>) {
     val leftWeight = 0.5f
     val mostLeftWeight = 0.3f
     val rightWeight = 0.20f
     val textSize = 15.sp
     Column(modifier = Modifier.fillMaxWidth(0.98f)) {
-        Row(
+       /* Row(
             modifier = Modifier
                 .background(
                     shape = RoundedCornerShape(topEnd = 7.dp, topStart = 7.dp),
                     color = Color(0xFFFFCC00)
                 ),
             horizontalArrangement = Arrangement.Center
-        ) {
-            MoveLabelRow(labels = listOf("Level", "Move", "Power", "Acc.", "PP"), textSize = textSize, mostLeftWeight = mostLeftWeight , leftWeight = leftWeight, rightWeight = rightWeight)
-        }
+        ) {*/
+            MoveLabelRow(
+                labels = listOf("Level", "Move", "Power", "Acc.", "PP"),
+                textSize = textSize,
+                mostLeftWeight = mostLeftWeight,
+                leftWeight = leftWeight,
+                rightWeight = rightWeight
+            )
+//        }
 //    Divider(color = Color.Black)
 
         FlowRow(
-            modifier = Modifier
-                .fillMaxWidth().shadow(2.dp)
-                .background(Color(0xFFFBFBFB))
+            modifier = modifier
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.Center,
             maxItemsInEachRow = 2
@@ -677,7 +686,7 @@ fun LevelMoveBoxColumn(moveList: List<LevelMove>) {
             Spacer(modifier = Modifier.padding(vertical = 5.dp))
             for (i in moveList.indices) {
                 MoveBox(
-                //modifier = Modifier
+                    //modifier = Modifier
 //                    .size(190.dp)
                     //.padding(horizontal = 8.dp),
                     mostLeftWeight = mostLeftWeight,
@@ -694,7 +703,7 @@ fun LevelMoveBoxColumn(moveList: List<LevelMove>) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun MachineMoveBoxColumn(moveList: List<MachineMove>) {
+fun MachineMoveBoxColumn(modifier: Modifier = Modifier, moveList: List<MachineMove>) {
     val leftWeight = 0.5f
     val mostLeftWeight = 0.3f
     val rightWeight = 0.20f
@@ -708,12 +717,18 @@ fun MachineMoveBoxColumn(moveList: List<MachineMove>) {
                 ),
             horizontalArrangement = Arrangement.Center
         ) {
-            MoveLabelRow(labels = listOf("Machine", "Move", "Power", "Acc.", "PP"), textSize = textSize, mostLeftWeight = mostLeftWeight , leftWeight = leftWeight, rightWeight = rightWeight)
+            MoveLabelRow(
+                labels = listOf("Machine", "Move", "Power", "Acc.", "PP"),
+                textSize = textSize,
+                mostLeftWeight = mostLeftWeight,
+                leftWeight = leftWeight,
+                rightWeight = rightWeight
+            )
         }
 //    Divider(color = Color.Black)
 
         FlowRow(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.Center,
@@ -741,18 +756,22 @@ fun MachineMoveBoxColumn(moveList: List<MachineMove>) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun EggTutorMoveBoxColumn(moveList: List<EggTutorMove>) {
+fun EggTutorMoveBoxColumn(modifier: Modifier = Modifier, moveList: List<EggTutorMove>) {
     val leftWeight = 0.8f
     val rightWeight = 0.20f
     val textSize = 15.sp
     Column(modifier = Modifier.fillMaxWidth(0.98f)) {
-        MoveLabelRow(labels = listOf("Move", "Power", "Acc.", "PP"), textSize = textSize, leftWeight = 0.8f, rightWeight = 0.2f)
+        MoveLabelRow(
+            labels = listOf("Move", "Power", "Acc.", "PP"),
+            textSize = textSize,
+            leftWeight = 0.8f,
+            rightWeight = 0.2f
+        )
 
         FlowRow(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .background(Color(0xFFF6F6F6)),
+                .verticalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.Center,
             maxItemsInEachRow = 2
         ) {
@@ -773,74 +792,6 @@ fun EggTutorMoveBoxColumn(moveList: List<EggTutorMove>) {
         }
     }
 }
-/*
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun TutorMoveBoxColumn(moveList: List<Egg>) {
-    val primaryWeight = 0.24f
-    val secondaryWeight = 0.76f
-    Column(modifier = Modifier.fillMaxWidth(0.98f)) {
-        Row(
-            modifier = Modifier
-                .background(
-                    shape = RoundedCornerShape(topEnd = 7.dp, topStart = 7.dp),
-                    color = Color(0xFFFFCC00)
-                ),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "Level",
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.weight(secondaryWeight),
-                text = "Move",
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-
-                text = "Power",
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "Acc.",
-                textAlign = TextAlign.Center
-            )
-            Text(
-                modifier = Modifier.weight(primaryWeight),
-                text = "PP",
-                textAlign = TextAlign.Center
-            )
-        }
-//    Divider(color = Color.Black)
-
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.Center,
-            maxItemsInEachRow = 2
-        ) {
-
-            Spacer(modifier = Modifier.padding(vertical = 5.dp))
-            for (i in moveList.indices) {
-                MoveBox(
-//                modifier = modifier
-//                    .size(190.dp)
-//                    .padding(horizontal = 8.dp, vertical = 5.dp),
-                    move = moveList[i],
-//                onClicked = { onPokemonClicked(pokemons[i].name) }
-                )
-                Divider(modifier = Modifier.padding(vertical = 2.dp), color = Color.Black)
-            }
-        }
-    }
-}*/
-
 
 @Composable
 fun MoveLabelRow(
@@ -855,7 +806,7 @@ fun MoveLabelRow(
         modifier = modifier
             .height(30.dp)
             .clip(RoundedCornerShape(topEnd = 7.dp, topStart = 7.dp))
-            .shadow(2.dp)
+            .shadow(2.2.dp)
             .background(
                 shape = RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp),
                 color = Color(0xFFFFCC00)
@@ -863,32 +814,35 @@ fun MoveLabelRow(
         horizontalArrangement = Arrangement.Center
     ) {
         var weight: Float
-            for (i in labels.indices) {
-                weight = when (i) {
-                    0 -> {
-                        if (labels.size == 5) {
-                            mostLeftWeight
-                        } else {
-                            leftWeight
-                        }
+        for (i in labels.indices) {
+            weight = when (i) {
+                0 -> {
+                    if (labels.size == 5) {
+                        mostLeftWeight
+                    } else {
+                        leftWeight
                     }
-
-                    1 -> {
-                        if (labels.size == 5) {
-                            leftWeight
-                        } else {
-                            rightWeight
-                        }
-                    }
-                    else -> rightWeight
                 }
-                Text(
-                    modifier = Modifier.weight(weight).align(Alignment.CenterVertically),
-                    text = labels[i],
-                    textAlign = TextAlign.Center,
-                    fontSize = textSize
-                )
+
+                1 -> {
+                    if (labels.size == 5) {
+                        leftWeight
+                    } else {
+                        rightWeight
+                    }
+                }
+
+                else -> rightWeight
             }
+            Text(
+                modifier = Modifier
+                    .weight(weight)
+                    .align(Alignment.CenterVertically),
+                text = labels[i],
+                textAlign = TextAlign.Center,
+                fontSize = textSize
+            )
+        }
     }
 
 }
@@ -967,7 +921,7 @@ fun MoveBox(
             )
         }
         Spacer(modifier = Modifier.height(6.dp))
-        Row{
+        Row {
             Box(
                 modifier = Modifier
                     .weight(1f)
