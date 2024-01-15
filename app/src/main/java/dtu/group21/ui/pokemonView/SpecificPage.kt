@@ -960,41 +960,41 @@ fun MoveBox(
                 textAlign = TextAlign.Center
             )
         }
-        Spacer(modifier = Modifier.padding(vertical = 2.dp))
-        Row()
-        {
-            /*     Box(
-                     modifier = Modifier
-                         .weight(secondaryWeightBottom)
-                         .background(
-                             shape = RoundedCornerShape(15.dp),
-                             color = move.type.primaryColor
-                         ), contentAlignment = Alignment.Center
-                 )
-                 {*/
-            Text(
-                modifier = Modifier
-                    .weight(leftWeightBottom)
-                    .background(shape = RoundedCornerShape(15.dp), color = move.type.primaryColor),
-                text = move.type.name,
-                // todo
-                fontSize = bottomRowTextSize, color = Color.White,
-                textAlign = TextAlign.Center
-            )
-//            }
+        Spacer(modifier = Modifier.weight(0.2f))
+        Row{
             Box(
                 modifier = Modifier
-                    .weight(rightWeightBottom)
+                    .weight(1f)
                     .background(
-                        shape = RoundedCornerShape(15.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        color = move.type.primaryColor
+                    ),
+                contentAlignment = Alignment.Center,
+            )
+            {
+                Text(
+                    text = move.type.name,
+                    fontSize = topRowTextSize, color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(0.2f))
+
+            Box(
+                modifier = Modifier
+                    .weight(0.5f)
+                    .background(
+                        shape = RoundedCornerShape(8.dp),
                         color = move.damageClass.color
-                    ), contentAlignment = Alignment.Center
+                    ),
+                contentAlignment = Alignment.Center
             )
             {
                 Text(
                     text = move.damageClass.name,
-                    // todo
-                    fontSize = bottomRowTextSize, color = Color.White
+                    fontSize = topRowTextSize,
+                    color = Color.White
                 )
             }
         }
@@ -1007,7 +1007,8 @@ fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType
         modifier = modifier.background(
             color = pokemonType.primaryColor,
             shape = RoundedCornerShape(15.dp)
-        ), contentAlignment = Alignment.Center
+        ),
+        contentAlignment = Alignment.Center
 
     ) {
         val name = if (pokemonType == PokemonType.NONE) "" else pokemonType.name
