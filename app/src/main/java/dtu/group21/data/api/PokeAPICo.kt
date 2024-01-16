@@ -262,8 +262,28 @@ class PokeAPICo : PokemonAPI {
         val moveIdNames = getIdNames(pokemonResponse.getJSONArray("moves"), "move")
         val moves = moveIdNames.map { getBasicMove(it, pokedexId) }
 
-        val abilityIdNames = getIdNames(pokemonResponse.getJSONArray("abilities"), "ability")
-        val abilities = abilityIdNames.map { getAbility(it, false) } // TODO: actually figure out if it's hidden
+
+        // Abilities
+        val abilitiesArray = pokemonResponse.getJSONArray("abilities")
+        val pokemonAbilities = Array(abilitiesArray.length()) { _ ->
+            PokemonAbility(
+                "",
+                "",
+                false
+            )
+        }
+        var isHidden: Boolean
+        for (i in 0 until abilitiesArray.length()) {
+            isHidden = abilitiesArray.getJSONObject(i).getBoolean("is_hidden")
+            pokemonAbilities[i] =
+                getAbility(
+                    abilitiesArray.getJSONObject(i).getJSONObject("ability").getString("name"),
+                    isHidden
+                )
+        }
+
+        /* val abilityIdNames = getIdNames(pokemonResponse.getJSONArray("abilities"), "ability")
+        val abilities = abilityIdNames.map { getAbility(it, false) }*/
 
         val evolutionChainId =
             speciesResponse.getJSONObject("evolution_chain").getString("url").split("/").dropLast(1)
@@ -287,7 +307,7 @@ class PokeAPICo : PokemonAPI {
             generation = PokemonHelper.getGeneration(pokedexId),
             weightInGrams = weightInGrams,
             heightInCm = heightInCm,
-            abilities = abilities.toTypedArray(),
+            abilities = pokemonAbilities,
             // TODO: in my opinion should not be in the class
             isFavorite = mutableStateOf(false),
         )
