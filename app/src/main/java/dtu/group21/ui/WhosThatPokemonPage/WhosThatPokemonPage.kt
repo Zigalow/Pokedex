@@ -78,35 +78,28 @@ fun WhosThatPokemonPage(
                 //.height(74.dp)
         ) {
             Spacer(Modifier.width(10.dp))
-            Image(
-                painter = painterResource(id = R.drawable.back_arrow),
-                contentDescription = "Back Arrow",
-                modifier = Modifier
-                    .size(35.dp)
-                    .align(Alignment.CenterVertically)
-                    .clickable { onNavigateBack() },
-                alignment = Alignment.CenterStart,
-            )
-            Box(modifier = Modifier.weight(0.5f).fillMaxWidth(), contentAlignment = Alignment.Center){
+            Box(modifier = Modifier.weight(0.1f).fillMaxWidth()){
                 Image(
-                    painter = painterResource(id = R.drawable.whos_that_pokemon_logo),
-                    contentDescription = "Who's That Pokemon?",
+                    painter = painterResource(id = R.drawable.back_arrow),
+                    contentDescription = "Back Arrow",
                     modifier = Modifier
-                        //.size(200.dp) // Adjust the size as needed
+                        .size(35.dp)
+                        //.align(Alignment.CenterVertically)
+                        .clickable { onNavigateBack() },
+                    alignment = Alignment.CenterStart,
                 )
             }
 
-            Spacer(Modifier.width(45.dp))
+            Box(modifier = Modifier.weight(0.5f).fillMaxWidth(), contentAlignment = Alignment.Center){
+                Image(
+                    painter = painterResource(id = R.drawable.whos_that_pokemon_logo4),
+                    contentDescription = "Who's That Pokemon?",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+           // Spacer(Modifier.width(45.dp))
         }
-        /* Display the Pokémon silhouette
-        Image(
-            //painter = painterResource(id = pokemonImage),
-            contentDescription = "Pokemon Silhouette",
-            modifier = Modifier
-                .size(200.dp)
-                .padding(top = 20.dp)
-        )
-        */
+
         if (currentPokemon is Resource.Success) {
             PokemonImage(
                 pokemon = currentPokemon.data,
