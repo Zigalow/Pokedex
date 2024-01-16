@@ -6,6 +6,7 @@ import dtu.group21.data.api.PokeAPICo
 import dtu.group21.data.api.PokemonAPI
 import dtu.group21.data.caches.PokedexCache
 import dtu.group21.data.database.AppDatabase
+import dtu.group21.data.database.FavoriteData
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.data.pokemon.StatPokemon
@@ -23,15 +24,22 @@ class PokedexViewModel(
     private val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val database: AppDatabase = MainActivity.database
 
-    fun isFavoritePokemon(pokedexId: Int): Boolean {
-        // TODO: is this even allowed?
-        return database.favoritesDao().getAll().any { it.id == pokedexId }
-    }
-
     fun getFavoritePokemons(destination: MutableState<List<Resource<StatPokemon>>>) {
         coroutineScope.launch {
             destination.value =
                 database.favoritesDao().getAll().map { Resource.Success(it.toPokemon()) }
+        }
+    }
+
+    fun makeFavorite(pokemon: DetailedPokemon) {
+        coroutineScope.launch {
+            database.favoritesDao().insertAll(FavoriteData(pokemon))
+        }
+    }
+
+    fun removeFavorite(pokemon: DetailedPokemon) {
+        coroutineScope.launch {
+            database.favoritesDao().delete(FavoriteData(pokemon))
         }
     }
 
@@ -168,10 +176,16 @@ class PokedexViewModel(
         }
     }
 
-    fun getDetails(pokedexId: Int, destination: MutableState<Resource<DetailedPokemon>>, cacheResult: Boolean = true) {
+    fun getDetails(
+        pokedexId: Int,
+        destination: MutableState<Pair<Resource<DetailedPokemon>, Boolean>>,
+        cacheResult: Boolean = true
+    ) {
         coroutineScope.launch {
+            val isFavorite = database.favoritesDao().getAll().any { it.id == pokedexId }
+
             getDetailsInternal(pokedexId, cacheResult).collect {
-                destination.value = it
+                destination.value = Pair(it, isFavorite)
             }
         }
     }

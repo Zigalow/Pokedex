@@ -36,7 +36,7 @@ class PokemonConverters {
 
     @TypeConverter
     fun fromAbility(ability: PokemonAbility?): String? {
-        return if (ability != null) "${ability.name};${ability.description};${ability.isHidden}" else null
+        return if (ability != null) "${ability.name};;${ability.description};;${ability.isHidden}" else null
     }
 
     @TypeConverter
@@ -44,7 +44,7 @@ class PokemonConverters {
         if (abilityString == null)
             return null
 
-        val parts = abilityString.split(";")
+        val parts = abilityString.split(";;")
         val (name, description, isHiddenString) = parts
         val isHidden = (isHiddenString == "true")
 
@@ -52,30 +52,30 @@ class PokemonConverters {
     }
 
     @TypeConverter
-    fun fromAbilities(abilities: Array<PokemonAbility>?) = ConverterHelper.fromArray(abilities, { fromAbility(it)!! }, ":")
+    fun fromAbilities(abilities: Array<PokemonAbility>?) = ConverterHelper.fromArray(abilities, { fromAbility(it)!! }, ";;;")
     @TypeConverter
-    fun toAbilities(abilitiesString: String?): Array<PokemonAbility>? = ConverterHelper.toList(abilitiesString, { toAbility(it)!! }, ":")?.toTypedArray()
+    fun toAbilities(abilitiesString: String?): Array<PokemonAbility>? = ConverterHelper.toList(abilitiesString, { toAbility(it)!! }, ";;;")?.toTypedArray()
 
     @TypeConverter
     fun fromMove(move: PokemonMove?): String? {
         if (move == null)
             return null
 
-        return "${move.name};${move.description};${move.power};${move.accuracy};${move.pp};${
+        return "'${move.name}';;'${move.description}';;${move.power};;${move.accuracy};;${move.pp};;${
             fromType(
                 move.type
             )
-        };${move.damageClass}"
+        };;${move.damageClass}"
     }
     @TypeConverter
     fun toMove(moveString: String?): PokemonMove? {
         if (moveString == null)
             return null
 
-        val parts = moveString.split(";")
+        val parts = moveString.split(";;")
 
-        val name = parts[0]
-        val description = parts[1]
+        val name = parts[0].drop(1).dropLast(1)
+        val description = parts[1].drop(1).dropLast(1)
         val power = parts[2].toIntOrNull()
         val accuracy = parts[3].toIntOrNull()
         val pp = parts[4].toInt()
@@ -88,7 +88,7 @@ class PokemonConverters {
     }
 
     @TypeConverter
-    fun fromMoves(moves: Array<PokemonMove>?) = ConverterHelper.fromArray(moves, { fromMove(it)!! }, ":")
+    fun fromMoves(moves: Array<PokemonMove>?) = ConverterHelper.fromArray(moves, { fromMove(it)!! }, ";;;")
     @TypeConverter
-    fun toMoves(movesString: String?): Array<PokemonMove>? = ConverterHelper.toList(movesString, { toMove(it)!! }, ":")?.toTypedArray()
+    fun toMoves(movesString: String?): Array<PokemonMove>? = ConverterHelper.toList(movesString, { toMove(it)!! }, ";;;")?.toTypedArray()
 }

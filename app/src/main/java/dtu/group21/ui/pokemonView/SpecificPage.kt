@@ -77,35 +77,58 @@ import dtu.group21.ui.theme.LightWhite
 
 @Composable
 fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
-    val pokemon = remember {
-        mutableStateOf<Resource<DetailedPokemon>>(Resource.Loading)
+    val details = remember {
+        mutableStateOf<Pair<Resource<DetailedPokemon>, Boolean>>(Pair(Resource.Loading, false))
     }
-
     LaunchedEffect(Unit) {
         val viewModel = PokedexViewModel()
-        viewModel.getDetails(pokedexId, pokemon)
+        viewModel.getDetails(pokedexId, details)
     }
+
+    val (pokemonResource, wasFavorite) = details.value
+
+    // TODO: make prettier
+    if (pokemonResource !is Resource.Success) {
+        CircularProgressIndicator(
+            color = Color.Black,
+        )
+        return
+    }
+    val pokemon = pokemonResource.data
+
     Mid(
-        pokemonResource = pokemon.value,
+        pokemon = pokemon,
         modifier = Modifier
     )
     Inspect(
-        pokemonResource = pokemon.value,
-        onNavigateBack = onNavigateBack
+        pokemon = pokemon,
+        isFavorite = wasFavorite,
+        onNavigateBack = onNavigateBack,
+        onFavorited = {
+            val isFavorite = !wasFavorite
+
+            val viewModel = PokedexViewModel()
+            if (isFavorite) {
+                viewModel.makeFavorite(pokemon)
+            }
+            else {
+                viewModel.removeFavorite(pokemon)
+            }
+
+            val oldDetails = details.value
+            details.value = Pair(oldDetails.first, isFavorite)
+        }
     )
 }
 
 @Composable
 fun Inspect(
-    pokemonResource: Resource<DetailedPokemon>,
+    pokemon: DetailedPokemon,
+    isFavorite: Boolean,
     onNavigateBack: () -> Unit,
+    onFavorited: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (pokemonResource !is Resource.Success)
-        return
-
-    val pokemon = pokemonResource.data
-
     val systemUiController = rememberSystemUiController()
     SideEffect {
         systemUiController.setStatusBarColor(pokemon.primaryType.secondaryColor)
@@ -118,10 +141,12 @@ fun Inspect(
         Column(verticalArrangement = Arrangement.Top) {
             Top(
                 pokemon = pokemon,
-                onClickBack = onNavigateBack
+                isFavorite = isFavorite,
+                onClickBack = onNavigateBack,
+                onFavorited = onFavorited,
             )
             Mid(
-                pokemonResource = pokemonResource,
+                pokemon = pokemon,
                 modifier = modifier
             )
         }
@@ -139,7 +164,9 @@ fun Inspect(
 @Composable
 fun Top(
     pokemon: DetailedPokemon,
+    isFavorite: Boolean,
     onClickBack: () -> Unit,
+    onFavorited: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -163,12 +190,9 @@ fun Top(
                 .weight(0.1f)
         ) {
             FavoritesIcon(
-                active = false, // TODO: change dynamically
+                active = isFavorite,
                 color = pokemon.primaryType.secondaryColor,
-                onClicked = {
-                    // TODO
-                }
-
+                onClicked = onFavorited
             )
         }
         Spacer(modifier.width(11.dp))
@@ -177,19 +201,9 @@ fun Top(
 
 @Composable
 fun Mid(
-    pokemonResource: Resource<DetailedPokemon>,
+    pokemon: DetailedPokemon,
     modifier: Modifier = Modifier
 ) {
-    // TODO: make prettier
-    if (pokemonResource !is Resource.Success) {
-        CircularProgressIndicator(
-            color = Color.Black,
-        )
-        return
-    }
-
-    val pokemon = pokemonResource.data
-
     Column(
         modifier
             .height(105.dp)
