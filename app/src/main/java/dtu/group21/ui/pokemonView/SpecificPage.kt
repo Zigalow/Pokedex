@@ -289,8 +289,8 @@ fun Category(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.clickable {
-            onClick()
-        }) {
+        onClick()
+    }) {
         Text(
             text = title,
             color = if (isSelected) Color.Black else Color.Gray,
@@ -331,9 +331,7 @@ fun Table(first: String, second: String) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            color = Color.Black.copy(alpha = 0.4f),
-            text = first,
-            modifier = Modifier.weight(0.35f)
+            color = Color.Black.copy(alpha = 0.4f), text = first, modifier = Modifier.weight(0.35f)
         )
         Row(
             modifier = Modifier.weight(1f)
@@ -350,8 +348,7 @@ fun Table(first: String, second: String) {
                 Image(
                     painter = painterResource(id = imageId),
                     contentDescription = "Pokemon Gender",
-                    modifier = Modifier
-                        .size(20.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
             Spacer(modifier = Modifier.weight(0.9995f))
@@ -443,7 +440,7 @@ fun Sections(modifier: Modifier, selectedCategory: String, pokemon: DetailedPoke
     when (selectedCategory) {
         "About" -> AboutSection(pokemon, modifier)
         "Stats" -> StatsSection(pokemon.stats, modifier)
-        "Moves" -> MovesSection(pokemon.moves)
+        "Moves" -> MovesSection(pokemon.moves, pokemon.name)
         "Evolution" -> EvolutionSection(
             modifier = Modifier
                 .padding(horizontal = 2.dp)
@@ -534,7 +531,7 @@ fun StatsSection(
 
 @Composable
 fun MovesSection(
-    moves: Array<DisplayMove>
+    moves: Array<DisplayMove>, pokemonName: String
 ) {
     val levelMoves: MutableList<LevelMove> = mutableListOf()
     val initialMachineMoves: MutableList<MachineMove> = mutableListOf()
@@ -583,15 +580,70 @@ fun MovesSection(
                 .background(Color(0xFFFBFBFB))
 
             when (selectedCategory) {
-                "Level" -> LevelMoveBoxColumn(modifier = commonModifier, moveList = levelMoves)
-                "Machine" -> MachineMoveBoxColumn(
-                    modifier = commonModifier, moveList = machineMoves
-                )
+                "Level" -> {
+                    if (levelMoves.isEmpty()) {
+                        NoMovesTextBox(
+                            modifier = commonModifier, category = "level", pokemonName = pokemonName
+                        )
+                    } else {
+                        LevelMoveBoxColumn(modifier = commonModifier, moveList = levelMoves)
+                    }
+                }
 
-                "Egg" -> EggTutorMoveBoxColumn(modifier = commonModifier, moveList = eggMoves)
-                "Tutor" -> EggTutorMoveBoxColumn(modifier = commonModifier, moveList = tutorMoves)
+                "Machine" -> {
+                    if (machineMoves.isEmpty()) {
+                        NoMovesTextBox(
+                            modifier = commonModifier,
+                            category = "machine",
+                            pokemonName = pokemonName
+                        )
+                    } else {
+                        MachineMoveBoxColumn(
+                            modifier = commonModifier, moveList = machineMoves
+                        )
+                    }
+                }
+
+                "Egg" -> {
+                    if (eggMoves.isEmpty()) {
+                        NoMovesTextBox(
+                            modifier = commonModifier, category = "egg", pokemonName = pokemonName
+                        )
+                    } else {
+                        EggTutorMoveBoxColumn(modifier = commonModifier, moveList = eggMoves)
+                    }
+                }
+
+                "Tutor" -> {
+                    if (tutorMoves.isEmpty()) {
+                        NoMovesTextBox(
+                            modifier = commonModifier, category = "tutor", pokemonName = pokemonName
+                        )
+                    } else {
+                        EggTutorMoveBoxColumn(modifier = commonModifier, moveList = tutorMoves)
+                    }
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun NoMovesTextBox(modifier: Modifier = Modifier, category: String, pokemonName: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(0.98f)
+            .fillMaxHeight(0.8f),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "No $category moves available for $pokemonName",
+            textAlign = TextAlign.Center,
+            color = Color.Black,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+
     }
 }
 
