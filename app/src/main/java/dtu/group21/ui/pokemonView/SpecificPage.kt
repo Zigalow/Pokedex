@@ -166,12 +166,12 @@ fun Inspect(
                 .background(color = pokemon.primaryType.secondaryColor)
         ) {
 
-            PokemonImage(
+            /*PokemonImage(
                 pokemon = pokemon,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .fillMaxHeight(0.4f)
-            )
+            )*/
             Bottom(pokemon = pokemon)
         }
     }
