@@ -163,7 +163,7 @@ fun Top(
                 .weight(0.1f)
         ) {
             FavoritesIcon(
-                active = pokemon.isFavorite.value,
+                active = false, // TODO: change dynamically
                 color = pokemon.primaryType.secondaryColor,
                 onClicked = {
                     // TODO

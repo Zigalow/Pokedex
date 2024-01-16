@@ -21,7 +21,7 @@ class PokedexViewModel(
     private val api: PokemonAPI = PokeAPICo()
 ) : ViewModel() {
     private val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val database: AppDatabase = MainActivity.database!!
+    private val database: AppDatabase = MainActivity.database
 
     fun isFavoritePokemon(pokedexId: Int): Boolean {
         // TODO: is this even allowed?
@@ -31,7 +31,7 @@ class PokedexViewModel(
     fun getFavoritePokemons(destination: MutableState<List<Resource<StatPokemon>>>) {
         coroutineScope.launch {
             destination.value =
-                database.favoritesDao().getAll().map { Resource.Success(it.getPokemon()) }
+                database.favoritesDao().getAll().map { Resource.Success(it.toPokemon()) }
         }
     }
 
@@ -149,7 +149,7 @@ class PokedexViewModel(
             // Database look-up
             val databaseMatches = database.favoritesDao().getPokemonById(pokedexId)
             if (databaseMatches.isNotEmpty()) {
-                retrievedPokemon = databaseMatches[0].getPokemon()
+                retrievedPokemon = databaseMatches[0].toPokemon()
             }
             // Fetching online
             else {
@@ -188,7 +188,7 @@ class PokedexViewModel(
             // Database look-up
             val databaseMatches = database.favoritesDao().getPokemonById(pokedexId)
             if (databaseMatches.isNotEmpty()) {
-                retrievedPokemon = databaseMatches[0].getPokemon()
+                retrievedPokemon = databaseMatches[0].toPokemon()
             }
             // Fetching online
             else {

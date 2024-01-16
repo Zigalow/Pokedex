@@ -20,7 +20,6 @@ data class AdvancedPokemon(
     override val weightInGrams: Int,
     override val heightInCm: Int,
     override val abilities: Array<PokemonAbility>,
-    override var isFavorite: MutableState<Boolean>,
     override val spriteId: String
 ) : DetailedPokemon {
     override val hasTwoTypes = (secondaryType != PokemonType.NONE)
@@ -39,7 +38,6 @@ data class AdvancedPokemon(
         weightInGrams: Int,
         heightInCm: Int,
         abilities: Array<PokemonAbility>,
-        isFavorite: MutableState<Boolean>,
     ) : this(
         name = template.name,
         pokedexId = template.pokedexId,
@@ -57,7 +55,6 @@ data class AdvancedPokemon(
         weightInGrams,
         heightInCm,
         abilities,
-        isFavorite,
         spriteId = template.spriteId
     )
 }

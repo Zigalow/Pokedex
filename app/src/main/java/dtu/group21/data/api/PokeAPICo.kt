@@ -174,8 +174,6 @@ class PokeAPICo : PokemonAPI {
             weightInGrams = weightInGrams,
             heightInCm = heightInCm,
             abilities = abilities.toTypedArray(),
-            // TODO: in my opinion should not be in the class
-            isFavorite = mutableStateOf(false),
         )
     }
 
