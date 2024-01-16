@@ -331,11 +331,31 @@ fun Table(first: String, second: String) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            color = Color.Black.copy(alpha = 0.4f), text = first, modifier = Modifier.weight(0.35f)
+            color = Color.Black.copy(alpha = 0.4f),
+            text = first,
+            modifier = Modifier.weight(0.35f)
         )
-        Text(
-            text = second, modifier = Modifier.weight(1f)
-        )
+        Row(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = second,
+            )
+
+            if (first.equals("Male") || first.equals("Female")) {
+                Spacer(modifier = Modifier.weight(0.05f))
+                val imageId =
+                    if (first.equals("Male")) R.drawable.male_icon else R.drawable.female_icon
+
+                Image(
+                    painter = painterResource(id = imageId),
+                    contentDescription = "Pokemon Gender",
+                    modifier = Modifier
+                        .size(20.dp)
+                )
+            }
+            Spacer(modifier = Modifier.weight(0.9995f))
+        }
     }
     Spacer(modifier = Modifier.height(10.dp))
 }
