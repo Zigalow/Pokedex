@@ -64,6 +64,7 @@ import dtu.group21.data.PokedexViewModel
 import dtu.group21.data.Resource
 import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.data.pokemon.DetailedPokemon
+import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.data.pokemon.PokemonGender
 import dtu.group21.data.pokemon.moves.PokemonMove
@@ -81,13 +82,18 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
     val pokemon = remember {
         mutableStateOf<Resource<DetailedPokemon>>(Resource.Loading)
     }
+    val displayPokemon = remember{
+        mutableStateOf<Resource<DisplayPokemon>>(Resource.Loading)
+    }
 
     LaunchedEffect(Unit) {
         val viewModel = PokedexViewModel()
         viewModel.getDetails(pokedexId, pokemon)
+        viewModel.getPokemon(pokedexId,displayPokemon)
     }
+    println(displayPokemon.value)
     Mid(
-        pokemonResource = pokemon.value,
+        pokemonResource = displayPokemon.value,
         modifier = Modifier
     )
     Inspect(
@@ -178,7 +184,7 @@ fun Top(
 
 @Composable
 fun Mid(
-    pokemonResource: Resource<DetailedPokemon>,
+    pokemonResource: Resource<DisplayPokemon>,
     modifier: Modifier = Modifier
 ) {
     // TODO: make prettier
