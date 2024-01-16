@@ -94,7 +94,7 @@ fun WhosThatPokemonPage(
             }
 
             Box(modifier = Modifier
-                .weight(0.5f)
+                .weight(0.7f)
                 .fillMaxWidth(), contentAlignment = Alignment.Center){
                 Image(
                     painter = painterResource(id = R.drawable.whos_that_pokemon_logo4),
@@ -152,6 +152,7 @@ fun WhosThatPokemonPage(
                 if (currentPokemon is Resource.Success) {
                     if (currentPokemon.data.name.equals(guess, ignoreCase = true)) {
                         showPokemon = true // Reveal Pokémon
+                        guess = ""
                     } else {
                         showTryAgainMessage = true
                     }
