@@ -381,13 +381,13 @@ fun StatsBar(
     var boxColor = Color.Gray
 
     if (first.equals("Total")) {
-        boxColor = if (second.toInt() < max * 0.2) {
+        boxColor = if (second.toInt() in 0 until 360/*< max * 0.2*/) {
             Color(0xFFFF0000)
-        } else if (second.toInt() >= max * 0.2 && second.toInt() < max * 0.4) {
+        } else if (second.toInt() in 360 until 480/*>= max * 0.2 && second.toInt() < max * 0.4*/) {
             Color(0xFFFFB800)
-        } else if (second.toInt() >= max * 0.4 && second.toInt() < max * 0.6) {
+        } else if (second.toInt() in 480 until 600/*>= max * 0.4 && second.toInt() < max * 0.6*/) {
             Color(0xFFA0E515)
-        } else if (second.toInt() >= max * 0.6 && second.toInt() < max * 0.8) {
+        } else if (second.toInt() in 600 until 670/*>= max * 0.6 && second.toInt() < max * 0.8*/) {
             Color(0xFF23CD5E)
         } else {
             Color(0xFF00E1FF)
