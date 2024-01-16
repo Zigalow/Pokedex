@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
@@ -34,7 +34,6 @@ import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.api.Resource
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.shared.UpperMenu
-import dtu.group21.ui.shared.bigFontSize
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -51,8 +50,10 @@ fun WhosThatPokemonPage(
     }
 
     var showPokemon by remember { mutableStateOf(false) }
+    var showTryAgainMessage by remember { mutableStateOf(false) }
 
     val currentPokemon = pokemonPool.value[index]
+
 
     LaunchedEffect(showPokemon) {
         if (showPokemon) {
@@ -78,7 +79,9 @@ fun WhosThatPokemonPage(
                 //.height(74.dp)
         ) {
             Spacer(Modifier.width(10.dp))
-            Box(modifier = Modifier.weight(0.1f).fillMaxWidth()){
+            Box(modifier = Modifier
+                .weight(0.1f)
+                .fillMaxWidth()){
                 Image(
                     painter = painterResource(id = R.drawable.back_arrow),
                     contentDescription = "Back Arrow",
@@ -90,14 +93,17 @@ fun WhosThatPokemonPage(
                 )
             }
 
-            Box(modifier = Modifier.weight(0.5f).fillMaxWidth(), contentAlignment = Alignment.Center){
+            Box(modifier = Modifier
+                .weight(0.7f)
+                .fillMaxWidth(), contentAlignment = Alignment.Center){
                 Image(
                     painter = painterResource(id = R.drawable.whos_that_pokemon_logo4),
                     contentDescription = "Who's That Pokemon?",
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                 )
+                Spacer(Modifier.height(80.dp))
             }
-           // Spacer(Modifier.width(45.dp))
         }
 
         if (currentPokemon is Resource.Success) {
@@ -147,6 +153,8 @@ fun WhosThatPokemonPage(
                     if (currentPokemon.data.name.equals(guess, ignoreCase = true)) {
                         showPokemon = true // Reveal Pokémon
                         guess = ""
+                    } else {
+                        showTryAgainMessage = true
                     }
                 }
             },
@@ -159,7 +167,18 @@ fun WhosThatPokemonPage(
         ) {
             Text("Guess", fontSize = 18.sp, color = Color.White) // Set the text color to white for better contrast
         }
-
+        if (showTryAgainMessage) {
+            LaunchedEffect(showTryAgainMessage) {
+                delay(2000) // Display the message for 2 seconds
+                showTryAgainMessage = false
+            }
+            Text(
+                text = "Try again!",
+                fontSize = 18.sp,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
     }
 }
 
