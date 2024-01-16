@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -91,10 +92,11 @@ fun WhosThatPokemonPage(
                 Image(
                     painter = painterResource(id = R.drawable.whos_that_pokemon_logo4),
                     contentDescription = "Who's That Pokemon?",
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                 )
+                Spacer(Modifier.height(80.dp))
             }
-           // Spacer(Modifier.width(45.dp))
         }
 
         if (currentPokemon is Resource.Success) {
@@ -155,7 +157,6 @@ fun WhosThatPokemonPage(
         ) {
             Text("Guess", fontSize = 18.sp, color = Color.White) // Set the text color to white for better contrast
         }
-
     }
 }
 
