@@ -37,6 +37,7 @@ import dtu.group21.ui.shared.UpperMenu
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhosThatPokemonPage(
@@ -49,8 +50,10 @@ fun WhosThatPokemonPage(
     }
 
     var showPokemon by remember { mutableStateOf(false) }
+    var showTryAgainMessage by remember { mutableStateOf(false) }
 
     val currentPokemon = pokemonPool.value[index]
+
 
     LaunchedEffect(showPokemon) {
         if (showPokemon) {
@@ -76,7 +79,9 @@ fun WhosThatPokemonPage(
                 //.height(74.dp)
         ) {
             Spacer(Modifier.width(10.dp))
-            Box(modifier = Modifier.weight(0.1f).fillMaxWidth()){
+            Box(modifier = Modifier
+                .weight(0.1f)
+                .fillMaxWidth()){
                 Image(
                     painter = painterResource(id = R.drawable.back_arrow),
                     contentDescription = "Back Arrow",
@@ -88,7 +93,9 @@ fun WhosThatPokemonPage(
                 )
             }
 
-            Box(modifier = Modifier.weight(0.5f).fillMaxWidth(), contentAlignment = Alignment.Center){
+            Box(modifier = Modifier
+                .weight(0.5f)
+                .fillMaxWidth(), contentAlignment = Alignment.Center){
                 Image(
                     painter = painterResource(id = R.drawable.whos_that_pokemon_logo4),
                     contentDescription = "Who's That Pokemon?",
@@ -145,6 +152,8 @@ fun WhosThatPokemonPage(
                 if (currentPokemon is Resource.Success) {
                     if (currentPokemon.data.name.equals(guess, ignoreCase = true)) {
                         showPokemon = true // Reveal Pokémon
+                    } else {
+                        showTryAgainMessage = true
                     }
                 }
             },
@@ -156,6 +165,18 @@ fun WhosThatPokemonPage(
             )
         ) {
             Text("Guess", fontSize = 18.sp, color = Color.White) // Set the text color to white for better contrast
+        }
+        if (showTryAgainMessage) {
+            LaunchedEffect(showTryAgainMessage) {
+                delay(2000) // Display the message for 2 seconds
+                showTryAgainMessage = false
+            }
+            Text(
+                text = "Try again!",
+                fontSize = 18.sp,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 }
