@@ -12,6 +12,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -92,12 +94,13 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
         viewModel.getPokemon(pokedexId,displayPokemon)
     }
     println(displayPokemon.value)
-    Mid(
+    /*Loading(
         pokemonResource = displayPokemon.value,
         modifier = Modifier
-    )
+    )*/
     Inspect(
         pokemonResource = pokemon.value,
+        pokemonResourceFast = displayPokemon.value,
         onNavigateBack = onNavigateBack
     )
 }
@@ -105,39 +108,40 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
 @Composable
 fun Inspect(
     pokemonResource: Resource<DetailedPokemon>,
+    pokemonResourceFast: Resource<DisplayPokemon>,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (pokemonResource !is Resource.Success)
-        return
 
-    val pokemon = pokemonResource.data
+    if (pokemonResourceFast !is Resource.Success) return
+
+    val fastPokemon = pokemonResourceFast.data
 
     val systemUiController = rememberSystemUiController()
     SideEffect {
-        systemUiController.setStatusBarColor(pokemon.primaryType.secondaryColor)
+        systemUiController.setStatusBarColor(fastPokemon.primaryType.secondaryColor)
     }
     Column(
         modifier
-            .background(color = pokemon.primaryType.secondaryColor)
+            .background(color = fastPokemon.primaryType.secondaryColor)
             .fillMaxSize()
     ) {
         Column(verticalArrangement = Arrangement.Top) {
             Top(
-                pokemon = pokemon,
+                pokemon = pokemonResource,
                 onClickBack = onNavigateBack
             )
             Mid(
-                pokemonResource = pokemonResource,
+                fastPokemon = fastPokemon,
                 modifier = modifier
             )
         }
         Column(
             modifier
                 .fillMaxSize()
-                .background(color = pokemon.primaryType.secondaryColor)
+                .background(color = fastPokemon.primaryType.secondaryColor)
         ) {
-            Bottom(pokemon = pokemon)
+            Bottom(slowPokemon = pokemonResource, fastPokemon = pokemonResourceFast)
         }
     }
 
@@ -145,7 +149,7 @@ fun Inspect(
 
 @Composable
 fun Top(
-    pokemon: DetailedPokemon,
+    pokemon: Resource<DetailedPokemon>,
     onClickBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -169,9 +173,15 @@ fun Top(
             modifier = Modifier
                 .weight(0.1f)
         ) {
+            if(pokemon !is Resource.Success){
+                CircularProgressIndicator(
+                    color = Color.Black
+                )
+                return
+            }
             FavoritesIcon(
-                active = pokemon.isFavorite.value,
-                color = pokemon.primaryType.secondaryColor,
+                active = pokemon.data.isFavorite.value,
+                color = pokemon.data.primaryType.secondaryColor,
                 onClicked = {
                     // TODO
                 }
@@ -184,18 +194,9 @@ fun Top(
 
 @Composable
 fun Mid(
-    pokemonResource: Resource<DisplayPokemon>,
+    fastPokemon: DisplayPokemon,
     modifier: Modifier = Modifier
 ) {
-    // TODO: make prettier
-    if (pokemonResource !is Resource.Success) {
-        CircularProgressIndicator(
-            color = Color.Black,
-        )
-        return
-    }
-
-    val pokemon = pokemonResource.data
 
     Column(
         modifier
@@ -212,16 +213,16 @@ fun Mid(
                 modifier = Modifier
                     .weight(0.3f)
                     .fillMaxHeight(),
-                text = pokemon.name.replaceFirstChar { it.uppercase() },
+                text = fastPokemon.name.replaceFirstChar { it.uppercase() },
                 fontStyle = FontStyle.Normal,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.Black,
                 fontSize = 30.sp
             )
             Text(
-                text = formatPokemonId(pokemon.pokedexId),
+                text = formatPokemonId(fastPokemon.pokedexId),
                 fontSize = 30.sp,
-                color = pokemon.primaryType.primaryColor
+                color = fastPokemon.primaryType.primaryColor
             )
             Spacer(modifier.width(13.dp))
         }
@@ -236,9 +237,9 @@ fun Mid(
                     .width(80.dp)
                     .height(29.dp)
                     .background(
-                        color = pokemon.primaryType.primaryColor,
+                        color = fastPokemon.primaryType.primaryColor,
                         shape = RoundedCornerShape(15.dp)
-                    ), pokemonType = pokemon.primaryType
+                    ), pokemonType = fastPokemon.primaryType
             )
             Spacer(modifier.width(15.dp))
             LargerPokemonTypeBox(
@@ -246,30 +247,37 @@ fun Mid(
                     .width(80.dp)
                     .height(29.dp)
                     .background(
-                        color = pokemon.secondaryType.secondaryColor,
+                        color = fastPokemon.secondaryType.secondaryColor,
                         shape = RoundedCornerShape(15.dp)
-                    ), pokemonType = pokemon.secondaryType
+                    ), pokemonType = fastPokemon.secondaryType
             )
         }
     }
 }
-
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
+fun Bottom(modifier: Modifier = Modifier, slowPokemon: Resource<DetailedPokemon>, fastPokemon: Resource<DisplayPokemon>) {
     var direction by remember {
         mutableStateOf(true)
     }
     var visible by remember {
         mutableStateOf(true)
     }
+    if (fastPokemon !is Resource.Success) {
+        return
+    }
+
+    val displayPokemon = fastPokemon.data
     Column {
 
         AnimatedVisibility(
             visible,
             modifier.align(Alignment.CenterHorizontally)) {
-            PokemonImage(
-                pokemon = pokemon, modifier = Modifier
+            AsyncImage(
+                model = displayPokemon.spriteId,
+                contentDescription = displayPokemon.name,
+                modifier = modifier
+                    .animateContentSize()
                     .fillMaxHeight(0.4f)
             )
         }
@@ -347,9 +355,16 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                             .padding(start = 13.dp)
                     ) {
                         //based on which category is the coresponding section function will be used
+                        if(slowPokemon !is Resource.Success){
+                            CircularProgressIndicator(
+                                color = Color.Black
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            return
+                        }
                         Sections(
                             selectedCategory = selectedCategory,
-                            pokemon = pokemon,
+                            pokemon = slowPokemon.data,
                             modifier = modifier
                         )
                         Spacer(
