@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import dtu.group21.models.pokemon.ComplexPokemon
+
 import dtu.group21.data.pokemon.moves.MoveDamageClass
 import dtu.group21.data.pokemon.PokemonAbility
 import dtu.group21.data.pokemon.PokemonGender
@@ -11,6 +12,22 @@ import dtu.group21.data.pokemon.moves.PokemonMove
 import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.data.pokemon.PokemonStats
 import dtu.group21.data.pokemon.PokemonType
+import dtu.group21.data.pokemon.moves.DisplayMove
+import dtu.group21.data.pokemon.moves.LevelMove
+import dtu.group21.data.pokemon.moves.MachineMove
+import dtu.group21.data.pokemon.moves.TutorMove
+
+import dtu.group21.models.pokemon.moves.BasicMove
+
+import dtu.group21.models.pokemon.moves.EggMove
+import dtu.group21.models.pokemon.moves.EggMoveData
+
+import dtu.group21.models.pokemon.moves.LevelMoveData
+
+import dtu.group21.models.pokemon.moves.MachineMoveData
+
+import dtu.group21.models.pokemon.moves.TutorMoveData
+
 
 
 @Entity(tableName = "pokemons")
@@ -71,18 +88,62 @@ data class PokemonData(
         )
 
         val moveStrings = movesString.split("::")
-        val movesArray = Array(moveStrings.size) {
+        val movesArray: Array<DisplayMove> = Array(moveStrings.size) {
             val moveStringParts = moveStrings[it].split(";")
-
-            PokemonMove(
-                moveStringParts[0],
-                moveStringParts[1],
-                moveStringParts[2].toIntOrNull(),
-                moveStringParts[3].toIntOrNull(),
-                moveStringParts[4].toInt(),
-                PokemonType.getFromName(moveStringParts[5]),
-                MoveDamageClass.getFromName(moveStringParts[6])
-            )
+            when (moveStringParts) {
+                is LevelMove -> {
+                    LevelMoveData(
+                        name = moveStringParts[0],
+                        power = moveStringParts[1].toIntOrNull(),
+                        accuracy = moveStringParts[2].toIntOrNull(),
+                        pp = moveStringParts[3].toInt(),
+                        type = PokemonType.getFromName(moveStringParts[4]),
+                        damageClass =  MoveDamageClass.getFromName(moveStringParts[5]),
+                        level = moveStringParts[6].toInt()
+                    )
+                }
+                is MachineMove -> {
+                    MachineMoveData(
+                        name = moveStringParts[0],
+                        power = moveStringParts[1].toIntOrNull(),
+                        accuracy = moveStringParts[2].toIntOrNull(),
+                        pp = moveStringParts[3].toInt(),
+                        type = PokemonType.getFromName(moveStringParts[4]),
+                        damageClass =  MoveDamageClass.getFromName(moveStringParts[5]),
+                        machineId = moveStringParts[6]
+                    )
+                }
+                is EggMove -> {
+                    EggMoveData(
+                        name = moveStringParts[0],
+                        power = moveStringParts[1].toIntOrNull(),
+                        accuracy = moveStringParts[2].toIntOrNull(),
+                        pp = moveStringParts[3].toInt(),
+                        type = PokemonType.getFromName(moveStringParts[4]),
+                        damageClass =  MoveDamageClass.getFromName(moveStringParts[5])
+                    )
+                }
+                is TutorMove -> {
+                    TutorMoveData(
+                        name = moveStringParts[0],
+                        power = moveStringParts[1].toIntOrNull(),
+                        accuracy = moveStringParts[2].toIntOrNull(),
+                        pp = moveStringParts[3].toInt(),
+                        type = PokemonType.getFromName(moveStringParts[4]),
+                        damageClass =  MoveDamageClass.getFromName(moveStringParts[5])
+                    )
+                }
+                else -> {
+                    BasicMove(
+                        name = moveStringParts[0],
+                        power = moveStringParts[1].toIntOrNull(),
+                        accuracy = moveStringParts[2].toIntOrNull(),
+                        pp = moveStringParts[3].toInt(),
+                        type = PokemonType.getFromName(moveStringParts[4]),
+                        damageClass =  MoveDamageClass.getFromName(moveStringParts[5])
+                    )
+                }
+            }
         }
 
         return ComplexPokemon(
