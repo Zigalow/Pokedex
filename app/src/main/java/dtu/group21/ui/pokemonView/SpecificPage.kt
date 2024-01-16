@@ -47,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -257,6 +258,7 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
         mutableStateOf(true)
     }
     Column {
+
         AnimatedVisibility(
             visible,
             modifier.align(Alignment.CenterHorizontally)) {
@@ -301,6 +303,17 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                     }
                 ), verticalArrangement = Arrangement.Bottom
         ) {
+            Spacer(modifier.height(8.dp))
+            Box(
+                modifier
+                    .height(4.dp)
+                    .width(60.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .alpha(0.4f),
+
+            ){
+                drag()
+            }
                     val categories = listOf("About", "Stats", "Moves", "Evolution")
                     var selectedCategory by remember { mutableStateOf("About") }
                     Spacer(
@@ -759,6 +772,15 @@ fun arrow(modifier: Modifier) {
         modifier = modifier
     )
 }
+@Composable
+fun drag (){
+    Image(
+        painter = painterResource(id = R.drawable.drag_icon),
+        contentDescription = "drag",
+        modifier = Modifier.fillMaxSize()
+        )
+}
+
 
 
 @OptIn(ExperimentalLayoutApi::class)
