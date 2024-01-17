@@ -60,6 +60,7 @@ fun WhosThatPokemonPage(
             showPokemon = true //showcase pokemon true
             delay(2000) // Delay for 3 seconds
             showPokemon=false
+            guess = ""
             index = Random.nextInt(pokemonPool.value.size) // Change to next Pokémon
         }
     }
@@ -149,6 +150,7 @@ fun WhosThatPokemonPage(
         // Button to submit the guess
         Button(
             onClick = {
+
                 if (currentPokemon is Resource.Success) {
                     if (currentPokemon.data.name.equals(guess, ignoreCase = true)) {
                         showPokemon = true // Reveal Pokémon
@@ -167,13 +169,32 @@ fun WhosThatPokemonPage(
         ) {
             Text("Guess", fontSize = 18.sp, color = Color.White) // Set the text color to white for better contrast
         }
+
+        Button(
+            onClick = {
+                if (currentPokemon is Resource.Success) {
+                        showPokemon = true // Reveal Pokémon
+                        guess = currentPokemon.data.name
+                }
+            },
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Red // Set the button color using the hexadecimal value
+            )
+        ) {
+            Text("Skip", fontSize = 18.sp, color = Color.White) // Set the text color to white for better contrast
+        }
+
+
         if (showTryAgainMessage) {
             LaunchedEffect(showTryAgainMessage) {
                 delay(2000) // Display the message for 2 seconds
                 showTryAgainMessage = false
             }
             Text(
-                text = "Try again!",
+                text = "Try againTry again!",
                 fontSize = 18.sp,
                 color = Color.Red,
                 modifier = Modifier.padding(top = 8.dp)
