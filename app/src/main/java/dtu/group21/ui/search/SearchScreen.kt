@@ -102,6 +102,7 @@ fun SearchBar(
                 ), // TODO: should respond to size of search box
                 fontStyle = if (isSearching) FontStyle.Normal else FontStyle.Italic
             )
+            
             // search field
             BasicTextField(
                 value = searchString,

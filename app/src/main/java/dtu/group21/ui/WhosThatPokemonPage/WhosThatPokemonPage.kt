@@ -30,8 +30,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
+import dtu.group21.data.Resource
 import dtu.group21.data.pokemon.DisplayPokemon
-import dtu.group21.models.api.Resource
+import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.shared.UpperMenu
 import kotlinx.coroutines.delay
@@ -42,7 +43,7 @@ import kotlin.random.Random
 @Composable
 fun WhosThatPokemonPage(
     onNavigateBack: () -> Unit,
-    pokemonPool: MutableState<List<Resource<DisplayPokemon>>>,
+    pokemonPool: MutableState<List<Resource<StatPokemon>>>,
 ) {
     var guess by remember { mutableStateOf("") }
     var index by remember {
@@ -181,7 +182,7 @@ fun WhosThatPokemonPage(
                 .padding(top = 20.dp)
                 .fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Red // Set the button color using the hexadecimal value
+                containerColor = Color.Gray // Set the button color using the hexadecimal value
             )
         ) {
             Text("Skip", fontSize = 18.sp, color = Color.White) // Set the text color to white for better contrast
@@ -194,7 +195,7 @@ fun WhosThatPokemonPage(
                 showTryAgainMessage = false
             }
             Text(
-                text = "Try againTry again!",
+                text = "Try again!",
                 fontSize = 18.sp,
                 color = Color.Red,
                 modifier = Modifier.padding(top = 8.dp)

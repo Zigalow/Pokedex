@@ -45,7 +45,6 @@ import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.helpers.PokemonHelper
-import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.PaginatedColumn
 import dtu.group21.ui.shared.PaginationElement
 import dtu.group21.data.pokemon.StatPokemon
@@ -62,7 +61,7 @@ const val lookAmount = 20
 @Composable
 fun FrontPage(
     onNavigate: (String) -> Unit,
-    pokemons: MutableState<List<Resource<DisplayPokemon>>>
+    pokemons: MutableState<List<Resource<StatPokemon>>>
 ) {
     val pokemonIds = remember {
         mutableStateOf(1..40)

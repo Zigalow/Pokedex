@@ -36,7 +36,6 @@ import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
 import dtu.group21.data.pokemon.DisplayPokemon
-import dtu.group21.models.api.Resource
 import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.data.Resource
 import dtu.group21.ui.frontpage.PokemonImage
