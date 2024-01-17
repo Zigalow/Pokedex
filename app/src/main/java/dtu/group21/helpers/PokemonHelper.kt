@@ -1,7 +1,7 @@
 package dtu.group21.helpers
 
 object PokemonHelper {
-    val validIds = 1..1025
+    val validIds = 1..1010
     val validGenerations = 1..9
 
     fun getGeneration(pokedexId: Int): Int {
