@@ -101,6 +101,13 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
         viewModel.getPokemon(pokedexId, displayPokemon)
         viewModel.getDetails(pokedexId, details)
     }
+
+    if (displayPokemon.value !is Resource.Success) {
+        CircularProgressIndicator(
+            color = Color.Black
+        )
+        return
+    }
     
     val (pokemonResource, wasFavorite) = details.value
     println(displayPokemon.value)
@@ -111,6 +118,10 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
         isFavorite = wasFavorite,
         onNavigateBack = onNavigateBack,
         onFavorited = {
+            if (pokemonResource !is Resource.Success)
+                return@Inspect
+
+            val pokemon = pokemonResource.data
             val isFavorite = !wasFavorite
 
             val viewModel = PokedexViewModel()
@@ -153,14 +164,12 @@ fun Inspect(
         Column(verticalArrangement = Arrangement.Top) {
             Top(
                 pokemon = pokemonResource,
-                onClickBack = onNavigateBack
+                isFavorite = isFavorite,
+                onClickBack = onNavigateBack,
+                onFavorited = onFavorited
             )
             Mid(
                 fastPokemon = fastPokemon,
-                isFavorite = isFavorite,
-                onClickBack = onNavigateBack,
-                onFavorited = onFavorited,
-            )
                 modifier = modifier
             )
         }
@@ -277,6 +286,7 @@ fun Mid(
                     .background(
                         color = fastPokemon.secondaryType.secondaryColor,
                         shape = RoundedCornerShape(15.dp)
+                    ),
                 pokemonType = fastPokemon.secondaryType
             )
         }
@@ -385,7 +395,10 @@ fun Bottom(modifier: Modifier = Modifier, slowPokemon: Resource<DetailedPokemon>
                         if(slowPokemon !is Resource.Success){
                             Box {
                                 CircularProgressIndicator(
-                                    modifier = modifier.fillMaxSize().align(Alignment.TopCenter).padding(30.dp),
+                                    modifier = modifier
+                                        .fillMaxSize()
+                                        .align(Alignment.TopCenter)
+                                        .padding(30.dp),
                                     color = Color.Black
                                 )
                             }
