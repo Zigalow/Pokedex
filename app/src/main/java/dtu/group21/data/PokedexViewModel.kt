@@ -113,33 +113,33 @@ class PokedexViewModel(
 
     fun getPokemon(
         pokedexId: Int,
-        destination: MutableState<DisplayPokemon>,
+        destination: MutableState<Resource<DisplayPokemon>>,
         cacheResult: Boolean = true
     ) {
         val cached = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
         if (cached != null) {
-            destination.value = cached
-        }
-        else {
+            destination.value = Resource.Success(cached)
+        } else {
             coroutineScope.launch {
                 getPokemonInternal(pokedexId, cacheResult).collect {
                     when (it) {
                         is Resource.Success -> {
-                            destination.value = it.data
+                            destination.value = Resource.Success(it.data)
                         }
 
                         is Resource.Failure -> {
-                            // TODO handle?
+                            // TODO handle failure if needed
                         }
 
                         Resource.Loading -> {
-                            // Do nothing
+                            // Do nothing or handle loading state if needed
                         }
                     }
                 }
             }
         }
     }
+
 
     private suspend fun getPokemonInternal(
         pokedexId: Int,
