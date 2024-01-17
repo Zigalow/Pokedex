@@ -186,14 +186,14 @@ fun FrontPage(
                             onClicked = { onNavigate("WhosThatPokemon") }
                         )
                         MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
-                        SettingsIcon(
+                        /*SettingsIcon(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .size(60.dp),
                             onClicked = {
                                 onNavigate("settings")
                             }
-                        )
+                        )*/
                     }
                 }
 
@@ -303,7 +303,7 @@ fun PokemonColumn(
 }
      */
 }
-
+/*
 @Composable
 fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
     Box(
@@ -318,7 +318,7 @@ fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
             modifier = Modifier.fillMaxSize(0.56f)
         )
     }
-}
+}*/
 
 @Composable
 fun WhosIcon(modifier: Modifier = Modifier, onClicked: () -> Unit){
