@@ -27,7 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.pokedex.R
-import dtu.group21.models.pokemon.PokemonType
+import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.ui.shared.BinaryChooser
 import dtu.group21.ui.shared.ToggleButton
 import dtu.group21.ui.shared.UpperMenu

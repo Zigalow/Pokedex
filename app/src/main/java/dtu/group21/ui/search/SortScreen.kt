@@ -9,31 +9,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.pokedex.R
 import dtu.group21.ui.shared.BinaryChooser
 import dtu.group21.ui.shared.RadioOptions
-import dtu.group21.ui.shared.Title
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
-import dtu.group21.ui.shared.buttonColor
 
 @Composable
 fun SortScreen(
-    onNavigateBack: () -> Unit,
-    sortSettings: SortSettings,
     modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -51,31 +44,48 @@ fun SortScreen(
                 modifier = Modifier
                     .size(35.dp)
                     .align(Alignment.CenterVertically)
-                    .clickable { onNavigateBack()
-                               },
+                    .clickable {
+                        onNavigateBack()
+                    },
                 alignment = Alignment.CenterStart,
             )
             Text(
                 text = "Sort",
-                modifier = Modifier.weight(0.01f).fillMaxWidth(),
+                modifier = Modifier
+                    .weight(0.01f)
+                    .fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = bigFontSize,
             )
             Spacer(Modifier.width(45.dp))
         }
-        val options = remember { arrayOf(SortSettings.SortType.Ascending, SortSettings.SortType.Descending) }
+        val options =
+            remember { arrayOf(SortSettings.SortType.Ascending, SortSettings.SortType.Descending) }
         BinaryChooser(
             option1 = "Ascending",
             option2 = "Descending",
-            onChange = { sortSettings.sortType = options[it] },
-            startsAt = options.indexOf(sortSettings.sortType),
+            onChange = { SortSettings.sortType = options[it] },
+            startsAt = options.indexOf(SortSettings.sortType),
         )
-        val sortOptions = remember { arrayOf("ID", "Name", "Total", "HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed") }
+        Spacer(modifier = Modifier.height(15.dp))
+        val sortOptions = remember {
+            arrayOf(
+                "ID",
+                "Name",
+                "HP",
+                "Attack",
+                "Defense",
+                "Special Attack",
+                "Special Defense",
+                "Speed",
+                "Total"
+            )
+        }
         RadioOptions(
             options = sortOptions,
-            onSelectionChanged = { sortSettings.sortMethod = it },
+            onSelectionChanged = { SortSettings.sortMethod = SortSettings.SortMethod.entries[it] },
             modifier = Modifier.padding(horizontal = 5.dp),
-            selectedInitially = sortSettings.sortMethod,
+            selectedInitially = SortSettings.sortMethod.ordinal,
         )
         //REMOVE Apply Button
         /*Button(

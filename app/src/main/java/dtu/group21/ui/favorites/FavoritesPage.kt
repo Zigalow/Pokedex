@@ -37,6 +37,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.models.api.Resource
+import dtu.group21.data.pokemon.StatPokemon
+import dtu.group21.data.Resource
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.SearchIcon
@@ -45,14 +47,13 @@ import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
 
-
 @Composable
 fun FavoritesPage(
     onNavigate: (String) -> Unit,
     onNavigateBack: () -> Unit,
     onPokemonClicked: (String) -> Unit
 ) {
-    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+    val pokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
     val systemUiController = rememberSystemUiController()
     SideEffect {
         systemUiController.setStatusBarColor(Color.White)
@@ -63,8 +64,10 @@ fun FavoritesPage(
         val pokedexViewModel = PokedexViewModel()
         pokedexViewModel.getFavoritePokemons(pokemons)
     }
-    Column(modifier = Modifier
-        .fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         UpperMenu(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,15 +112,15 @@ fun FavoritesPage(
                     pokemonResource = pokemonResource,
                     onClicked = onPokemonClicked
                 )
-                }
             }
         }
     }
+}
 
 @Composable
 fun FavoritePokemonBox(
     modifier: Modifier = Modifier,
-    pokemonResource: Resource<DisplayPokemon>,
+    pokemonResource: Resource<StatPokemon>,
     onClicked: (String) -> Unit
 ) {
     when (pokemonResource) {
@@ -190,7 +193,7 @@ fun FavoritePokemonBox(
                         contentAlignment = Alignment.BottomStart
                     ) {
                         Text(
-                            text = capitalizeFirstLetter(pokemon.name),
+                            text = pokemon.name,
                             fontSize = 17.sp,
                             color = Color.White,
                             textAlign = TextAlign.Start,

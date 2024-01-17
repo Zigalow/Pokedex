@@ -1,6 +1,8 @@
 package dtu.group21.models.pokemon
 
 import androidx.room.TypeConverter
+import dtu.group21.data.pokemon.PokemonAbility
+import dtu.group21.data.pokemon.PokemonStats
 
 class ComplexPokemonConverter {
     @TypeConverter

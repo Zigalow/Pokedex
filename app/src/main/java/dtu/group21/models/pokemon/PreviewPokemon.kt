@@ -1,6 +1,7 @@
 package dtu.group21.models.pokemon
 
 import com.example.pokedex.R
+import dtu.group21.data.pokemon.PokemonType
 
 data class PreviewPokemon(
     val id: Int, // the same as the pokédex number
@@ -9,5 +10,4 @@ data class PreviewPokemon(
     val secondaryType: PokemonType,
 ) {
     val hasTwoTypes = secondaryType != PokemonType.NONE
-    val spriteResourceId = R.drawable._0001
 }
