@@ -8,15 +8,15 @@ import androidx.room.Query
 
 @Dao
 interface FavoritesDao {
-    @Query("SELECT * FROM pokemons")
-    fun getAll(): List<PokemonData>
+    @Query("SELECT * FROM favorites")
+    fun getAll(): List<FavoriteData>
 
-    @Query("SELECT * FROM pokemons WHERE id IN (:pokemonIds)")
-    fun getPokemonById(vararg pokemonIds: Int): List<PokemonData>
+    @Query("SELECT * FROM favorites WHERE id IN (:pokemonIds)")
+    fun getPokemonById(vararg pokemonIds: Int): List<FavoriteData>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg pokemons: PokemonData)
+    fun insertAll(vararg pokemons: FavoriteData)
 
     @Delete
-    fun delete(pokemon: PokemonData)
+    fun delete(pokemon: FavoriteData)
 }

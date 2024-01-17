@@ -1,25 +1,21 @@
 package dtu.group21.data.api
 
-import androidx.compose.runtime.mutableStateOf
 import dtu.group21.data.pokemon.AdvancedPokemon
 import dtu.group21.data.pokemon.BasicPokemon
 import dtu.group21.data.pokemon.BasicStatPokemon
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
-
 import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.helpers.PokemonHelper
 import dtu.group21.models.api.JsonRequestMaker
 import dtu.group21.data.pokemon.moves.MoveDamageClass
 import dtu.group21.data.pokemon.PokemonAbility
-import dtu.group21.data.pokemon.moves.PokemonMove
 import dtu.group21.data.pokemon.PokemonStats
 import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.data.pokemon.moves.DetailedMove
 import dtu.group21.data.pokemon.moves.DisplayMove
 import dtu.group21.models.pokemon.moves.AdvancedMove
 import dtu.group21.models.pokemon.moves.BasicMove
-
 import dtu.group21.models.pokemon.moves.EggMoveData
 import dtu.group21.models.pokemon.moves.LevelMoveData
 import dtu.group21.models.pokemon.moves.MachineMoveData
@@ -308,8 +304,6 @@ class PokeAPICo : PokemonAPI {
             weightInGrams = weightInGrams,
             heightInCm = heightInCm,
             abilities = pokemonAbilities,
-            // TODO: in my opinion should not be in the class
-            isFavorite = mutableStateOf(false),
         )
     }
 

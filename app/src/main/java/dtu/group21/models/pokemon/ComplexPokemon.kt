@@ -25,7 +25,6 @@ class ComplexPokemon(
     override val stats: PokemonStats,
     val species: PokemonSpecies,
     override val moves: Array<DisplayMove>,
-    override var isFavorite: MutableState<Boolean> = mutableStateOf(false)
 ) : GenderedPokemon, DetailedPokemon, StatPokemon {
     //@Ignore
     override val spriteId = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${
