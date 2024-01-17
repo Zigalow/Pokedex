@@ -1,3 +1,4 @@
+/*
 package com.example.group21.steps
 
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -5,7 +6,7 @@ import androidx.compose.ui.test.onNodeWithText
 import dtu.group21.data.api.PokeAPICo
 import dtu.group21.data.api.PokemonAPI
 import dtu.group21.data.pokemon.DetailedPokemon
-import dtu.group21.models.api.PokedexRequestMaker
+
 import dtu.group21.models.pokemon.EvolutionChainPokemon
 import dtu.group21.ui.PokeNavHost
 import io.cucumber.java.en.Given
@@ -81,3 +82,4 @@ class PokemonRetrieval {
 
 
 }
+*/

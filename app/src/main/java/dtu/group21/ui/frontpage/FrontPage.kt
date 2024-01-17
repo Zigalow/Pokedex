@@ -168,7 +168,7 @@ fun PokemonColumn(
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val chunks = if (screenWidth > 600.dp) 4 else 2
-    val itemWidth = (screenWidth / chunks) - 6.dp //-6.dp to consider patting in between each box
+    val itemWidth = (screenWidth / chunks) - 12.dp //-12.dp to consider patting in between each box
     val alignedPokemons = pokemons.chunked(chunks)
 
     LazyColumn(modifier.fillMaxWidth()) {
@@ -220,7 +220,7 @@ fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.favorite_icon_active),
+            painter = painterResource(id = R.drawable.favorite_icon),
             contentDescription = "White heart",
             modifier = Modifier.fillMaxSize(0.56f)
         )

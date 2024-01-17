@@ -6,10 +6,10 @@ import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.GenderedPokemon
 import dtu.group21.data.pokemon.PokemonAbility
 import dtu.group21.data.pokemon.PokemonGender
-import dtu.group21.data.pokemon.moves.PokemonMove
 import dtu.group21.data.pokemon.PokemonStats
 import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.data.pokemon.StatPokemon
+import dtu.group21.data.pokemon.moves.DisplayMove
 
 //@Entity(tableName = "favorites")
 class ComplexPokemon(
@@ -24,8 +24,7 @@ class ComplexPokemon(
     override val heightInCm: Int,
     override val stats: PokemonStats,
     val species: PokemonSpecies,
-    override val moves: Array<PokemonMove>,
-    override var isFavorite: MutableState<Boolean> = mutableStateOf(false)
+    override val moves: Array<DisplayMove>,
 ) : GenderedPokemon, DetailedPokemon, StatPokemon {
     //@Ignore
     override val spriteId = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${
