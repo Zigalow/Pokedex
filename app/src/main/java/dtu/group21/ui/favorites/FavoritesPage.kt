@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,17 +30,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
-import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.data.Resource
+import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.PokemonTypeBox
 import dtu.group21.ui.frontpage.SearchIcon
-import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
@@ -62,57 +62,93 @@ fun FavoritesPage(
         val pokedexViewModel = PokedexViewModel()
         pokedexViewModel.getFavoritePokemons(pokemons)
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        UpperMenu(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(74.dp)
-        ) {
-            Spacer(Modifier.width(10.dp))
-            Image(
-                painter = painterResource(id = R.drawable.back_arrow),
-                contentDescription = "Back Arrow",
-                modifier = Modifier
-                    .size(35.dp)
-                    .align(Alignment.CenterVertically)
-                    .clickable { onNavigateBack() },
-                alignment = Alignment.CenterStart,
-            )
-            Text(
-                text = "Favorites",
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                fontSize = bigFontSize,
-            )
-            Spacer(Modifier.width(45.dp))
-
-            //Search icon
-            SearchIcon(size = 49.dp, onClicked = { onNavigate("searchFavourites") })
-        }
-
-        LazyColumn(
+    Box {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
         ) {
-            items(pokemons.value.size) { index ->
-                val pokemonResource = pokemons.value[index]
-                val boxModifier = Modifier
+            UpperMenu(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-                FavoritePokemonBox(
-                    modifier = boxModifier,
-                    pokemonResource = pokemonResource,
-                    onClicked = onPokemonClicked
+                    .height(74.dp)
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .weight(0.1f)
+                        .fillMaxWidth()
                 )
+                {
+                    BackIcon(size = 49.dp, onClicked = { onNavigateBack })
+                    /*Image(
+                        painter = painterResource(id = R.drawable.back_arrow),
+                        contentDescription = "Back Arrow",
+                        modifier = Modifier
+                            .size(49.dp)
+                            //.align(Alignment.CenterVertically)
+                            .clickable { onNavigateBack() },
+                        //alignment = Alignment.Center,
+                    )*/
+                }
+
+                Box(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .fillMaxWidth()
+                )
+                {
+                    Text(
+                        text = "Favorites",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(horizontal = 10.dp, vertical = 8.dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = bigFontSize,
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .weight(0.1f)
+                        .fillMaxWidth()
+                )
+                {
+                    SearchIcon(size = 49.dp, onClicked = { onNavigate("searchFavourites") })
+
+                }
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                items(pokemons.value.size) { index ->
+                    val pokemonResource = pokemons.value[index]
+                    val boxModifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                    FavoritePokemonBox(
+                        modifier = boxModifier,
+                        pokemonResource = pokemonResource,
+                        onClicked = onPokemonClicked
+                    )
+                }
             }
         }
     }
+}
+@Composable
+fun BackIcon(modifier: Modifier = Modifier, size: Dp, onClicked: () -> Unit) {
+    Image(
+        painter = painterResource(id = R.drawable.back_arrow),
+        contentDescription = "Back Arrow",
+        modifier = modifier
+            .padding(vertical = size / 3)
+            .size(size)
+            .clickable { onClicked() }
+    )
 }
 
 @Composable
