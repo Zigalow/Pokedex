@@ -1,11 +1,25 @@
 package dtu.group21.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Vertical
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,16 +27,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dtu.group21.data.PokedexViewModel
-import dtu.group21.models.api.Resource
-import dtu.group21.data.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.StatPokemon
+import dtu.group21.data.Resource
 import dtu.group21.ui.favorites.FavoritesPage
 import dtu.group21.ui.frontpage.FrontPage
 import dtu.group21.ui.pokemonView.SpecificPage
+import dtu.group21.ui.pokemonView.isOnline
 import dtu.group21.ui.search.FilterScreen
 import dtu.group21.ui.search.SearchScreen
-import dtu.group21.ui.search.SearchSettings
 import dtu.group21.ui.search.SortScreen
 import dtu.group21.ui.settings.SettingsPage
+import dtu.group21.ui.settings.WhosThatPokemonPage
 
 // Step1: get nav controller
 
@@ -49,98 +64,117 @@ fun popBackStackCustom(navController: NavHostController): Boolean {
 
 @Composable
 fun PokeNavHost(startDestination: String = "home") {
-    val navController = rememberNavController()
-    val searchSettings = remember { SearchSettings() }
+    var isOnline by remember { mutableStateOf(true) }
+    isOnline = isOnline(LocalContext.current)
+    if(isOnline){
+        val navController = rememberNavController()
 
-    val favouritePokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
-    LaunchedEffect(Unit) {
-        val pokedexViewModel = PokedexViewModel()
-        pokedexViewModel.getFavoritePokemons(favouritePokemons)
-    }
+        val favouritePokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
+        LaunchedEffect(Unit) {
+            val pokedexViewModel = PokedexViewModel()
+            pokedexViewModel.getFavoritePokemons(favouritePokemons)
+        }
 
-    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
-    LaunchedEffect(Unit) {
-        val pokedexViewModel = PokedexViewModel()
-        val ids = (1..20)
-        pokedexViewModel.getPokemons(ids.toList(),pokemons)
-    }
+        val pokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
+        LaunchedEffect(Unit) {
+            val pokedexViewModel = PokedexViewModel()
+            val ids = (1..151)
+            pokedexViewModel.getPokemons(ids.toList(), pokemons)
+        }
 
-    NavHost(
-        navController = navController,
-        startDestination = startDestination
-    ) {
-        composable("home") {
-            FrontPage(
-                onNavigate = {
-                    navController.navigate(it)
-                },
-                pokemons = pokemons
-            )
-        }
-        composable("search") {
-            SearchScreen(
-                onNavigateBack = { popBackStackCustom(navController) },
-                onNavigateToFilter = { navController.navigate("filter") },
-                onNavigateToSort = { navController.navigate("sort") },
-                onPokemonClicked = { navController.navigate("pokemon/$it") },
-                searchSettings = searchSettings,
-                pokemonPool = pokemons,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-        composable("searchFavourites") {
-            SearchScreen(
-                onNavigateBack = { navController.popBackStack() },
-
-                //Changed to favourite filter and sort, so it filters and sorts accordingly to the favourite page.
-                onNavigateToFilter = { navController.navigate("filter") },
-                onNavigateToSort = { navController.navigate("sort") },
-
-                onPokemonClicked = { navController.navigate("pokemon/$it") },
-                searchSettings = searchSettings,
-                pokemonPool = favouritePokemons,
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
-        composable("filter") {
-            FilterScreen(
-                onNavigateBack = { popBackStackCustom(navController) },
-                filterSettings = searchSettings.filterSettings,
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
-        composable("sort") {
-            SortScreen(
-                onNavigateBack = { popBackStackCustom(navController) },
-                sortSettings = searchSettings.sortSettings,
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
-        composable(
-            "pokemon/{pokedexId}",
-            arguments = listOf(navArgument("pokedexId") { type = NavType.IntType })
+        NavHost(
+            navController = navController,
+            startDestination = startDestination
         ) {
-            it.arguments?.getInt("pokedexId")?.let { it1 ->
-                SpecificPage(
-                    it1,
+            composable("home") {
+                FrontPage(
+                    onNavigate = {
+                        navController.navigate(it)
+                    },
+                    pokemons = pokemons
+                )
+            }
+            composable("search") {
+                SearchScreen(
+                    onNavigateBack = { popBackStackCustom(navController) },
+                    onNavigateToFilter = { navController.navigate("filter") },
+                    onNavigateToSort = { navController.navigate("sort") },
+                    onPokemonClicked = { navController.navigate("pokemon/$it") },
+                    pokemonPool = pokemons,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            composable("searchFavourites") {
+                SearchScreen(
+                    onNavigateBack = { navController.popBackStack() },
+
+                    //Changed to favourite filter and sort, so it filters and sorts accordingly to the favourite page.
+                    onNavigateToFilter = { navController.navigate("filter") },
+                    onNavigateToSort = { navController.navigate("sort") },
+
+                    onPokemonClicked = { navController.navigate("pokemon/$it") },
+                    pokemonPool = favouritePokemons,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+            composable("filter") {
+                FilterScreen(
+                    onNavigateBack = { popBackStackCustom(navController) },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+            composable("sort") {
+                SortScreen(
+                    onNavigateBack = { popBackStackCustom(navController) },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+            composable(
+                "pokemon/{pokedexId}",
+                arguments = listOf(navArgument("pokedexId") { type = NavType.IntType })
+            ) {
+                it.arguments?.getInt("pokedexId")?.let { it1 ->
+                    SpecificPage(
+                        it1,
+                        onNavigateBack = { popBackStackCustom(navController) }
+                    )
+                }
+            }
+            composable("settings") {
+                SettingsPage(
                     onNavigateBack = { popBackStackCustom(navController) }
                 )
             }
+            composable("WhosThatPokemon") {
+                WhosThatPokemonPage(
+                    onNavigateBack = { popBackStackCustom(navController) },
+                    pokemonPool = pokemons
+                )
+            }
+            composable("favorites") {
+                FavoritesPage(
+                    onNavigate = {
+                        navController.navigate(it)
+                    },
+                    onNavigateBack = { navController.popBackStack() },
+                    onPokemonClicked = { navController.navigate("pokemon/$it") },
+                    //favoritePokemons = PokemonSamples.listOfPokemons.subList(2, 7)
+                )
+            }
         }
-        composable("settings") {
-            SettingsPage(
-                onNavigateBack = { popBackStackCustom(navController) }
-            )
-        }
-        composable("favorites") {
-            FavoritesPage(
-                onNavigate = {
-                    navController.navigate(it)
-                },
-                onNavigateBack = { navController.popBackStack() },
-                onPokemonClicked = { navController.navigate("pokemon/$it") },
-                //favoritePokemons = PokemonSamples.listOfPokemons.subList(2, 7)
-            )
+    }
+    else {
+        Box(modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Button(modifier = Modifier
+                .size(200.dp),
+                onClick = {
+                isOnline = true
+            }) {
+                Icon(modifier = Modifier.fillMaxSize(),imageVector = Icons.Default.Refresh, contentDescription = null)
+                Text("Refresh", modifier = Modifier.fillMaxSize())
+            }
         }
     }
 }

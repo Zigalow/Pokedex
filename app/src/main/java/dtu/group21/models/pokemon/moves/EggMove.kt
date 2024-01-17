@@ -1,3 +1,5 @@
 package dtu.group21.models.pokemon.moves
 
-interface EggMove : DisplayMove {}
+import dtu.group21.data.pokemon.moves.DisplayMove
+
+interface EggMove : DisplayMove, EggTutorMove {}

@@ -1,5 +1,6 @@
 package dtu.group21.ui.frontpage
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,7 +31,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,14 +43,15 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import dtu.group21.data.PokedexViewModel
-import dtu.group21.models.api.Resource
-import dtu.group21.models.pokemon.ComplexPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.helpers.PokemonHelper
 import dtu.group21.models.pokemon.PokemonType
 import dtu.group21.ui.shared.PaginatedColumn
 import dtu.group21.ui.shared.PaginationElement
+import dtu.group21.data.pokemon.StatPokemon
+import dtu.group21.data.PokedexViewModel
+import dtu.group21.data.Resource
+import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.theme.Yellow60
 import java.util.Locale
@@ -64,7 +68,7 @@ fun FrontPage(
         mutableStateOf(1..40)
     }
 
-    val pokemons = remember { mutableStateOf(emptyList<Resource<DisplayPokemon>>()) }
+    val pokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
     LaunchedEffect(Unit) {
         println("Loading pokemons")
         val pokedexViewModel = PokedexViewModel()
@@ -93,7 +97,8 @@ fun FrontPage(
                 Box(
                     modifier = Modifier
                         .weight(0.5f)
-                        .fillMaxWidth(), contentAlignment = Alignment.Center
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
                     PokemonLogo(size = 174.dp)
                 }
@@ -101,7 +106,8 @@ fun FrontPage(
                 Box(
                     modifier = Modifier
                         .weight(0.1f)
-                        .fillMaxWidth(), contentAlignment = Alignment.CenterEnd
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
                 ) {
                     SearchIcon(size = 49.dp, onClicked = { onNavigate("search") })
                 }
@@ -173,6 +179,13 @@ fun FrontPage(
                         modifier = Modifier
                             .fillMaxHeight(),
                     ) {
+                        WhosIcon(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(top = 60.dp) // Increase bottom padding to raise the icon
+                                .size(60.dp),
+                            onClicked = { onNavigate("WhosThatPokemon") }
+                        )
                         MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
                         SettingsIcon(
                             modifier = Modifier
@@ -309,6 +322,21 @@ fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
 }
 
 @Composable
+fun WhosIcon(modifier: Modifier = Modifier, onClicked: () -> Unit){
+    Box(modifier = modifier
+        .clickable { onClicked() },
+        contentAlignment = Alignment.Center
+    )
+    {
+        Image(
+            painter = painterResource(id = R.drawable.pokemon_icon_512x512_ivi5uex5),
+            contentDescription = "Whos That Pokemon Icon",
+            modifier = Modifier.fillMaxSize(0.56f)
+        )
+    }
+}
+
+@Composable
 fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
     Box(
         modifier = modifier
@@ -320,7 +348,7 @@ fun FavoritesIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.favorite_icon_active),
+            painter = painterResource(id = R.drawable.favorite_icon),
             contentDescription = "White heart",
             modifier = Modifier.fillMaxSize(0.56f)
         )
@@ -386,7 +414,7 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
     ) {
         val name = if (pokemonType == PokemonType.NONE) "" else pokemonType.name
         Text(
-            text = capitalizeFirstLetter(name),
+            text = name,
             // todo
             fontSize = 11.sp, color = Color.White
         )
@@ -394,11 +422,12 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
 }
 
 @Composable
-fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon) {
+fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon, silhoutteColor: Color? = null) {
     AsyncImage(
         model = pokemon.spriteId,
         contentDescription = pokemon.name,
-        modifier = modifier
+        modifier = modifier.animateContentSize(),
+        colorFilter = if (silhoutteColor == null) null else ColorFilter.tint(silhoutteColor)
     )
     /*Image(
             painter = rememberAsyncImagePainter(pokemon.spriteResourceId),
@@ -409,24 +438,6 @@ fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon) {
 
 fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
-
-
-@Composable
-fun PokemonNameBox(modifier: Modifier = Modifier, pokemon: ComplexPokemon, size: Dp) {
-    Box(
-        modifier = modifier.background(
-            color = pokemon.primaryType.primaryColor,
-            shape = RoundedCornerShape(30.dp)
-        ),
-    ) {
-        Text(
-            text = capitalizeFirstLetter(pokemon.species.name),
-            modifier = Modifier.padding(start = 8.dp),
-            fontSize = 17.sp,
-            color = Color.White,
-        )
-    }
-}
 
 fun formatPokemonId(unformattedNumber: Int): String {
     return "#${"%04d".format(unformattedNumber)}"

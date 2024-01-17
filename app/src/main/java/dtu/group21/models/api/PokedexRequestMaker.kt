@@ -1,23 +1,28 @@
 package dtu.group21.models.api
 
+import dtu.group21.data.pokemon.PokemonAbility
+import dtu.group21.data.pokemon.PokemonGender
+import dtu.group21.data.pokemon.PokemonStats
+import dtu.group21.data.pokemon.PokemonType
+import dtu.group21.data.pokemon.moves.DisplayMove
+import dtu.group21.data.pokemon.moves.MoveDamageClass
 import dtu.group21.models.pokemon.ComplexPokemon
-import dtu.group21.models.pokemon.PokemonGender
-import dtu.group21.models.pokemon.PokemonType
-import dtu.group21.models.pokemon.PreviewPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
-import dtu.group21.models.pokemon.MoveDamageClass
-import dtu.group21.models.pokemon.PokemonAbility
-import dtu.group21.models.pokemon.PokemonMove
+
 import dtu.group21.models.pokemon.PokemonSpecies
-import dtu.group21.models.pokemon.PokemonStats
+import dtu.group21.models.pokemon.PreviewPokemon
+import dtu.group21.models.pokemon.moves.BasicMove
+
+import dtu.group21.models.pokemon.moves.EggMoveData
+import dtu.group21.models.pokemon.moves.LevelMoveData
+import dtu.group21.models.pokemon.moves.MachineMoveData
+import dtu.group21.models.pokemon.moves.TutorMoveData
 import org.json.JSONArray
 import org.json.JSONObject
 
 class PokedexRequestMaker {
-
     private val apiURL = "https://pokeapi.co/api/v2"
     private val jsonRequestMaker: JsonRequestMaker = JsonRequestMaker(apiURL)
-
 
     private fun getNameFromSpecies(species: JSONObject): String {
         val names = species.getJSONArray("names")
@@ -34,24 +39,6 @@ class PokedexRequestMaker {
         }
         return name
     }
-
-    private fun getPokemonTypes(pokemon: JSONObject): Pair<PokemonType, PokemonType> {
-
-        val types = pokemon.getJSONArray("types")
-        val primaryType =
-            PokemonType.getFromName(types.getJSONObject(0).getJSONObject("type").getString("name"))
-        val secondaryType =
-            if (types.length() == 2) {
-                PokemonType.getFromName(
-                    types.getJSONObject(1).getJSONObject("type").getString("name")
-                )
-            } else {
-                PokemonType.NONE
-            }
-
-        return Pair(primaryType, secondaryType)
-    }
-
 
     private fun getEvolutionInfo(
         evolutionInfo: JSONObject,
@@ -92,6 +79,7 @@ class PokedexRequestMaker {
         return Pair(info.second, info.third)
     }
 
+
     private fun getEnglishString(
         stringObjects: JSONArray,
         stringName: String,
@@ -108,7 +96,6 @@ class PokedexRequestMaker {
         return ""
     }
 
-
     suspend fun getSimplePokemon(pokedexId: Int): EvolutionChainPokemon {
         val speciesObject = jsonRequestMaker.makeRequest("pokemon-species/$pokedexId")
         val name = getNameFromSpecies(speciesObject)
@@ -120,6 +107,9 @@ class PokedexRequestMaker {
         return EvolutionChainPokemon(pokedexId, name, evolutionInfo.first, evolutionInfo.second)
     }
 
+    
+    
+    
     suspend fun getPreviewPokemon(pokedexId: Int): PreviewPokemon {
         val species = jsonRequestMaker.makeRequest("pokemon-species/$pokedexId")
         val name = getNameFromSpecies(species)
@@ -129,31 +119,103 @@ class PokedexRequestMaker {
 
         return PreviewPokemon(pokedexId, name, types.first, types.second)
     }
+    // made by Zaid haters
+    private fun getPokemonTypes(pokemon: JSONObject): Pair<PokemonType, PokemonType> {
 
-    private suspend fun getMove(moveName: String): PokemonMove {
+        val types = pokemon.getJSONArray("types")
+        val primaryType =
+            PokemonType.getFromName(types.getJSONObject(0).getJSONObject("type").getString("name"))
+        val secondaryType =
+            if (types.length() == 2) {
+                PokemonType.getFromName(
+                    types.getJSONObject(1).getJSONObject("type").getString("name")
+                )
+            } else {
+                PokemonType.NONE
+            }
+
+        return Pair(primaryType, secondaryType)
+    }
+
+
+    private suspend fun getBasicMove(moveName: String, pokedexId: Int): DisplayMove {
         val moveObject = jsonRequestMaker.makeRequest("move/$moveName")
 
+        // Pokemon's ID
+        val pokemonResponse = jsonRequestMaker.makeRequest("pokemon/$pokedexId")
+
+        // move's name
         val namesArray = moveObject.getJSONArray("names")
         val name = getEnglishString(namesArray, "name")
-        val descriptionsArray = moveObject.getJSONArray("flavor_text_entries")
-        val description = getEnglishString(descriptionsArray, "flavor_text")
 
+        // Other data
         val power = moveObject.get("power") as? Int
         val accuracy = moveObject.get("accuracy") as? Int
         val pp = moveObject.getInt("pp")
+
         val type = PokemonType.getFromName(moveObject.getJSONObject("type").getString("name"))
+
+        // Move categories name
+        val moves = pokemonResponse.getJSONArray("moves")
+        var learnMoveMethods = JSONArray()
+        var moveMethodName = "Tutor"
         val damageClass =
             MoveDamageClass.getFromName(moveObject.getJSONObject("damage_class").getString("name"))
 
-        return PokemonMove(
-            name,
-            description,
-            power,
-            accuracy,
-            pp,
-            type,
-            damageClass,
-        )
+        // To find the move category for the latest version/game
+        for (i in 0 until moves.length()) {
+            val movesObject = moves.getJSONObject(i).getJSONObject("move")
+            val moveNameYES = movesObject.getString("name")
+
+            if (moveNameYES == moveName) {
+                learnMoveMethods =
+                    if (moves.length() > 0) {
+                        moves.getJSONObject(i).getJSONArray("version_group_details")
+                    } else {
+                        JSONArray()
+                    }
+                moveMethodName =
+                    learnMoveMethods.getJSONObject(0).getJSONObject("move_learn_method")
+                        .getString("name")
+                break
+            }
+        }
+
+        return when (moveMethodName) {
+            "machine" -> {
+                val machines = moveObject.getJSONArray("machines")
+                var machineURL = ""
+
+                if (machines.length() > 0) {
+                    machineURL =
+                        machines.getJSONObject(0).getJSONObject("machine").getString("url")
+                            .split("/").dropLast(1)
+                            .last().toString()
+                } else if (machines.length() <= 0) {
+                    machineURL = "-"
+                }
+
+                MachineMoveData(name, power, accuracy, pp, type, damageClass, machineURL)
+            }
+
+            "level-up" -> {
+                var level = learnMoveMethods.getJSONObject(learnMoveMethods.length() - 1)
+                    .getInt("level_learned_at")
+                LevelMoveData(name, power, accuracy, pp, type, damageClass, level)
+            }
+
+            "tutor" -> {
+                TutorMoveData(name, power, accuracy, pp, type, damageClass)
+            }
+
+            "egg" -> {
+                EggMoveData(name, power, accuracy, pp, type, damageClass)
+            }
+
+            else -> {
+                BasicMove(name, power, accuracy, pp, type, damageClass)
+            }
+        }
     }
 
     private suspend fun getAbility(abilityName: String, isHidden: Boolean): PokemonAbility {
@@ -212,9 +274,8 @@ class PokedexRequestMaker {
 
         // Moves
         val movesArray = pokemon.getJSONArray("moves")
-        val pokemonMoves = Array(movesArray.length()) { _ ->
-            PokemonMove(
-                "",
+        val pokemonMoves: Array<DisplayMove> = Array(movesArray.length()) { _ ->
+            BasicMove(
                 "",
                 0,
                 0,
@@ -224,8 +285,10 @@ class PokedexRequestMaker {
             )
         }
         for (i in 0 until movesArray.length()) {
-            pokemonMoves[i] =
-                getMove(movesArray.getJSONObject(i).getJSONObject("move").getString("name"))
+            pokemonMoves[i] = getBasicMove(
+                movesArray.getJSONObject(i).getJSONObject("move").getString("name"),
+                pokedexId
+            )
         }
 
         // Abilities

@@ -2,9 +2,10 @@ package dtu.group21.data.caches
 
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.StatPokemon
 
 object PokedexCache {
-    val displayCache = PokemonCache<DisplayPokemon>()
+    val displayCache = PokemonCache<StatPokemon>()
     val detailsCache = PokemonCache<DetailedPokemon>()
     val favoritesCache = PokemonCache<DetailedPokemon>()
 
@@ -19,7 +20,7 @@ object PokedexCache {
         favoritesCache.size = -1 // no limit
     }
 
-    fun addDisplayPokemon(pokemon: DisplayPokemon) {
+    fun addDisplayPokemon(pokemon: StatPokemon) {
         // TODO: decide if the equality requirement should be harsher
         //  (e.g. differentiate between different genders of the same pokemon)
         // Don't add it if it's already favorited

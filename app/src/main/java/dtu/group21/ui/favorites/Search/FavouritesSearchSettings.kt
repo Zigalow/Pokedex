@@ -6,6 +6,6 @@ import dtu.group21.ui.search.SortSettings
 class FavouritesSearchSettings {
         var searchString = ""
 
-        val FavouritesFilterSettings = FilterSettings()
-        val FavouritesSortSettings = SortSettings()
+        val FavouritesFilterSettings = FilterSettings
+        val FavouritesSortSettings = SortSettings
 }

@@ -6,9 +6,10 @@ import dtu.group21.data.api.PokeAPICo
 import dtu.group21.data.api.PokemonAPI
 import dtu.group21.data.caches.PokedexCache
 import dtu.group21.data.database.AppDatabase
-import dtu.group21.models.api.Resource
+import dtu.group21.data.database.FavoriteData
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.pokedex.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,29 +22,43 @@ class PokedexViewModel(
     private val api: PokemonAPI = PokeAPICo()
 ) : ViewModel() {
     private val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val database: AppDatabase = MainActivity.database!!
+    private val database: AppDatabase = MainActivity.database
 
-    fun isFavoritePokemon(pokedexId: Int): Boolean {
-        // TODO: is this even allowed?
-        return database.favoritesDao().getAll().any { it.id == pokedexId }
-    }
-
-    fun getFavoritePokemons(destination: MutableState<List<Resource<DisplayPokemon>>>) {
+    fun getFavoritePokemons(destination: MutableState<List<Resource<StatPokemon>>>) {
         coroutineScope.launch {
-            destination.value = database.favoritesDao().getAll().map { Resource.Success(it.getPokemon()) }
+            destination.value =
+                database.favoritesDao().getAll().map { Resource.Success(it.toPokemon()) }
         }
     }
 
-    fun getPokemons(pokedexIds: List<Int>, destination: MutableState<List<Resource<DisplayPokemon>>>, cacheResults: Boolean = true) {
+    fun makeFavorite(pokemon: DetailedPokemon) {
+        coroutineScope.launch {
+            database.favoritesDao().insertAll(FavoriteData(pokemon))
+        }
+    }
+
+    fun removeFavorite(pokemon: DetailedPokemon) {
+        coroutineScope.launch {
+            database.favoritesDao().delete(FavoriteData(pokemon))
+        }
+    }
+
+    fun getPokemons(
+        pokedexIds: List<Int>,
+        destination: MutableState<List<Resource<StatPokemon>>>,
+        cacheResults: Boolean = true
+    ) {
         coroutineScope.launch {
             getPokemonsInternal(pokedexIds).collect {
                 when (it) {
                     is Resource.Success -> {
                         destination.value = it.data
                     }
+
                     is Resource.Failure -> {
                         return@collect
                     }
+
                     Resource.Loading -> {
                         // Do nothing
                     }
@@ -52,12 +67,12 @@ class PokedexViewModel(
         }
     }
 
-    private suspend fun getPokemonsInternal(pokedexIds: List<Int>): Flow<Resource<List<Resource<DisplayPokemon>>>> = flow {
-        val pokemons = mutableMapOf<Int, Resource<DisplayPokemon>>()
+    private suspend fun getPokemonsInternal(pokedexIds: List<Int>): Flow<Resource<List<Resource<StatPokemon>>>> = flow {
+        val pokemons = mutableMapOf<Int, Resource<StatPokemon>>()
         pokedexIds.forEach { pokemons[it] = Resource.Loading }
 
         // TODO: probably make this better
-        fun getPokemonList(map: Map<Int, Resource<DisplayPokemon>>, order: List<Int>): List<Resource<DisplayPokemon>> {
+        fun getPokemonList(map: Map<Int, Resource<StatPokemon>>, order: List<Int>): List<Resource<StatPokemon>> {
             return order.map { map[it]!! }
         }
 
@@ -82,10 +97,12 @@ class PokedexViewModel(
                         pokemons[pokemon.pokedexId] = Resource.Success(pokemon)
                         emit(Resource.Success(getPokemonList(pokemons, pokedexIds)))
                     }
+
                     is Resource.Failure -> {
                         // TODO handle?
                         emit(Resource.Failure("TODO"))
                     }
+
                     Resource.Loading -> {
                         // Do nothing
                     }
@@ -94,23 +111,28 @@ class PokedexViewModel(
         }
     }
 
-    fun getPokemon(pokedexId: Int, destination: MutableState<DisplayPokemon>, cacheResult: Boolean = true) {
+    fun getPokemon(
+        pokedexId: Int,
+        destination: MutableState<Resource<DisplayPokemon>>,
+        cacheResult: Boolean = true
+    ) {
         val cached = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
         if (cached != null) {
-            destination.value = cached
-        }
-        else {
+            destination.value = Resource.Success(cached)
+        } else {
             coroutineScope.launch {
                 getPokemonInternal(pokedexId, cacheResult).collect {
                     when (it) {
                         is Resource.Success -> {
-                            destination.value = it.data
+                            destination.value = Resource.Success(it.data)
                         }
+
                         is Resource.Failure -> {
-                            // TODO handle?
+                            // TODO handle failure if needed
                         }
+
                         Resource.Loading -> {
-                            // Do nothing
+                            // Do nothing or handle loading state if needed
                         }
                     }
                 }
@@ -118,23 +140,27 @@ class PokedexViewModel(
         }
     }
 
-    private suspend fun getPokemonInternal(pokedexId: Int, cacheResult: Boolean): Flow<Resource<DisplayPokemon>> = flow {
+
+    private suspend fun getPokemonInternal(
+        pokedexId: Int,
+        cacheResult: Boolean
+    ): Flow<Resource<StatPokemon>> = flow {
         if (pokedexId < 1 || pokedexId > 1010) {
             emit(Resource.Failure("Number not valid"))
             return@flow
         }
         emit(Resource.Loading)
 
-        var retrievedPokemon: DisplayPokemon? = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
+        var retrievedPokemon: StatPokemon? = PokedexCache.pokemons.firstOrNull { it.pokedexId == pokedexId }
         if (retrievedPokemon == null) {
             // Database look-up
             val databaseMatches = database.favoritesDao().getPokemonById(pokedexId)
             if (databaseMatches.isNotEmpty()) {
-                retrievedPokemon = databaseMatches[0].getPokemon()
+                retrievedPokemon = databaseMatches[0].toPokemon()
             }
             // Fetching online
             else {
-                retrievedPokemon = api.getDisplayPokemon(pokedexId)
+                retrievedPokemon = api.getStatPokemon(pokedexId)
             }
 
             if (cacheResult) {
@@ -144,26 +170,21 @@ class PokedexViewModel(
 
         if (retrievedPokemon != null) {
             emit(Resource.Success(retrievedPokemon))
-        }
-        else {
+        } else {
             emit(Resource.Failure("Could not retrieve pokemon"))
         }
     }
 
-    fun getDetails(pokedexId: Int, destination: MutableState<DetailedPokemon>, cacheResult: Boolean = true) {
+    fun getDetails(
+        pokedexId: Int,
+        destination: MutableState<Pair<Resource<DetailedPokemon>, Boolean>>,
+        cacheResult: Boolean = true
+    ) {
         coroutineScope.launch {
+            val isFavorite = database.favoritesDao().getAll().any { it.id == pokedexId }
+
             getDetailsInternal(pokedexId, cacheResult).collect {
-                when (it) {
-                    is Resource.Success -> {
-                        destination.value = it.data
-                    }
-                    is Resource.Failure -> {
-                        // TODO handle?
-                    }
-                    Resource.Loading -> {
-                        // Do nothing
-                    }
-                }
+                destination.value = Pair(it, isFavorite)
             }
         }
     }
@@ -180,7 +201,7 @@ class PokedexViewModel(
             // Database look-up
             val databaseMatches = database.favoritesDao().getPokemonById(pokedexId)
             if (databaseMatches.isNotEmpty()) {
-                retrievedPokemon = databaseMatches[0].getPokemon()
+                retrievedPokemon = databaseMatches[0].toPokemon()
             }
             // Fetching online
             else {
@@ -194,8 +215,7 @@ class PokedexViewModel(
 
         if (retrievedPokemon != null) {
             emit(Resource.Success(retrievedPokemon))
-        }
-        else {
+        } else {
             emit(Resource.Failure("Could not retrieve pokemon"))
         }
     }

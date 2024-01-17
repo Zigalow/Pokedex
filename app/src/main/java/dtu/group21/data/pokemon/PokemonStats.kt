@@ -1,4 +1,4 @@
-package dtu.group21.models.pokemon
+package dtu.group21.data.pokemon
 
 data class PokemonStats(
     val hp: Int,
@@ -11,4 +11,6 @@ data class PokemonStats(
     val total = hp + attack + defense + specialAttack + specialDefense + speed
 
     constructor(stats: List<Int>) : this(stats[0], stats[1], stats[2], stats[3], stats[4], stats[5])
+
+    fun toList() = listOf(hp, attack, defense, specialAttack, specialDefense, speed)
 }
