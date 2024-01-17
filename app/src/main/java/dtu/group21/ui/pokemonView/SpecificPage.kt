@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -596,7 +597,7 @@ fun StatsBar(
 @Composable
 fun Sections(modifier: Modifier, selectedCategory: String, pokemon: DetailedPokemon) {
     when (selectedCategory) {
-        "About" -> AboutSection(pokemon, modifier)
+        "About" -> AboutSection(pokemon)
         "Stats" -> StatsSection(pokemon.stats, modifier)
         "Moves" -> MovesSection(pokemon.moves, pokemon.name)
         "Evolution" -> EvolutionSection(
@@ -609,80 +610,115 @@ fun Sections(modifier: Modifier, selectedCategory: String, pokemon: DetailedPoke
 
 @Composable
 fun AboutSection(
-    pokemon: DetailedPokemon, modifier: Modifier
+    pokemon: DetailedPokemon,
 ) {
     val weightInGrams: Double = pokemon.weightInGrams.toDouble()
 
-    val pokemonWeight = when (pokemon.weightInGrams) {
-        in 1 until 1000 -> "$weightInGrams g"
-        in 1000 until 1000000 -> "${weightInGrams / 1000} kg"
-        else -> "${weightInGrams / 1000000} t"
-    }
+    val pokemonWeight =
+        when (pokemon.weightInGrams) {
+            in 1 until 1000 -> "$weightInGrams g"
+            in 1000 until 1000000 -> "${weightInGrams / 1000} kg"
+            else -> "${weightInGrams / 1000000} t"
+        }
     val heightInCm = pokemon.heightInCm.toDouble()
-    val pokemonHeight = when (pokemon.heightInCm) {
-        in 1 until 100 -> "$heightInCm cm"
-        in 100 until 10000 -> "${heightInCm / 100} m"
-        else -> "${heightInCm / 100000} km"
-    }
+    val pokemonHeight =
+        when (pokemon.heightInCm) {
+            in 1 until 100 -> "$heightInCm cm"
+            in 100 until 10000 -> "${heightInCm / 100} m"
+            else -> "${heightInCm / 100000} km"
+        }
 
-    val pokemonGeneration = when (pokemon.pokedexId) {
-        in 1..151 -> "Generation 1"
-        in 152..251 -> "Generation 2"
-        in 252..386 -> "Generation 3"
-        in 387..493 -> "Generation 4"
-        in 494..649 -> "Generation 5"
-        in 650..721 -> "Generation 6"
-        in 722..809 -> "Generation 7"
-        in 810..905 -> "Generation 8"
-        else -> "Generation 9"
-    }
+    val pokemonGeneration =
+        when (pokemon.pokedexId) {
+            in 1..151 -> "Generation 1"
+            in 152..251 -> "Generation 2"
+            in 252..386 -> "Generation 3"
+            in 387..493 -> "Generation 4"
+            in 494..649 -> "Generation 5"
+            in 650..721 -> "Generation 6"
+            in 722..809 -> "Generation 7"
+            in 810..905 -> "Generation 8"
+            else -> "Generation 9"
+        }
 
-    Column {
-        Table(first = "Category", second = pokemon.category)
-        Table(first = "Abilities", second = pokemon.abilities.joinToString {
-            if (!it.isHidden) {
-                it.name
-            } else {
-                "${it.name} (hidden)"
+    LazyColumn {
+        item {
+            Column {
+                Table(first = "Category", second = pokemon.category)
+                Table(
+                    first = "Abilities",
+                    second = pokemon.abilities.joinToString {
+                        if (!it.isHidden) {
+                            it.name
+                        } else {
+                            "${it.name} (hidden)"
+                        }
+                    }
+                )
+                Table(first = "Weight", second = pokemonWeight)
+                Table(first = "Height", second = pokemonHeight)
+                Table(first = "Introduced", second = pokemonGeneration)
+
+                Spacer(modifier = Modifier.height(30.dp))
             }
-        })
-        Table(first = "Weight", second = pokemonWeight)
-        Table(first = "Height", second = pokemonHeight)
-        Table(first = "Introduced", second = pokemonGeneration)
-        Spacer(modifier.height(30.dp))
-    }
-    Column {
-        Text(text = "Gender ratio")
-        if (pokemon.genderRate > -1) {
-            Table("Male", "${100 - (pokemon.genderRate / 8.0 * 100)}%")
-            Table("Female", "${pokemon.genderRate / 8.0 * 100}%")
-            //Table(first = "Egg cycles", second = "20 (4.884-5.140 steps)")
-        } else {
-            Spacer(modifier = Modifier.height(10.dp))
-            Table(first = "Genderless", second = "100%")
+        }
+
+        item {
+            Column {
+                Text(text = "Gender ratio")
+                if (pokemon.genderRate > -1) {
+                    Table("Male", "${100 - (pokemon.genderRate / 8.0 * 100)}%")
+                    Table("Female", "${pokemon.genderRate / 8.0 * 100}%")
+                    // Table(first = "Egg cycles", second = "20 (4.884-5.140 steps)")
+                } else {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Table(first = "Genderless", second = "100%")
+                }
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.fillMaxHeight())
         }
     }
-    Spacer(modifier.fillMaxHeight())
 }
 
 @Composable
 fun StatsSection(
     stats: PokemonStats, modifier: Modifier
 ) {
-    Column {
-        StatsBar(first = "HP", second = stats.hp.toString(), 255)
-        StatsBar(first = "Attack", second = stats.attack.toString(), 255, 1000, 100)
-        StatsBar(first = "Defense", second = stats.defense.toString(), 255, 1000, 200)
-        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(), 255, 1000, 300)
-        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(), 255, 1000, 400)
-        StatsBar(first = "Speed", second = stats.speed.toString(), 255, 1000, 500)
-        Row {
-            Spacer(modifier = Modifier.weight(0.0001f))
-            Divider(Modifier.weight(0.5f))
-            Spacer(modifier = Modifier.weight(0.01f))
+    LazyColumn {
+        item {
+            StatsBar(first = "HP", second = stats.hp.toString(), 255)
         }
-        Spacer(Modifier.height(5.dp))
-        StatsBar(first = "Total", second = stats.total.toString(), 720, 1000, 600)
+        item {
+            StatsBar(first = "Attack", second = stats.attack.toString(), 255, 1000, 100)
+        }
+        item {
+            StatsBar(first = "Defense", second = stats.defense.toString(), 255, 1000, 200)
+        }
+        item {
+            StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(), 255, 1000, 300)
+        }
+        item {
+            StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(), 255, 1000, 400)
+        }
+        item {
+            StatsBar(first = "Speed", second = stats.speed.toString(), 255, 1000, 500)
+        }
+        item {
+            Row {
+                Spacer(modifier = Modifier.weight(0.0001f))
+                Divider(Modifier.weight(0.5f))
+                Spacer(modifier = Modifier.weight(0.01f))
+            }
+        }
+        item {
+            Spacer(Modifier.height(5.dp))
+        }
+        item {
+            StatsBar(first = "Total", second = stats.total.toString(), 720, 1000, 600)
+        }
     }
     Spacer(modifier.fillMaxHeight())
 }
