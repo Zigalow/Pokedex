@@ -5,8 +5,10 @@ import dtu.group21.data.pokemon.PokemonAbility
 import dtu.group21.data.pokemon.PokemonGender
 import dtu.group21.data.pokemon.PokemonStats
 import dtu.group21.data.pokemon.PokemonType
+import dtu.group21.data.pokemon.moves.DisplayMove
 import dtu.group21.data.pokemon.moves.MoveDamageClass
 import dtu.group21.data.pokemon.moves.PokemonMove
+import dtu.group21.models.pokemon.moves.BasicMove
 
 class PokemonConverters {
     @TypeConverter
@@ -57,38 +59,37 @@ class PokemonConverters {
     fun toAbilities(abilitiesString: String?): Array<PokemonAbility>? = ConverterHelper.toList(abilitiesString, { toAbility(it)!! }, ";;;")?.toTypedArray()
 
     @TypeConverter
-    fun fromMove(move: PokemonMove?): String? {
+    fun fromMove(move: DisplayMove?): String? {
         if (move == null)
             return null
 
-        return "'${move.name}';;'${move.description}';;${move.power};;${move.accuracy};;${move.pp};;${
+        return "'${move.name}';;${move.power};;${move.accuracy};;${move.pp};;${
             fromType(
                 move.type
             )
         };;${move.damageClass}"
     }
     @TypeConverter
-    fun toMove(moveString: String?): PokemonMove? {
+    fun toMove(moveString: String?): DisplayMove? {
         if (moveString == null)
             return null
 
         val parts = moveString.split(";;")
 
         val name = parts[0].drop(1).dropLast(1)
-        val description = parts[1].drop(1).dropLast(1)
-        val power = parts[2].toIntOrNull()
-        val accuracy = parts[3].toIntOrNull()
-        val pp = parts[4].toInt()
-        val type = PokemonType.valueOf(parts[5])
-        val damageClass = MoveDamageClass.valueOf(parts[6])
+        val power = parts[1].toIntOrNull()
+        val accuracy = parts[2].toIntOrNull()
+        val pp = parts[3].toInt()
+        val type = PokemonType.valueOf(parts[4])
+        val damageClass = MoveDamageClass.valueOf(parts[5])
 
-        return PokemonMove(
-            name, description, power, accuracy, pp, type, damageClass
+        return BasicMove(
+            name, power, accuracy, pp, type, damageClass
         )
     }
 
     @TypeConverter
-    fun fromMoves(moves: Array<PokemonMove>?) = ConverterHelper.fromArray(moves, { fromMove(it)!! }, ";;;")
+    fun fromMoves(moves: Array<DisplayMove>?) = ConverterHelper.fromArray(moves, { fromMove(it)!! }, ";;;")
     @TypeConverter
-    fun toMoves(movesString: String?): Array<PokemonMove>? = ConverterHelper.toList(movesString, { toMove(it)!! }, ";;;")?.toTypedArray()
+    fun toMoves(movesString: String?): Array<DisplayMove>? = ConverterHelper.toList(movesString, { toMove(it)!! }, ";;;")?.toTypedArray()
 }

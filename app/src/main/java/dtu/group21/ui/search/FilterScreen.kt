@@ -59,7 +59,9 @@ fun FilterScreen(
                     .align(Alignment.CenterVertically)
                     .clickable {
                         onNavigateBack()
+
                     },
+
                 alignment = Alignment.CenterStart,
 
                 )

@@ -2,6 +2,8 @@ package dtu.group21.ui.pokemonView
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +31,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -47,6 +50,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -54,6 +60,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -64,16 +71,18 @@ import dtu.group21.data.Resource
 import dtu.group21.models.api.PokemonViewModel
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.models.pokemon.EvolutionChainPokemon
-import dtu.group21.data.pokemon.PokemonGender
-import dtu.group21.data.pokemon.moves.PokemonMove
-import dtu.group21.models.pokemon.PokemonSpecies
 import dtu.group21.data.pokemon.PokemonStats
 import dtu.group21.data.pokemon.PokemonType
+import dtu.group21.data.pokemon.moves.DisplayMove
+import dtu.group21.data.pokemon.moves.LevelMove
+import dtu.group21.data.pokemon.moves.MachineMove
+import dtu.group21.data.pokemon.moves.TutorMove
+import dtu.group21.models.pokemon.moves.EggMove
+import dtu.group21.models.pokemon.moves.EggTutorMove
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
-
 
 @Composable
 fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
@@ -184,7 +193,6 @@ fun Top(
                     .clickable { onClickBack() }
             )
         }
-        //Spacer(modifier.width(230.dp))
         Box(
             modifier = Modifier
                 .weight(0.1f)
@@ -245,7 +253,8 @@ fun Mid(
                     .background(
                         color = pokemon.primaryType.primaryColor,
                         shape = RoundedCornerShape(15.dp)
-                    ), pokemonType = pokemon.primaryType
+                    ),
+                pokemonType = pokemon.primaryType
             )
             Spacer(modifier.width(15.dp))
             LargerPokemonTypeBox(
@@ -255,7 +264,8 @@ fun Mid(
                     .background(
                         color = pokemon.secondaryType.secondaryColor,
                         shape = RoundedCornerShape(15.dp)
-                    ), pokemonType = pokemon.secondaryType
+                    ),
+                pokemonType = pokemon.secondaryType
             )
         }
     }
@@ -315,6 +325,17 @@ fun Bottom(modifier: Modifier = Modifier, pokemon: DetailedPokemon) {
                     }
                 ), verticalArrangement = Arrangement.Bottom
         ) {
+            Spacer(modifier.height(8.dp))
+            Box(
+                modifier
+                    .height(4.dp)
+                    .width(60.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .alpha(0.4f),
+
+            ){
+                DragIcon()
+            }
                     val categories = listOf("About", "Stats", "Moves", "Evolution")
                     var selectedCategory by remember { mutableStateOf("About") }
                     Spacer(
@@ -408,7 +429,6 @@ fun CategoryList(
     onCategorySelected(selectedCategory)
 }
 
-
 @Composable
 fun Table(first: String, second: String) {
     Row(
@@ -419,21 +439,76 @@ fun Table(first: String, second: String) {
             text = first,
             modifier = Modifier.weight(0.35f)
         )
-        Text(
-            text = second,
+        Row(
             modifier = Modifier.weight(1f)
-        )
+        ) {
+            Text(
+                text = second,
+            )
+
+            if (first.equals("Male") || first.equals("Female")) {
+                Spacer(modifier = Modifier.weight(0.05f))
+                val imageId =
+                    if (first.equals("Male")) R.drawable.male_icon else R.drawable.female_icon
+
+                Image(
+                    painter = painterResource(id = imageId),
+                    contentDescription = "Pokemon Gender",
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(modifier = Modifier.weight(0.9995f))
+        }
     }
     Spacer(modifier = Modifier.height(10.dp))
 }
 
 @Composable
-fun StatsBar(first: String, second: String) {
-    val percentage = (second.toFloat() / 100).coerceIn(0f, 1f)
-    val boxColor =
-        if (second.toFloat() < 50) Color(0xFFFF0000) else if (second.toFloat() >= 50 && second.toFloat() < 80) Color(
-            0xFFFFB800
-        ) else Color(0xFF42FF00)
+fun StatsBar(
+    first: String, second: String, max: Int, animDuration: Int = 1000, animDelay: Int = 0
+) {
+    val percentage = (second.toFloat() / max)
+    var animationPlayed by remember {
+        mutableStateOf(false)
+    }
+    val currentPercent = animateFloatAsState(
+        targetValue = if (animationPlayed) {
+            percentage
+        } else 0f, animationSpec = tween(
+            animDuration, animDelay
+        )
+    )
+    LaunchedEffect(key1 = true) {
+        animationPlayed = true
+    }
+    var boxColor = Color.Gray
+
+    if (first == "Total") {
+        boxColor = if (second.toInt() in 0 until 360/*< max * 0.2*/) {
+            Color(0xFFFF0000)
+        } else if (second.toInt() in 360 until 480/*>= max * 0.2 && second.toInt() < max * 0.4*/) {
+            Color(0xFFFFB800)
+        } else if (second.toInt() in 480 until 600/*>= max * 0.4 && second.toInt() < max * 0.6*/) {
+            Color(0xFFA0E515)
+        } else if (second.toInt() in 600 until 670/*>= max * 0.6 && second.toInt() < max * 0.8*/) {
+            Color(0xFF23CD5E)
+        } else {
+            Color(0xFF00E1FF)
+        }
+    } else {
+        boxColor = if (second.toInt() in 0 until 50) {
+            Color(0xFFFF0000)
+        } else if (second.toInt() in 50 until 90) {
+            Color(0xFFFF9800)
+        } else if (second.toInt() in 90 until 120) {
+            Color(0xFFA0E515)
+        } else if (second.toInt() in 120 until 150) {
+            Color(0xFF23CD5E)
+        } else {
+            Color(0xFF00E1FF)
+        }
+    }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -444,9 +519,8 @@ fun StatsBar(first: String, second: String) {
         )
         Text(
             text = second,
-            modifier = Modifier.weight(0.05f)
+            modifier = Modifier.weight(0.1f)
         )
-
         Box(
             modifier = Modifier
                 .weight(0.50f)
@@ -454,10 +528,9 @@ fun StatsBar(first: String, second: String) {
                 .background(shape = RoundedCornerShape(15.dp), color = Color(0xFFD9D9D9))
                 .align(Alignment.CenterVertically)
         ) {
-
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(percentage)
+                    .fillMaxWidth(currentPercent.value)
                     .height(5.dp)
                     .background(shape = RoundedCornerShape(15.dp), color = boxColor)
             )
@@ -470,9 +543,9 @@ fun StatsBar(first: String, second: String) {
 @Composable
 fun Sections(modifier: Modifier, selectedCategory: String, pokemon: DetailedPokemon) {
     when (selectedCategory) {
-        "About" -> AboutSection(pokemon, modifier)
+        "About" -> AboutSection(pokemon)
         "Stats" -> StatsSection(pokemon.stats, modifier)
-        "Moves" -> MovesSection(pokemon.moves)
+        "Moves" -> MovesSection(pokemon.moves, pokemon.name)
         "Evolution" -> EvolutionSection(
             modifier = Modifier
                 .padding(horizontal = 2.dp)
@@ -485,7 +558,7 @@ fun Sections(modifier: Modifier, selectedCategory: String, pokemon: DetailedPoke
 @Composable
 fun AboutSection(
     pokemon: DetailedPokemon,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
 ) {
     val weightInGrams: Double = pokemon.weightInGrams.toDouble()
 
@@ -516,61 +589,223 @@ fun AboutSection(
             else -> "Generation 9"
         }
 
-    Column {
-        Table(first = "Category", second = pokemon.category)
-        Table(first = "Abilities", second = pokemon.abilities.joinToString {
-            if (!it.isHidden) {
-                it.name
-            } else {
-                "${it.name} (hidden)"
-            }
-        })
-        Table(first = "Weight", second = pokemonWeight)
-        Table(first = "Height", second = pokemonHeight)
-        Table(first = "Introduced", second = pokemonGeneration)
+    LazyColumn(
+        modifier = modifier,
+    ) {
+        item {
+            Column {
+                Table(first = "Category", second = pokemon.category)
+                Table(
+                    first = "Abilities",
+                    second = pokemon.abilities.joinToString {
+                        if (!it.isHidden) {
+                            it.name
+                        } else {
+                            "${it.name} (hidden)"
+                        }
+                    }
+                )
+                Table(first = "Weight", second = pokemonWeight)
+                Table(first = "Height", second = pokemonHeight)
+                Table(first = "Introduced", second = pokemonGeneration)
 
-        Spacer(modifier.height(30.dp))
-    }
-    Column {
-        Text(text = "Gender ratio")
-        if (pokemon.genderRate > -1) {
-            Table("Male", "${100 - (pokemon.genderRate / 8.0 * 100)}%")
-            Table("Female", "${pokemon.genderRate / 8.0 * 100}%")
-            //Table(first = "Egg cycles", second = "20 (4.884-5.140 steps)")
-        } else {
-            Spacer(modifier = Modifier.height(10.dp))
-            Table(first = "Genderless", second = "100%");
+                Spacer(modifier = Modifier.height(30.dp))
+            }
+        }
+
+        item {
+            Column {
+                Text(text = "Gender ratio")
+                if (pokemon.genderRate > -1) {
+                    Table("Male", "${100 - (pokemon.genderRate / 8.0 * 100)}%")
+                    Table("Female", "${pokemon.genderRate / 8.0 * 100}%")
+                    // Table(first = "Egg cycles", second = "20 (4.884-5.140 steps)")
+                } else {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Table(first = "Genderless", second = "100%")
+                }
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.fillMaxHeight())
         }
     }
-    Spacer(modifier.fillMaxHeight())
 }
 
 @Composable
 fun StatsSection(
     stats: PokemonStats,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Column {
-        StatsBar(first = "HP", second = stats.hp.toString())
-        StatsBar(first = "Attack", second = stats.attack.toString())
-        StatsBar(first = "Defense", second = stats.defense.toString())
-        StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString())
-        StatsBar(first = "Sp.Def", second = stats.specialDefense.toString())
-        StatsBar(first = "Speed", second = stats.speed.toString())
-        Divider(Modifier.width(150.dp))
-        Spacer(Modifier.height(5.dp))
-        Table(first = "Total", second = stats.total.toString())
+    LazyColumn(
+        modifier = modifier,
+    ) {
+        item {
+            StatsBar(first = "HP", second = stats.hp.toString(), 255)
+        }
+        item {
+            StatsBar(first = "Attack", second = stats.attack.toString(), 255, 1000, 100)
+        }
+        item {
+            StatsBar(first = "Defense", second = stats.defense.toString(), 255, 1000, 200)
+        }
+        item {
+            StatsBar(first = "Sp.Atk", second = stats.specialAttack.toString(), 255, 1000, 300)
+        }
+        item {
+            StatsBar(first = "Sp.Def", second = stats.specialDefense.toString(), 255, 1000, 400)
+        }
+        item {
+            StatsBar(first = "Speed", second = stats.speed.toString(), 255, 1000, 500)
+        }
+        item {
+            Row {
+                Spacer(modifier = Modifier.weight(0.0001f))
+                Divider(Modifier.weight(0.5f))
+                Spacer(modifier = Modifier.weight(0.01f))
+            }
+        }
+        item {
+            Spacer(Modifier.height(5.dp))
+        }
+        item {
+            StatsBar(first = "Total", second = stats.total.toString(), 720, 1000, 600)
+        }
     }
-    Spacer(modifier.fillMaxHeight())
+    Spacer(Modifier.fillMaxHeight())
 }
 
 @Composable
 fun MovesSection(
-    moves: Array<PokemonMove>
+    moves: Array<DisplayMove>,
+    pokemonName: String
 ) {
-    Column {
-        MoveBoxColumn(moveList = moves.toList())
+    val levelMoves: MutableList<LevelMove> = mutableListOf()
+    val initialMachineMoves: MutableList<MachineMove> = mutableListOf()
+    val eggMoves: MutableList<EggMove> = mutableListOf()
+    val tutorMoves: MutableList<TutorMove> = mutableListOf()
+
+    for (move in moves) {
+        when (move) {
+            is LevelMove -> levelMoves.add(move)
+            is MachineMove -> initialMachineMoves.add(move)
+            is EggMove -> eggMoves.add(move)
+            is TutorMove -> tutorMoves.add(move)
+        }
     }
+    levelMoves.sortBy { it.level }
+    val machineMoves = sortMachineMoves(initialMachineMoves)
+    eggMoves.sortBy { it.name }
+    tutorMoves.sortBy { it.name }
+
+    val moveCategories = listOf("Level", "Machine", "Egg", "Tutor")
+    var selectedCategory: String by remember { mutableStateOf("Level") }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+
+        Box(
+            modifier = Modifier
+                .height(25.dp)
+                .align(Alignment.CenterHorizontally),
+        ) {
+            Text(text = "Move categories", modifier = Modifier.align(Alignment.Center))
+        }
+
+        CategoryList(
+            categories = moveCategories,
+            onCategorySelected = { selectedCategory = it },
+            initiallyChosen = selectedCategory,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        Column {
+            val commonModifier = Modifier
+                .shadow(2.2.dp)
+                .background(Color(0xFFFBFBFB))
+
+            when (selectedCategory) {
+                "Level" -> {
+                    if (levelMoves.isEmpty()) {
+                        NoMovesTextBox(
+                            modifier = commonModifier, category = "level", pokemonName = pokemonName
+                        )
+                    } else {
+                        LevelMoveBoxColumn(modifier = commonModifier, moveList = levelMoves)
+                    }
+                }
+
+                "Machine" -> {
+                    if (machineMoves.isEmpty()) {
+                        NoMovesTextBox(
+                            modifier = commonModifier,
+                            category = "machine",
+                            pokemonName = pokemonName
+                        )
+                    } else {
+                        MachineMoveBoxColumn(
+                            modifier = commonModifier, moveList = machineMoves
+                        )
+                    }
+                }
+
+                "Egg" -> {
+                    if (eggMoves.isEmpty()) {
+                        NoMovesTextBox(
+                            modifier = commonModifier, category = "egg", pokemonName = pokemonName
+                        )
+                    } else {
+                        EggTutorMoveBoxColumn(modifier = commonModifier, moveList = eggMoves)
+                    }
+                }
+
+                "Tutor" -> {
+                    if (tutorMoves.isEmpty()) {
+                        NoMovesTextBox(
+                            modifier = commonModifier, category = "tutor", pokemonName = pokemonName
+                        )
+                    } else {
+                        EggTutorMoveBoxColumn(modifier = commonModifier, moveList = tutorMoves)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NoMovesTextBox(modifier: Modifier = Modifier, category: String, pokemonName: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(0.98f)
+            .fillMaxHeight(0.8f),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "No $category moves available for $pokemonName",
+            textAlign = TextAlign.Center,
+            color = Color.Black,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+    }
+}
+
+private fun sortMachineMoves(originalList: List<MachineMove>): List<MachineMove> {
+    val (machineMovesWithDash, machineMovesWithoutDash) = originalList.partition {
+        it.machineId.contains(
+            "-"
+        )
+    }
+
+    val sortedMachineMovesWithDash = machineMovesWithDash.sortedBy { it.machineId }
+    val sortedMachineMovesWithoutDash = machineMovesWithoutDash.sortedBy { it.machineId.toInt() }
+
+    return sortedMachineMovesWithDash + sortedMachineMovesWithoutDash
 }
 
 @Composable
@@ -582,7 +817,6 @@ fun EvolutionSection(
         val evolutionChain = remember {
             mutableStateOf(ArrayList<List<EvolutionChainPokemon>>())
         }
-
         val viewModel = PokemonViewModel()
         LaunchedEffect(Unit) {
             if (evolutionChain.value.isEmpty()) {
@@ -777,7 +1011,7 @@ fun arrow(modifier: Modifier) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun MoveBoxColumn(moveList: List<PokemonMove>) {
+fun MoveBoxColumn(moveList: List<DisplayMove>) {
     val primaryWeight = 0.24f
     val secondaryWeight = 0.76f
     Row(
@@ -842,7 +1076,7 @@ fun MoveBoxColumn(moveList: List<PokemonMove>) {
 
 
 @Composable
-fun moveBox(move: PokemonMove) {
+fun moveBox(move: DisplayMove) {
     val primaryWeightUpper = 0.24f
     val secondaryWeightUpper = 0.76f
 
@@ -950,6 +1184,277 @@ fun LargerPokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType
             fontSize = 17.sp, color = Color.White
         )
     }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun EggTutorMoveBoxColumn(modifier: Modifier = Modifier, moveList: List<EggTutorMove>) {
+    val leftWeight = 0.8f
+    val rightWeight = 0.20f
+    val textSize = 15.sp
+    Column(modifier = Modifier.fillMaxWidth(0.98f)) {
+        MoveLabelRow(
+            labels = listOf("Move", "Power", "Acc.", "PP"),
+            textSize = textSize,
+            leftWeight = 0.8f,
+            rightWeight = 0.2f
+        )
+
+        FlowRow(
+            modifier = modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.Center,
+            maxItemsInEachRow = 2
+        ) {
+
+            Spacer(modifier = Modifier.height(5.dp))
+            for (i in moveList.indices) {
+                MoveBox(
+                    move = moveList[i],
+                    leftWeight = leftWeight,
+                    rightWeight = rightWeight,
+                )
+                Divider(modifier = Modifier.padding(vertical = 2.dp), color = Color.Black)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun LevelMoveBoxColumn(modifier: Modifier = Modifier, moveList: List<LevelMove>) {
+    val leftWeight = 0.5f
+    val mostLeftWeight = 0.3f
+    val rightWeight = 0.20f
+    val textSize = 15.sp
+    Column(modifier = Modifier.fillMaxWidth(0.98f)) {
+        MoveLabelRow(
+            labels = listOf("Level", "Move", "Power", "Acc.", "PP"),
+            textSize = textSize,
+            mostLeftWeight = mostLeftWeight,
+            leftWeight = leftWeight,
+            rightWeight = rightWeight
+        )
+        FlowRow(
+            modifier = modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.Center,
+            maxItemsInEachRow = 2
+        ) {
+
+            Spacer(modifier = Modifier.padding(vertical = 5.dp))
+            for (i in moveList.indices) {
+                MoveBox(
+                    mostLeftWeight = mostLeftWeight,
+                    leftWeight = leftWeight,
+                    rightWeight = rightWeight,
+                    move = moveList[i],
+                )
+                Divider(modifier = Modifier.padding(vertical = 2.dp), color = Color.Black)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun MachineMoveBoxColumn(modifier: Modifier = Modifier, moveList: List<MachineMove>) {
+    val leftWeight = 0.5f
+    val mostLeftWeight = 0.3f
+    val rightWeight = 0.20f
+    val textSize = 15.sp
+    Column(modifier = Modifier.fillMaxWidth(0.98f)) {
+        MoveLabelRow(
+            labels = listOf("Machine", "Move", "Power", "Acc.", "PP"),
+            textSize = textSize,
+            mostLeftWeight = mostLeftWeight,
+            leftWeight = leftWeight,
+            rightWeight = rightWeight
+        )
+        FlowRow(
+            modifier = modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.Center,
+            maxItemsInEachRow = 2
+        ) {
+
+            Spacer(modifier = Modifier.padding(vertical = 5.dp))
+            for (i in moveList.indices) {
+                MoveBox(
+                    mostLeftWeight = mostLeftWeight,
+                    leftWeight = leftWeight,
+                    rightWeight = rightWeight,
+                    move = moveList[i],
+                )
+                Divider(modifier = Modifier.padding(vertical = 2.dp), color = Color.Black)
+            }
+        }
+    }
+}
+
+@Composable
+fun MoveBox(
+    mostLeftWeight: Float = 1f, leftWeight: Float = 1f, rightWeight: Float = 1f, move: DisplayMove
+) {
+    val topRowTextSize = 15.sp
+    val bottomRowTextSize = topRowTextSize
+    val rightWeightBottom = 0.4f
+    val leftWeightBottom = 0.6f
+
+
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
+        ) {
+            if (move is LevelMove) {
+                Text(
+                    modifier = Modifier.weight(mostLeftWeight),
+                    text = move.level.toString(),
+                    fontSize = topRowTextSize,
+                    textAlign = TextAlign.Center
+                )
+            } else if (move is MachineMove) {
+                Text(
+                    modifier = Modifier.weight(mostLeftWeight),
+                    text = move.machineId,
+                    textAlign = TextAlign.Center,
+                    fontSize = topRowTextSize,
+                )
+            }
+            Text(
+                modifier = Modifier.weight(leftWeight),
+                text = move.name,
+                textAlign = TextAlign.Center,
+                fontSize = topRowTextSize,
+            )
+            val power: String
+            if (move.power == null) {
+                power = "-"
+            } else {
+                power = move.power.toString()
+            }
+            Text(
+                modifier = Modifier.weight(rightWeight),
+
+                text = power, fontSize = topRowTextSize, textAlign = TextAlign.Center
+            )
+
+            val accuracy: String
+            if (move.accuracy == null) {
+                accuracy = "-"
+            } else {
+                accuracy = move.accuracy.toString()
+            }
+            Text(
+                modifier = Modifier.weight(rightWeight),
+                text = accuracy,
+                fontSize = topRowTextSize,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.weight(rightWeight),
+                text = move.pp.toString(),
+                fontSize = topRowTextSize,
+                textAlign = TextAlign.Center
+            )
+        }
+        Spacer(modifier = Modifier.height(6.dp))
+        Row {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(
+                        shape = RoundedCornerShape(8.dp), color = move.type.primaryColor
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = move.type.name,
+                    fontSize = bottomRowTextSize,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(0.2f))
+
+            Box(
+                modifier = Modifier
+                    .weight(0.5f)
+                    .background(
+                        shape = RoundedCornerShape(8.dp), color = move.damageClass.color
+                    ), contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = move.damageClass.name, fontSize = bottomRowTextSize, color = Color.White
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MoveLabelRow(
+    modifier: Modifier = Modifier,
+    labels: List<String>,
+    textSize: TextUnit,
+    mostLeftWeight: Float = 1f,
+    leftWeight: Float = 1f,
+    rightWeight: Float = 1f
+) {
+    Row(
+        modifier = modifier
+            .height(30.dp)
+            .clip(RoundedCornerShape(topEnd = 7.dp, topStart = 7.dp))
+            .shadow(2.2.dp)
+            .background(
+                shape = RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp),
+                color = Color(0xFFFFCC00)
+            ), horizontalArrangement = Arrangement.Center
+    ) {
+        var weight: Float
+        for (i in labels.indices) {
+            weight = when (i) {
+                0 -> {
+                    if (labels.size == 5) {
+                        mostLeftWeight
+                    } else {
+                        leftWeight
+                    }
+                }
+
+                1 -> {
+                    if (labels.size == 5) {
+                        leftWeight
+                    } else {
+                        rightWeight
+                    }
+                }
+
+                else -> rightWeight
+            }
+            Text(
+                modifier = Modifier
+                    .weight(weight)
+                    .align(Alignment.CenterVertically),
+                text = labels[i],
+                textAlign = TextAlign.Center,
+                fontSize = textSize
+            )
+        }
+    }
+}
+
+@Composable
+fun DragIcon(){
+    Image(
+        painter = painterResource(id = R.drawable.drag_icon),
+        contentDescription = "drag",
+        modifier = Modifier.fillMaxSize()
+    )
 }
 
 /*

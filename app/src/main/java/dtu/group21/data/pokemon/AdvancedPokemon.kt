@@ -1,14 +1,15 @@
 package dtu.group21.data.pokemon
 
 import androidx.compose.runtime.MutableState
-import dtu.group21.data.pokemon.moves.PokemonMove
+import dtu.group21.data.pokemon.moves.DisplayMove
+
 
 data class AdvancedPokemon(
     override val name: String,
     override val pokedexId: Int,
     override val primaryType: PokemonType,
     override val secondaryType: PokemonType,
-    override val moves: Array<PokemonMove>,
+    override val moves: Array<DisplayMove>,
     override val stats: PokemonStats,
     override val evolutionChainId: Int,
     override val genderRate: Int,
@@ -26,7 +27,7 @@ data class AdvancedPokemon(
 
     constructor(
         template: DisplayPokemon,
-        moves: Array<PokemonMove>,
+        moves: Array<DisplayMove>,
         stats: PokemonStats,
         evolutionChainId: Int,
         genderRate: Int,
