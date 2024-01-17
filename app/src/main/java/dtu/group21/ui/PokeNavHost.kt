@@ -78,7 +78,7 @@ fun PokeNavHost(startDestination: String = "home") {
         val pokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
         LaunchedEffect(Unit) {
             val pokedexViewModel = PokedexViewModel()
-            val ids = (1..151)
+            val ids = listOf(1, 2, 3, 4, 5, 6, 10, 11, 12, 25, 133, 150, 151, 248, 250, 282, 300, 333, 400, 448, 571, 658, 778, 823, 900, 1010)
             pokedexViewModel.getPokemons(ids.toList(), pokemons)
         }
 
