@@ -37,6 +37,7 @@ import dtu.group21.ui.search.FilterScreen
 import dtu.group21.ui.search.SearchScreen
 import dtu.group21.ui.search.SortScreen
 import dtu.group21.ui.settings.SettingsPage
+import dtu.group21.ui.settings.WhosThatPokemonPage
 
 // Step1: get nav controller
 
@@ -144,6 +145,12 @@ fun PokeNavHost(startDestination: String = "home") {
                     onNavigateBack = { popBackStackCustom(navController) }
                 )
             }
+            composable("WhosThatPokemon") {
+                WhosThatPokemonPage(
+                    onNavigateBack = { popBackStackCustom(navController) },
+                    pokemonPool = pokemons
+                )
+            }
             composable("favorites") {
                 FavoritesPage(
                     onNavigate = {
@@ -155,7 +162,6 @@ fun PokeNavHost(startDestination: String = "home") {
                 )
             }
         }
-
     }
     else {
         Box(modifier = Modifier.fillMaxSize(),
@@ -169,7 +175,6 @@ fun PokeNavHost(startDestination: String = "home") {
                 Icon(modifier = Modifier.fillMaxSize(),imageVector = Icons.Default.Refresh, contentDescription = null)
                 Text("Refresh", modifier = Modifier.fillMaxSize())
             }
-
         }
     }
 }

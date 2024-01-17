@@ -32,7 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -129,6 +131,13 @@ fun FrontPage(onNavigate: (String) -> Unit, pokemons: MutableState<List<Resource
                         modifier = Modifier
                             .fillMaxHeight(),
                     ) {
+                        WhosIcon(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(top = 60.dp) // Increase bottom padding to raise the icon
+                                .size(60.dp),
+                            onClicked = { onNavigate("WhosThatPokemon") }
+                        )
                         MenuIcon(size = 49.dp, onClicked = { menuIsOpen = false })
                         SettingsIcon(
                             modifier = Modifier
@@ -203,6 +212,21 @@ fun SettingsIcon(modifier: Modifier = Modifier, onClicked: () -> Unit) {
         Image(
             painter = painterResource(id = R.drawable.settings_icon),
             contentDescription = "settings-icon",
+            modifier = Modifier.fillMaxSize(0.56f)
+        )
+    }
+}
+
+@Composable
+fun WhosIcon(modifier: Modifier = Modifier, onClicked: () -> Unit){
+    Box(modifier = modifier
+        .clickable { onClicked() },
+        contentAlignment = Alignment.Center
+    )
+    {
+        Image(
+            painter = painterResource(id = R.drawable.pokemon_icon_512x512_ivi5uex5),
+            contentDescription = "Whos That Pokemon Icon",
             modifier = Modifier.fillMaxSize(0.56f)
         )
     }
@@ -294,11 +318,12 @@ fun PokemonTypeBox(modifier: Modifier = Modifier, pokemonType: PokemonType) {
 }
 
 @Composable
-fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon) {
+fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon, silhoutteColor: Color? = null) {
     AsyncImage(
         model = pokemon.spriteId,
         contentDescription = pokemon.name,
-        modifier = modifier.animateContentSize()
+        modifier = modifier.animateContentSize(),
+        colorFilter = if (silhoutteColor == null) null else ColorFilter.tint(silhoutteColor)
     )
     /*Image(
             painter = rememberAsyncImagePainter(pokemon.spriteResourceId),

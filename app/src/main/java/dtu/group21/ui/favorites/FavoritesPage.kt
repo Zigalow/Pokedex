@@ -1,5 +1,6 @@
 package dtu.group21.ui.favorites
 
+//import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +35,8 @@ import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dtu.group21.data.PokedexViewModel
+import dtu.group21.data.pokemon.DisplayPokemon
+import dtu.group21.models.api.Resource
 import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.data.Resource
 import dtu.group21.ui.frontpage.PokemonImage
