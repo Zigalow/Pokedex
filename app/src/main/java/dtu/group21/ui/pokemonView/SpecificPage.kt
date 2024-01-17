@@ -172,6 +172,8 @@ fun Top(
         Box(
             modifier = Modifier
                 .weight(0.1f)
+                .size(60.dp)
+                .offset(-8.dp, 11.dp)
         ) {
             if(pokemon !is Resource.Success){
                 CircularProgressIndicator(
@@ -356,9 +358,12 @@ fun Bottom(modifier: Modifier = Modifier, slowPokemon: Resource<DetailedPokemon>
                     ) {
                         //based on which category is the coresponding section function will be used
                         if(slowPokemon !is Resource.Success){
-                            CircularProgressIndicator(
-                                color = Color.Black
-                            )
+                            Box {
+                                CircularProgressIndicator(
+                                    modifier = modifier.fillMaxSize().align(Alignment.TopCenter).padding(30.dp),
+                                    color = Color.Black
+                                )
+                            }
                             Spacer(modifier = Modifier.weight(1f))
                             return
                         }
