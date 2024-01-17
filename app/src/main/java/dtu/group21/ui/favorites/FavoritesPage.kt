@@ -79,16 +79,7 @@ fun FavoritesPage(
                         .fillMaxWidth()
                 )
                 {
-                    BackIcon(size = 49.dp, onClicked = { onNavigateBack })
-                    /*Image(
-                        painter = painterResource(id = R.drawable.back_arrow),
-                        contentDescription = "Back Arrow",
-                        modifier = Modifier
-                            .size(49.dp)
-                            //.align(Alignment.CenterVertically)
-                            .clickable { onNavigateBack() },
-                        //alignment = Alignment.Center,
-                    )*/
+                    BackIcon(size = 49.dp, onClicked = { onNavigateBack() })
                 }
 
                 Box(
