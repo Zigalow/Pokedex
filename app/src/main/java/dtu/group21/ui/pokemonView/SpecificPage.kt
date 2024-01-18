@@ -88,7 +88,7 @@ import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
 
 @Composable
-fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
+fun SpecificPage(pokedexId: Int, viewModel: PokedexViewModel, onNavigateBack: () -> Unit) {
     val displayPokemon = remember{
         mutableStateOf<Resource<DisplayPokemon>>(Resource.Loading)
     }
@@ -97,7 +97,6 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
     }
 
     LaunchedEffect(Unit) {
-        val viewModel = PokedexViewModel()
         viewModel.getPokemon(pokedexId, displayPokemon)
         viewModel.getDetails(pokedexId, details)
     }
@@ -124,7 +123,6 @@ fun SpecificPage(pokedexId: Int, onNavigateBack: () -> Unit) {
             val pokemon = pokemonResource.data
             val isFavorite = !wasFavorite
 
-            val viewModel = PokedexViewModel()
             if (isFavorite) {
                 viewModel.makeFavorite(pokemon)
             }

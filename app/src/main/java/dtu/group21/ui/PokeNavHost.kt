@@ -64,6 +64,7 @@ fun popBackStackCustom(navController: NavHostController): Boolean {
 
 @Composable
 fun PokeNavHost(startDestination: String = "home") {
+    val viewModel = PokedexViewModel()
     var isOnline by remember { mutableStateOf(true) }
     isOnline = isOnline(LocalContext.current)
     if(isOnline){
@@ -71,15 +72,13 @@ fun PokeNavHost(startDestination: String = "home") {
 
         val favouritePokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
         LaunchedEffect(Unit) {
-            val pokedexViewModel = PokedexViewModel()
-            pokedexViewModel.getFavoritePokemons(favouritePokemons)
+            viewModel.getFavoritePokemons(favouritePokemons)
         }
 
         val pokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
         LaunchedEffect(Unit) {
-            val pokedexViewModel = PokedexViewModel()
             val ids = listOf(1, 2, 3, 4, 5, 6, 10, 11, 12, 25, 133, 150, 151, 248, 250, 282, 300, 333, 400, 448, 571, 658, 778, 823, 900, 1010)
-            pokedexViewModel.getPokemons(ids.toList(), pokemons)
+            viewModel.getPokemons(ids.toList(), pokemons)
         }
 
         NavHost(
@@ -91,6 +90,7 @@ fun PokeNavHost(startDestination: String = "home") {
                     onNavigate = {
                         navController.navigate(it)
                     },
+                    viewModel,
                     pokemons = pokemons
                 )
             }
@@ -136,6 +136,7 @@ fun PokeNavHost(startDestination: String = "home") {
                 it.arguments?.getInt("pokedexId")?.let { it1 ->
                     SpecificPage(
                         it1,
+                        viewModel = viewModel,
                         onNavigateBack = { popBackStackCustom(navController) }
                     )
                 }
@@ -158,6 +159,7 @@ fun PokeNavHost(startDestination: String = "home") {
                     },
                     onNavigateBack = { navController.popBackStack() },
                     onPokemonClicked = { navController.navigate("pokemon/$it") },
+                    viewModel = viewModel
                     //favoritePokemons = PokemonSamples.listOfPokemons.subList(2, 7)
                 )
             }

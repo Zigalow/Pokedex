@@ -61,6 +61,7 @@ const val lookAmount = 20
 @Composable
 fun FrontPage(
     onNavigate: (String) -> Unit,
+    viewModel: PokedexViewModel,
     pokemons: MutableState<List<Resource<StatPokemon>>>
 ) {
     val pokemonIds = remember {
@@ -70,8 +71,7 @@ fun FrontPage(
     val pokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
     LaunchedEffect(Unit) {
         println("Loading pokemons")
-        val pokedexViewModel = PokedexViewModel()
-        pokedexViewModel.getPokemons(pokemonIds.value.toList(), pokemons)
+        viewModel.getPokemons(pokemonIds.value.toList(), pokemons)
     }
 
     var menuIsOpen by remember { mutableStateOf(false) }
@@ -133,8 +133,7 @@ fun FrontPage(
                         pokemonIds.value = (current.first - lookbackAmount)..(current.last - lookbackAmount)
 
                         println("Loading pokemons ${pokemonIds.value}")
-                        val pokedexViewModel = PokedexViewModel()
-                        pokedexViewModel.getPokemons(pokemonIds.value.toList(), pokemons)
+                        viewModel.getPokemons(pokemonIds.value.toList(), pokemons)
                     }
                 },
                 loadFollowing = {
@@ -149,8 +148,7 @@ fun FrontPage(
                         pokemonIds.value = (current.first + lookforwardAmount)..(current.last + lookforwardAmount)
 
                         println("Loading pokemons ${pokemonIds.value}")
-                        val pokedexViewModel = PokedexViewModel()
-                        pokedexViewModel.getPokemons(pokemonIds.value.toList(), pokemons)
+                        viewModel.getPokemons(pokemonIds.value.toList(), pokemons)
                     }
                 },
             )

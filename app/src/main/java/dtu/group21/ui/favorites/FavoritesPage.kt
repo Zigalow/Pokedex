@@ -49,6 +49,7 @@ import dtu.group21.ui.shared.bigFontSize
 fun FavoritesPage(
     onNavigate: (String) -> Unit,
     onNavigateBack: () -> Unit,
+    viewModel: PokedexViewModel,
     onPokemonClicked: (String) -> Unit
 ) {
     val pokemons = remember { mutableStateOf(emptyList<Resource<StatPokemon>>()) }
@@ -59,8 +60,7 @@ fun FavoritesPage(
 
     // Load the favorite pokemons
     LaunchedEffect(Unit) {
-        val pokedexViewModel = PokedexViewModel()
-        pokedexViewModel.getFavoritePokemons(pokemons)
+        viewModel.getFavoritePokemons(pokemons)
     }
     Box {
         Column(
