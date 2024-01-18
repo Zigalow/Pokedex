@@ -137,7 +137,10 @@ fun PokeNavHost(startDestination: String = "home") {
                     SpecificPage(
                         it1,
                         viewModel = viewModel,
-                        onNavigateBack = { popBackStackCustom(navController) }
+                        onNavigateBack = { popBackStackCustom(navController) },
+                        onEvolutionBack = {
+                            navController.navigate(it)
+                        }
                     )
                 }
             }

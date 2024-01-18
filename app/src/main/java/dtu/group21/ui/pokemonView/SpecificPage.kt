@@ -82,13 +82,15 @@ import dtu.group21.data.pokemon.moves.MachineMove
 import dtu.group21.data.pokemon.moves.TutorMove
 import dtu.group21.models.pokemon.moves.EggMove
 import dtu.group21.models.pokemon.moves.EggTutorMove
-import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite
 
 @Composable
-fun SpecificPage(pokedexId: Int, viewModel: PokedexViewModel, onNavigateBack: () -> Unit) {
+fun SpecificPage(pokedexId: Int,
+                 viewModel: PokedexViewModel,
+                 onNavigateBack: () -> Unit,
+                 onEvolutionBack: (String) -> Unit) {
     val displayPokemon = remember{
         mutableStateOf<Resource<DisplayPokemon>>(Resource.Loading)
     }
@@ -132,6 +134,10 @@ fun SpecificPage(pokedexId: Int, viewModel: PokedexViewModel, onNavigateBack: ()
 
             val oldDetails = details.value
             details.value = Pair(oldDetails.first, isFavorite)
+        },
+        onEvolutionBack = {
+            println("Navigating to 'pokemon/$it'")
+            onEvolutionBack("pokemon/$it")
         }
     )
 }
@@ -143,6 +149,7 @@ fun Inspect(
     isFavorite: Boolean,
     onNavigateBack: () -> Unit,
     onFavorited: () -> Unit,
+    onEvolutionBack: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (pokemonResourceFast !is Resource.Success)
@@ -176,7 +183,9 @@ fun Inspect(
                 .fillMaxSize()
                 .background(color = fastPokemon.primaryType.secondaryColor)
         ) {
-            Bottom(slowPokemon = pokemonResource, fastPokemon = pokemonResourceFast)
+            Bottom( slowPokemon = pokemonResource,
+                    fastPokemon = pokemonResourceFast,
+                    onEvolutionBack = onEvolutionBack)
         }
     }
 
@@ -292,7 +301,12 @@ fun Mid(
 }
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun Bottom(modifier: Modifier = Modifier, slowPokemon: Resource<DetailedPokemon>, fastPokemon: Resource<DisplayPokemon>) {
+fun Bottom(
+    modifier: Modifier = Modifier,
+    slowPokemon: Resource<DetailedPokemon>,
+    fastPokemon: Resource<DisplayPokemon>,
+    onEvolutionBack: (String) -> Unit
+) {
     var direction by remember {
         mutableStateOf(true)
     }
@@ -406,6 +420,7 @@ fun Bottom(modifier: Modifier = Modifier, slowPokemon: Resource<DetailedPokemon>
                         Sections(
                             selectedCategory = selectedCategory,
                             pokemon = slowPokemon.data,
+                            onEvolutionBack = onEvolutionBack,
                             modifier = modifier
                         )
                         Spacer(
@@ -581,16 +596,20 @@ fun StatsBar(
 }
 
 @Composable
-fun Sections(modifier: Modifier, selectedCategory: String, pokemon: DetailedPokemon) {
+fun Sections(modifier: Modifier,
+             selectedCategory: String,
+             pokemon: DetailedPokemon,
+             onEvolutionBack: (String) -> Unit) {
     when (selectedCategory) {
         "About" -> AboutSection(pokemon)
         "Stats" -> StatsSection(pokemon.stats, modifier)
         "Moves" -> MovesSection(pokemon.moves, pokemon.name)
         "Evolution" -> EvolutionSection(
+            pokemon = pokemon,
+            onEvolutionBack = onEvolutionBack,
             modifier = Modifier
                 .padding(horizontal = 2.dp)
                 .fillMaxWidth(),
-            pokemon
         )
     }
 }
@@ -851,6 +870,7 @@ private fun sortMachineMoves(originalList: List<MachineMove>): List<MachineMove>
 @Composable
 fun EvolutionSection(
     modifier: Modifier,
+    onEvolutionBack: (String) -> Unit,
     pokemon: DetailedPokemon
 ) {
     if (isOnline(LocalContext.current)) {
@@ -890,6 +910,7 @@ fun EvolutionSection(
                             Column {
                                 EvolutionPokemonImage(
                                     pokemon = evolution,
+                                    onPokemonClicked = onEvolutionBack,
                                     modifier = Modifier
                                         .size(100.dp)
                                         .align(Alignment.CenterHorizontally)
@@ -921,6 +942,7 @@ fun EvolutionSection(
                                 Column {
                                     EvolutionPokemonImage(
                                         pokemon = evolution,
+                                        onPokemonClicked = onEvolutionBack,
                                         modifier = Modifier
                                             .size(100.dp)
                                             .align(Alignment.CenterHorizontally)
@@ -945,11 +967,13 @@ fun EvolutionSection(
 }
 
 @Composable
-fun EvolutionPokemonImage(modifier: Modifier = Modifier, pokemon: EvolutionChainPokemon) {
+fun EvolutionPokemonImage(modifier: Modifier = Modifier,
+                          pokemon: EvolutionChainPokemon,
+                          onPokemonClicked: (String) -> Unit) {
     Image(
         painter = rememberAsyncImagePainter(pokemon.spriteResourceId),
         contentDescription = pokemon.name,
-        modifier = modifier,
+        modifier = modifier.clickable { onPokemonClicked("${pokemon.id}")  }
     )
 }
 @Composable
