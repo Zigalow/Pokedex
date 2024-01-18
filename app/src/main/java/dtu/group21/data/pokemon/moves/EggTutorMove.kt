@@ -1,6 +1,4 @@
-package dtu.group21.models.pokemon.moves
-
-import dtu.group21.data.pokemon.moves.DisplayMove
+package dtu.group21.data.pokemon.moves
 
 interface EggTutorMove : DisplayMove {
 }

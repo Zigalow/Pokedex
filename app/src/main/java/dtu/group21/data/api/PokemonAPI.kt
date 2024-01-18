@@ -3,7 +3,7 @@ package dtu.group21.data.api
 import dtu.group21.data.pokemon.DetailedPokemon
 import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.data.pokemon.StatPokemon
-import dtu.group21.models.pokemon.moves.BasicMove
+import dtu.group21.data.pokemon.moves.BasicMove
 
 
 interface PokemonAPI {

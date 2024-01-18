@@ -7,8 +7,7 @@ import dtu.group21.data.pokemon.PokemonStats
 import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.data.pokemon.moves.DisplayMove
 import dtu.group21.data.pokemon.moves.MoveDamageClass
-import dtu.group21.data.pokemon.moves.PokemonMove
-import dtu.group21.models.pokemon.moves.BasicMove
+import dtu.group21.data.pokemon.moves.BasicMove
 
 class PokemonConverters {
     @TypeConverter

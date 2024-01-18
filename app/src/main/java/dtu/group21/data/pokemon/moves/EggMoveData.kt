@@ -1,7 +1,6 @@
-package dtu.group21.models.pokemon.moves
+package dtu.group21.data.pokemon.moves
 
 import dtu.group21.data.pokemon.PokemonType
-import dtu.group21.data.pokemon.moves.MoveDamageClass
 
 data class EggMoveData(
     override val name: String,

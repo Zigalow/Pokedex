@@ -14,12 +14,12 @@ import dtu.group21.data.pokemon.PokemonStats
 import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.data.pokemon.moves.DetailedMove
 import dtu.group21.data.pokemon.moves.DisplayMove
-import dtu.group21.models.pokemon.moves.AdvancedMove
-import dtu.group21.models.pokemon.moves.BasicMove
-import dtu.group21.models.pokemon.moves.EggMoveData
-import dtu.group21.models.pokemon.moves.LevelMoveData
-import dtu.group21.models.pokemon.moves.MachineMoveData
-import dtu.group21.models.pokemon.moves.TutorMoveData
+import dtu.group21.data.pokemon.moves.AdvancedMove
+import dtu.group21.data.pokemon.moves.BasicMove
+import dtu.group21.data.pokemon.moves.EggMoveData
+import dtu.group21.data.pokemon.moves.LevelMoveData
+import dtu.group21.data.pokemon.moves.MachineMoveData
+import dtu.group21.data.pokemon.moves.TutorMoveData
 import org.json.JSONArray
 
 class PokeAPICo : PokemonAPI {
@@ -66,7 +66,7 @@ class PokeAPICo : PokemonAPI {
             primaryType = PokemonType.getFromName(primaryTypeName),
             secondaryType = PokemonType.getFromName(secondaryTypeName),
             spriteId = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${PokemonHelper.getPokedexIdString(pokedexId)}.png",
-            stats = PokemonStats(statsList)
+            stats = stats
         )
     }
     

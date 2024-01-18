@@ -80,8 +80,8 @@ import dtu.group21.data.pokemon.moves.DisplayMove
 import dtu.group21.data.pokemon.moves.LevelMove
 import dtu.group21.data.pokemon.moves.MachineMove
 import dtu.group21.data.pokemon.moves.TutorMove
-import dtu.group21.models.pokemon.moves.EggMove
-import dtu.group21.models.pokemon.moves.EggTutorMove
+import dtu.group21.data.pokemon.moves.EggMove
+import dtu.group21.data.pokemon.moves.EggTutorMove
 import dtu.group21.ui.frontpage.capitalizeFirstLetter
 import dtu.group21.ui.frontpage.formatPokemonId
 import dtu.group21.ui.theme.LightWhite

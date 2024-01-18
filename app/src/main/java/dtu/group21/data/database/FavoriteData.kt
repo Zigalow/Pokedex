@@ -8,7 +8,6 @@ import dtu.group21.data.pokemon.PokemonAbility
 import dtu.group21.data.pokemon.PokemonStats
 import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.data.pokemon.moves.DisplayMove
-import dtu.group21.data.pokemon.moves.PokemonMove
 
 @Entity(tableName = "favorites")
 data class FavoriteData(
