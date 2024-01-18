@@ -18,12 +18,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
-class PokedexViewModel(
+object PokedexViewModel : ViewModel(){
+    
     private val api: PokemonAPI = PokeAPICo()
-) : ViewModel() {
+
     private val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val database: AppDatabase = MainActivity.database
 
+    
     fun getFavoritePokemons(destination: MutableState<List<Resource<StatPokemon>>>) {
         coroutineScope.launch {
             destination.value =

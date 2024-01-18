@@ -10,12 +10,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
-class PokemonViewModel(
-    private val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
-) : ViewModel() {
+object PokemonViewModel : ViewModel() {
+    private val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val pokedexRequestMaker: PokedexRequestMaker = PokedexRequestMaker()
 
-    fun getEvolutionChain(pokedexId: Int, pokemons: MutableState<ArrayList<List<EvolutionChainPokemon>>>) {
+    fun getEvolutionChain(
+        pokedexId: Int,
+        pokemons: MutableState<ArrayList<List<EvolutionChainPokemon>>>
+    ) {
         coroutineScope.launch {
             val evolutionChain = ArrayList<List<EvolutionChainPokemon>>()
             getEvolutionChainInternal(pokedexId).collect {
@@ -23,9 +25,11 @@ class PokemonViewModel(
                     is Resource.Failure -> {
                         return@collect
                     }
+
                     is Resource.Success -> {
                         evolutionChain.add(it.data)
                     }
+
                     Resource.Loading -> {
                         // Do nothing
                     }
@@ -51,7 +55,7 @@ class PokemonViewModel(
         for (i in evolutionChain) {
             println("Current i: ${i}")
             for (j in i) {
-                println("Id: ${ j.id }")
+                println("Id: ${j.id}")
             }
         }
 
@@ -59,12 +63,13 @@ class PokemonViewModel(
         var loadPreviousOf = basePokemon
         while (!loadPreviousOf.isRoot) {
             println("PreviousPokemon")
-            val previousPokemon = pokedexRequestMaker.getSimplePokemon(loadPreviousOf.precedingPokemonId)
+            val previousPokemon =
+                pokedexRequestMaker.getSimplePokemon(loadPreviousOf.precedingPokemonId)
             evolutionChain.add(0, arrayListOf(previousPokemon))
             for (i in evolutionChain) {
                 println("Current i: ${i}")
                 for (j in i) {
-                    println("Id: ${ j.id }")
+                    println("Id: ${j.id}")
                 }
             }
             loadPreviousOf = previousPokemon
@@ -86,7 +91,7 @@ class PokemonViewModel(
                 evolutionChain.add(possibilites)
                 break
             }
-            
+
             // TODO actually handle branching
 //            break
         }

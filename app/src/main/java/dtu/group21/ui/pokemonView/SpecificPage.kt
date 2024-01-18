@@ -88,7 +88,6 @@ import dtu.group21.ui.theme.LightWhite
 
 @Composable
 fun SpecificPage(pokedexId: Int,
-                 viewModel: PokedexViewModel,
                  onNavigateBack: () -> Unit,
                  onEvolutionBack: (String) -> Unit) {
     val displayPokemon = remember{
@@ -99,8 +98,8 @@ fun SpecificPage(pokedexId: Int,
     }
 
     LaunchedEffect(Unit) {
-        viewModel.getPokemon(pokedexId, displayPokemon)
-        viewModel.getDetails(pokedexId, details)
+        PokedexViewModel.getPokemon(pokedexId, displayPokemon)
+        PokedexViewModel.getDetails(pokedexId, details)
     }
 
     if (displayPokemon.value !is Resource.Success) {
@@ -126,10 +125,10 @@ fun SpecificPage(pokedexId: Int,
             val isFavorite = !wasFavorite
 
             if (isFavorite) {
-                viewModel.makeFavorite(pokemon)
+                PokedexViewModel.makeFavorite(pokemon)
             }
             else {
-                viewModel.removeFavorite(pokemon)
+                PokedexViewModel.removeFavorite(pokemon)
             }
 
             val oldDetails = details.value
@@ -877,10 +876,10 @@ fun EvolutionSection(
         val evolutionChain = remember {
             mutableStateOf(ArrayList<List<EvolutionChainPokemon>>())
         }
-        val viewModel = PokemonViewModel()
+        
         LaunchedEffect(Unit) {
             if (evolutionChain.value.isEmpty()) {
-                viewModel.getEvolutionChain(pokemon.pokedexId, evolutionChain)
+                PokemonViewModel.getEvolutionChain(pokemon.pokedexId, evolutionChain)
             }
         }
 
