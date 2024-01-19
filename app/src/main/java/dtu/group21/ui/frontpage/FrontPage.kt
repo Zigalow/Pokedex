@@ -431,18 +431,6 @@ fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon, silhout
             modifier = modifier,
         )*/
 }
-@Composable
-fun WrongAnswerImage(
-    modifier: Modifier = Modifier
-) {
-    Image(
-        painter = painterResource(id = R.drawable.red__),
-        contentDescription = "Wrong Answer",
-        modifier = modifier.fillMaxSize(),
-        alignment = Alignment.Center
-    )
-}
-
 
 fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
