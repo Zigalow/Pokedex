@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.R
 import dtu.group21.data.Resource
-import dtu.group21.data.pokemon.DisplayPokemon
 import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.ui.frontpage.PokemonImage
 import dtu.group21.ui.shared.UpperMenu
@@ -40,6 +40,7 @@ import kotlin.random.Random
 
 
 @OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun WhosThatPokemonPage(
     onNavigateBack: () -> Unit,
@@ -49,6 +50,7 @@ fun WhosThatPokemonPage(
     var index by remember {
         mutableStateOf(0)
     }
+    var showOverlayImage by remember { mutableStateOf(false) }
 
     var showPokemon by remember { mutableStateOf(false) }
     var showTryAgainMessage by remember { mutableStateOf(false) }
@@ -59,8 +61,10 @@ fun WhosThatPokemonPage(
     LaunchedEffect(showPokemon) {
         if (showPokemon) {
             showPokemon = true //showcase pokemon true
+            showOverlayImage = false // show overlay image
             delay(2000) // Delay for 3 seconds
             showPokemon=false
+           // showOverlayImage = true
             guess = ""
             index = Random.nextInt(pokemonPool.value.size) // Change to next Pokémon
         }
@@ -81,9 +85,12 @@ fun WhosThatPokemonPage(
                 //.height(74.dp)
         ) {
             Spacer(Modifier.width(10.dp))
+
             Box(modifier = Modifier
                 .weight(0.1f)
-                .fillMaxWidth()){
+                .fillMaxWidth()
+                .offset(0.10.dp)
+            ){
                 Image(
                     painter = painterResource(id = R.drawable.back_arrow),
                     contentDescription = "Back Arrow",
@@ -112,6 +119,19 @@ fun WhosThatPokemonPage(
             PokemonImage(
                 pokemon = currentPokemon.data,
                 silhoutteColor = if (showPokemon) null else Color.Black
+            )
+        }
+        if (showOverlayImage) {
+            LaunchedEffect(showOverlayImage) {
+                delay(2000) // Display the message for 2 seconds
+                showOverlayImage = false
+            }
+            Image(
+                painter = painterResource(id = R.drawable.red__),
+                contentDescription = "Overlay Image",
+                modifier = Modifier
+                    .fillMaxSize(),
+                alignment = Alignment.Center
             )
         }
         Box(
@@ -151,13 +171,12 @@ fun WhosThatPokemonPage(
         // Button to submit the guess
         Button(
             onClick = {
-
                 if (currentPokemon is Resource.Success) {
                     if (currentPokemon.data.name.equals(guess, ignoreCase = true)) {
                         showPokemon = true // Reveal Pokémon
                         guess = ""
                     } else {
-                        showTryAgainMessage = true
+                        showOverlayImage = true
                     }
                 }
             },
@@ -179,27 +198,13 @@ fun WhosThatPokemonPage(
                 }
             },
             modifier = Modifier
-                .padding(top = 20.dp)
+                .padding(top = 3.dp)
                 .fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Gray // Set the button color using the hexadecimal value
             )
         ) {
             Text("Skip", fontSize = 18.sp, color = Color.White) // Set the text color to white for better contrast
-        }
-
-
-        if (showTryAgainMessage) {
-            LaunchedEffect(showTryAgainMessage) {
-                delay(2000) // Display the message for 2 seconds
-                showTryAgainMessage = false
-            }
-            Text(
-                text = "Try again!",
-                fontSize = 18.sp,
-                color = Color.Red,
-                modifier = Modifier.padding(top = 8.dp)
-            )
         }
     }
 }

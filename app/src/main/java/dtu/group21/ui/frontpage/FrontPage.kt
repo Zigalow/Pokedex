@@ -31,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
@@ -43,14 +42,14 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pokedex.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dtu.group21.data.PokedexViewModel
+import dtu.group21.data.Resource
 import dtu.group21.data.pokemon.DisplayPokemon
+import dtu.group21.data.pokemon.PokemonType
+import dtu.group21.data.pokemon.StatPokemon
 import dtu.group21.helpers.PokemonHelper
 import dtu.group21.ui.shared.PaginatedColumn
 import dtu.group21.ui.shared.PaginationElement
-import dtu.group21.data.pokemon.StatPokemon
-import dtu.group21.data.PokedexViewModel
-import dtu.group21.data.Resource
-import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.theme.Yellow60
 import java.util.Locale
@@ -432,6 +431,18 @@ fun PokemonImage(modifier: Modifier = Modifier, pokemon: DisplayPokemon, silhout
             modifier = modifier,
         )*/
 }
+@Composable
+fun WrongAnswerImage(
+    modifier: Modifier = Modifier
+) {
+    Image(
+        painter = painterResource(id = R.drawable.red__),
+        contentDescription = "Wrong Answer",
+        modifier = modifier.fillMaxSize(),
+        alignment = Alignment.Center
+    )
+}
+
 
 fun capitalizeFirstLetter(text: String) = text.lowercase(Locale.ROOT)
     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
