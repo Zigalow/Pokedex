@@ -2,32 +2,51 @@ package dtu.group21.models.pokemon
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.room.Entity
-import androidx.room.Ignore
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
+import dtu.group21.data.pokemon.DetailedPokemon
+import dtu.group21.data.pokemon.GenderedPokemon
+import dtu.group21.data.pokemon.PokemonAbility
+import dtu.group21.data.pokemon.PokemonGender
+import dtu.group21.data.pokemon.PokemonStats
+import dtu.group21.data.pokemon.PokemonType
+import dtu.group21.data.pokemon.StatPokemon
+import dtu.group21.data.pokemon.moves.DisplayMove
 
 //@Entity(tableName = "favorites")
 class ComplexPokemon(
     //@PrimaryKey
-    val id: Int, // the same as the pokédex number
-    val type: PokemonType,
-    val secondaryType: PokemonType,
-    val gender: PokemonGender,
-    val categoryName: String,
-    val abilities: Array<PokemonAbility>,
-    val weightInGrams: Int,
-    val heightInCm: Int,
-    val stats: PokemonStats,
+    override val pokedexId: Int, // the same as the pokédex number
+    override val primaryType: PokemonType,
+    override val secondaryType: PokemonType,
+    override val gender: PokemonGender,
+    override val category: String,
+    override val abilities: Array<PokemonAbility>,
+    override val weightInGrams: Int,
+    override val heightInCm: Int,
+    override val stats: PokemonStats,
     val species: PokemonSpecies,
-    val moves: Array<PokemonMove>,
-    var isFavorite: MutableState<Boolean> = mutableStateOf(false)
-) {
+    override val moves: Array<DisplayMove>,
+) : GenderedPokemon, DetailedPokemon, StatPokemon {
     //@Ignore
-    val spriteResourceId = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${
-        id.toString().padStart(3, '0')
+    override val spriteId = "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${
+        pokedexId.toString().padStart(3, '0')
     }.png"
+    override val evolutionChainId: Int
+        get() = -1 // TODO:  
+    override val genderRate: Int
+        get() = species.genderRate
+    override val isBaby: Boolean
+        get() = species.isBaby
+    override val isLegendary: Boolean
+        get() = species.isLegendary
+    override val isMythical: Boolean
+        get() = species.isMythical
+    override val generation: Int
+        get() = -1 // TODO:
+    override val hasGenderDifferences: Boolean
+        get() = species.hasGenderDifferences
+
+    override val name = species.name
+
     //@Ignore
-    val hasTwoTypes = secondaryType != PokemonType.NONE
+    override val hasTwoTypes = secondaryType != PokemonType.NONE
 }

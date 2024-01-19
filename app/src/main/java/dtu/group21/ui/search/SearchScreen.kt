@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.internal.liveLiteral
@@ -45,7 +46,11 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.pokedex.R
-import dtu.group21.models.pokemon.ComplexPokemon
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dtu.group21.data.pokemon.StatPokemon
+import dtu.group21.helpers.PokemonHelper.getGeneration
+import dtu.group21.data.Resource
+import dtu.group21.data.pokemon.PokemonType
 import dtu.group21.ui.favorites.FavoritePokemonBox
 import dtu.group21.ui.shared.UpperMenu
 import dtu.group21.ui.shared.bigFontSize
@@ -87,7 +92,6 @@ fun SearchBar(
                         .size(height / 1.5f),
                 )
             }
-
             var searchString by remember { mutableStateOf(initialText) }
             var isSearching by remember { mutableStateOf(initialText != "") }
             val textStyle = TextStyle(
@@ -98,7 +102,7 @@ fun SearchBar(
                 ), // TODO: should respond to size of search box
                 fontStyle = if (isSearching) FontStyle.Normal else FontStyle.Italic
             )
-
+            
             // search field
             BasicTextField(
                 value = searchString,
@@ -138,20 +142,19 @@ fun SearchScreen(
     onNavigateToFilter: () -> Unit,
     onNavigateToSort: () -> Unit,
     onPokemonClicked: (String) -> Unit,
-    searchSettings: SearchSettings,
-    pokemonPool: MutableList<MutableState<ComplexPokemon>>,
+    pokemonPool: MutableState<List<Resource<StatPokemon>>>,
     modifier: Modifier = Modifier,
 ) {
-    val allCandidates = ArrayList<ComplexPokemon>()
-    for (pokemon in pokemonPool) {
-        allCandidates.add(pokemon.value)
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(Color.White)
     }
+    val allCandidates = pokemonPool.value
+    val candidates: State<List<Resource<StatPokemon>>> =
+        liveLiteral("searchResults", allCandidates)
 
-    val candidates: State<List<ComplexPokemon>> = liveLiteral("searchResults", allCandidates)
-
+    updateCandidates(allCandidates)
     Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         UpperMenu(
@@ -183,30 +186,14 @@ fun SearchScreen(
         SearchBar(
             onChange = {
                 println("Searched for '$it'")
-                searchSettings.searchString = it
-                updateLiveLiteralValue(
-                    "searchResults",
-                    allCandidates.filter { pokemon ->
-                        // very complicated statement to check if the searchString is either
-                        // - empty
-                        // - a substring of the name of the pokemon
-                        // - a substring of the number of the pokemon
-                        // if either is true, it is a candidate
-                        val isCandidate =
-                            if (searchSettings.searchString.isEmpty()) true
-                            else if (searchSettings.searchString.isDigitsOnly()) {
-                                val searchNumber = searchSettings.searchString.toInt()
-                                searchNumber.toString() in pokemon.id.toString()
-                            } else searchSettings.searchString.lowercase() in pokemon.species.name.lowercase()
-
-                        isCandidate
-                    })
+                SearchSettings.searchString = it
+                updateCandidates(allCandidates)
             },
             height = 40.dp,
             modifier = Modifier
                 .padding(horizontal = 5.dp)
                 .fillMaxWidth(0.9f),
-            initialText = searchSettings.searchString,
+            initialText = SearchSettings.searchString,
         )
         Spacer(Modifier.height(10.dp))
         Row {
@@ -227,9 +214,10 @@ fun SearchScreen(
                 Text(
                     text = "Filter",
                     fontSize = mediumFontSize,
-                    fontWeight = if (searchSettings.filterSettings.hasSettings()) FontWeight.Black else FontWeight.Normal,
+                    fontWeight = if (SearchSettings.filterSettings.hasFilterTypeSettings() || SearchSettings.filterSettings.hasFilterGenerationsSettings()) FontWeight.Black else FontWeight.Normal,
                 )
             }
+
             Button(
                 onClick = { onNavigateToSort() },
                 modifier = Modifier
@@ -240,24 +228,127 @@ fun SearchScreen(
                 Text(
                     text = "Sort",
                     fontSize = mediumFontSize,
-                    fontWeight = if (searchSettings.sortSettings.hasSettings()) FontWeight.Black else FontWeight.Normal,
+                    fontWeight = if (SearchSettings.sortSettings.hasSettings()) FontWeight.Black else FontWeight.Normal,
                 )
             }
         }
 
-        if (candidates.value.isEmpty()) {
-            Spacer(Modifier.height(10.dp))
-            Text("No Pokémon matching criteria")
-        } else {
-            candidates.value.forEach { pokemon ->
-                FavoritePokemonBox(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    pokemon = pokemon,
-                    onClicked = { onPokemonClicked(pokemon.id.toString()) }
-                )
+        Column(
+            modifier = modifier
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        )
+        {
+            if (candidates.value.isEmpty()) {
+                Spacer(Modifier.height(10.dp))
+                Text("No Pokémon matching criteria")
+            } else {
+                candidates.value.forEach { pokemonResource ->
+                    FavoritePokemonBox(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        pokemonResource = pokemonResource,
+                        onClicked = onPokemonClicked
+                    )
+                }
             }
         }
     }
+}
+
+@OptIn(InternalComposeApi::class)
+fun updateCandidates(
+    allCandidates: List<Resource<StatPokemon>>
+) {
+    val loadedCandidates =
+        allCandidates.filter { it is Resource.Success }.map { (it as Resource.Success).data }
+    val unloadedCandidates = Array(allCandidates.size - loadedCandidates.size) { Resource.Loading }
+
+    val nameCandidates = loadedCandidates.filter { pokemon ->
+        // very complicated statement to check if the searchString is either
+        // - empty
+        // - a substring of the name of the pokemon
+        // - a substring of the number of the pokemon
+        // if either is true, it is a candidate
+        val candidate =
+            if (SearchSettings.searchString.isEmpty())
+                true
+            else if (SearchSettings.searchString.isDigitsOnly()) {
+                val searchNumber = SearchSettings.searchString.toInt()
+                searchNumber.toString() in pokemon.pokedexId.toString()
+            } else SearchSettings.searchString.lowercase() in pokemon.name.lowercase()
+
+        candidate
+    }
+
+    val typeCandidates = nameCandidates.filter { pokemon ->
+        val candidate =
+            if (!SearchSettings.filterSettings.hasFilterTypeSettings()) {
+                true
+            } else if (SearchSettings.filterSettings.filterType == FilterSettings.FilterType.IncludableTypes) {
+                if (SearchSettings.filterSettings.types[pokemon.primaryType.ordinal]) true
+                else SearchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
+            } else if (SearchSettings.filterSettings.filterType == FilterSettings.FilterType.ExactTypes) {
+                if (SearchSettings.filterSettings.numberOfTypesChosen() == 1) {
+                    SearchSettings.filterSettings.types[pokemon.primaryType.ordinal] && pokemon.secondaryType == PokemonType.NONE
+                } else if (SearchSettings.filterSettings.numberOfTypesChosen() == 2) {
+                    SearchSettings.filterSettings.types[pokemon.primaryType.ordinal] && SearchSettings.filterSettings.types[pokemon.secondaryType.ordinal]
+                } else {
+                    false
+                }
+            } else false
+
+        candidate
+    }
+
+    val generationCandidates = typeCandidates.filter { pokemon ->
+        val candidate =
+            if (!SearchSettings.filterSettings.hasFilterGenerationsSettings()) {
+                true
+            } else SearchSettings.filterSettings.generations[getGeneration(pokemon.pokedexId) - 1]
+
+        candidate
+    }
+
+    val sortedStatCandidates = generationCandidates.sortedBy { pokemon ->
+        val candidate =
+            when (SearchSettings.sortSettings.sortMethod) {
+                SortSettings.SortMethod.ID -> pokemon.pokedexId
+                SortSettings.SortMethod.HP -> pokemon.stats.hp
+                SortSettings.SortMethod.ATTACK -> pokemon.stats.attack
+                SortSettings.SortMethod.DEFENSE -> pokemon.stats.defense
+                SortSettings.SortMethod.SPECIAL_ATTACK -> pokemon.stats.specialAttack
+                SortSettings.SortMethod.SPECIAL_DEFENSE -> pokemon.stats.specialDefense
+                SortSettings.SortMethod.SPEED -> pokemon.stats.speed
+                SortSettings.SortMethod.TOTAL -> pokemon.total
+                else -> pokemon.pokedexId
+            }
+        candidate
+    }
+
+    val sortedNameCandidates = generationCandidates.sortedBy { pokemon ->
+        val candidate = pokemon.name
+        candidate
+    }
+
+    val orderedCandidates =
+
+        if (SearchSettings.sortSettings.sortType == SortSettings.SortType.Descending) {
+            if (SearchSettings.sortSettings.sortMethod == SortSettings.SortMethod.NAME) {
+                sortedNameCandidates.reversed()
+            } else sortedStatCandidates.reversed()
+        } else {
+            if (SearchSettings.sortSettings.sortMethod == SortSettings.SortMethod.NAME) {
+                sortedNameCandidates
+            } else sortedStatCandidates
+        }
+
+// TODO: decide whether unloaded pokemons should also be shown here
+    val results = orderedCandidates.map { Resource.Success(it) } + unloadedCandidates
+
+    updateLiveLiteralValue(
+        "searchResults",
+        results
+    )
 }

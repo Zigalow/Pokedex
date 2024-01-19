@@ -1,8 +1,8 @@
 package dtu.group21.ui.search
 
-class SearchSettings {
+object SearchSettings {
     var searchString = ""
 
-    val filterSettings = FilterSettings()
-    val sortSettings = SortSettings()
+    val filterSettings = FilterSettings
+    val sortSettings = SortSettings
 }
