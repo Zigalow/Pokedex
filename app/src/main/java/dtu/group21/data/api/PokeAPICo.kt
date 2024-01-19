@@ -188,7 +188,6 @@ class PokeAPICo : PokemonAPI {
         val learnedByPokemon = mutableListOf<DisplayPokemon>()
         var generation = 0
         for(i in 0 until learnedByPokemonAPI.length()){
-            //val pokemonName = learnedByPokemonAPI.getJSONObject(i).getString("name")
             val pokemonId = learnedByPokemonAPI.getJSONObject(i).getString("url")
                 .split("/")
                 .dropLast(1)
@@ -277,9 +276,6 @@ class PokeAPICo : PokemonAPI {
                     isHidden
                 )
         }
-
-        /* val abilityIdNames = getIdNames(pokemonResponse.getJSONArray("abilities"), "ability")
-        val abilities = abilityIdNames.map { getAbility(it, false) }*/
 
         val evolutionChainId =
             speciesResponse.getJSONObject("evolution_chain").getString("url").split("/").dropLast(1)
